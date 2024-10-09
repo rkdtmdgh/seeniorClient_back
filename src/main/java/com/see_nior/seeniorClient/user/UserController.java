@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.see_nior.seeniorClient.dto.UserAccoountDto;
+import com.see_nior.seeniorClient.dto.UserAccountDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,10 +32,10 @@ public class UserController {
 	
 	// 회원 가입 확인
 	@PostMapping("/sign_up_confirm")
-	public String signUpConfirm(UserAccoountDto userAccoountDto, Model model) {
+	public String signUpConfirm(UserAccountDto userAccountDto, Model model) {
 		log.info("signUpConfirm()");
 		
-		int signUpResult = userService.signUpConfirm(userAccoountDto);
+		String signUpResult = userService.signUpConfirm(userAccountDto);
 		
 		model.addAttribute("signUpResult", signUpResult);
 		

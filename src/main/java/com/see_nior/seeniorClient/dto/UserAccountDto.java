@@ -1,5 +1,7 @@
 package com.see_nior.seeniorClient.dto;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAccoountDto {
+public class UserAccountDto {
 
 	private int u_no;
 	private String u_id;
@@ -16,7 +18,7 @@ public class UserAccoountDto {
 	private String u_phone;
 	private String u_nickname;
 	private String u_gender;
-	private String u_birth;
+	private LocalDate u_birth;
 	private String u_address;
 	private String u_profile_img;
 	private String u_company;
