@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.see_nior.seeniorClient.account.mapper.UserMapper">
+
+
+	<!-- 신규 회원 가입 -->
+	<insert id="insertNewUser">
+		
+		INSERT INTO 
+			USER_ACCOUNT(
+				U_ID, 
+				U_PW, 
+				U_NAME, 
+				U_PHONE, 
+				U_NICKNAME, 
+				U_GENDER, 
+				U_BIRTH, 
+				<if test="u_zip_code != '' and u_zip_code != null">
+					U_ZIP_CODE,
+				</if>
+				<if test="u_address != '' and u_address != null">
+					U_ADDRESS,
+				</if>
+				<if test="u_detailed_address != '' and u_detailed_address != null">
+					U_DETAILED_ADDRESS,
+				</if>
+				<if test="u_profile_img != '' and u_profile_img != null">
+					U_PROFILE_IMG,
+				</if>
+				U_COMPANY,
+				U_IS_PERSONAL 
+			) 
+		VALUES(
+			#{u_id}, 
+			#{u_pw}, 
+			#{u_name}, 
+			#{u_phone}, 
+			#{u_nickname}, 
+			#{u_gender}, 
+			#{u_birth}, 
+			<if test="u_address != '' and u_address != null">
+				#{u_zip_code}, 
+			</if>
+			<if test="u_address != '' and u_address != null">
+				#{u_address}, 
+			</if>
+			<if test="u_address != '' and u_address != null">
+				#{u_detailed_address}, 
+			</if>
+			<if test="u_profile_img != '' and u_profile_img != null">
+				#{u_profile_img}, 
+			</if>
+			#{u_company} 
+			#{u_is_personal} 
+		)
+	
+	</insert>
+	
+	<!-- 아이디 중복 확인 -->
+	<select id="isAccount">
+	
+		SELECT 
+			COUNT(*) 
+		FROM 
+			USER_ACCOUNT 
+		WHERE 
+			U_ID = #{u_id} 
+	
+	</select>
+	
+	<!-- 내 정보 가져오기 by id -->
+	<select id="selectUserAccountById"
+			resultType="UserAccountDto">
+	
+		SELECT 
+			U_NO, U_ID, U_NAME, U_PHONE, U_NICKNAME, U_GENDER, U_BIRTH, U_ZIP_CODE, U_ADDRESS, U_DETAILED_ADDRESS, 
+			U_PROFILE_IMG, U_COMPANY, U_IS_PERSONAL, U_SOCIAL_ID, U_IS_BLOCKED, U_REG_DATE, U_MOD_DATE 
+		FROM 
+			USER_ACCOUNT 
+		WHERE 
+			U_IS_DELETED = 1 
+		AND 
+			U_ID = #{u_id} 
+	
+	</select>
+	
+</mapper>

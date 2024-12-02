@@ -8,7 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -37,11 +36,8 @@ public class SecurityConfig {
 							"/quillEditor/**",
 							"/error/**",
 							"/image/**",
-							"/user/sign_up_form",
 							"/user/sign_up_confirm",
-							"/user/sign_in_form",
 							"/user/sign_in_confirm",
-							"/user/sign_in_result/**",
 							"/user/is_account"
 							).permitAll()
 					.anyRequest().authenticated());
@@ -52,33 +48,17 @@ public class SecurityConfig {
 					.loginProcessingUrl("/user/sign_in_confirm")
 					.usernameParameter("u_id")
 					.passwordParameter("u_pw")
-					.successHandler((request, response, authentication) -> {
-						log.info("user sign in successHanleder");
-						
-						response.sendRedirect("/user/sign_in_result?result=" + true);
-						
-					})
-					.failureHandler((request, response, exception) -> {
-						log.info("user sign in failureHandler");
-						
-						response.sendRedirect("/user/sign_in_result?result=" + false);
-						
-					})
-					);
+					.defaultSuccessUrl("/") 				// 로그인 성공 시 url
+					.failureUrl("/user/sign_in_error")		// 로그인 실패 시 url 
+					.permitAll());	
 		
 		http
 			.logout(logout -> logout
 					.logoutUrl("/user/sign_out_confirm")
-					.logoutSuccessHandler((request, response, authentication) -> {
-						log.info("logoutSuccessHandler()");
-						
-						HttpSession session = request.getSession(false);
-						
-						if (session != null) session.invalidate();
-						
-						response.sendRedirect("/");
-						
-					}));
+					.logoutSuccessUrl("/user/sign_out_success")		// 로그아웃 성공 시 url 
+					.invalidateHttpSession(true)					// 세션 무효화
+					.permitAll());		
+		
 		
 		http
 			.sessionManagement(sess -> sess
