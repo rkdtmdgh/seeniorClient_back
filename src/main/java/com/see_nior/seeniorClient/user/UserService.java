@@ -45,7 +45,6 @@ public class UserService {
 			return SqlResult.FAIL.getValue();
 			
 		}
-		
 	}
 
 	// 아이디 중복 확인
@@ -53,7 +52,6 @@ public class UserService {
 		log.info("isAccount()");
 		
 		return userMapper.isAccount(u_id);
-			
 	}
 
 	// 내 정보 가져오기
@@ -61,7 +59,6 @@ public class UserService {
 		log.info("getAccountInfoById()");
 		
 		return userMapper.selectUserAccountById(u_id);
-		
 	}
 
 }
