@@ -28,8 +28,13 @@
 				<if test="u_profile_img != '' and u_profile_img != null">
 					U_PROFILE_IMG,
 				</if>
-				U_COMPANY,
-				U_IS_PERSONAL 
+				<if test="u_is_personal == true">
+					U_IS_PERSONAL  
+				</if>
+				<if test="u_is_personal == false">
+					U_IS_PERSONAL,   
+					U_COMPANY
+				</if>
 			) 
 		VALUES(
 			#{u_id}, 
@@ -51,8 +56,13 @@
 			<if test="u_profile_img != '' and u_profile_img != null">
 				#{u_profile_img}, 
 			</if>
-			#{u_company} 
-			#{u_is_personal} 
+			<if test="u_is_personal == true">
+				1
+			</if>
+			<if test="u_is_personal == false">
+				0,   
+				#{u_company}
+			</if>
 		)
 	
 	</insert>
