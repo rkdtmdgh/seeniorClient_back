@@ -50,7 +50,7 @@ public class SecurityConfig {
 					.passwordParameter("u_pw")
 					.defaultSuccessUrl("/") 				// 로그인 성공 시 url
 					.failureUrl("/user/sign_in_error")		// 로그인 실패 시 url 
-					.permitAll());	
+					.permitAll());
 		
 		http
 			.logout(logout -> logout
