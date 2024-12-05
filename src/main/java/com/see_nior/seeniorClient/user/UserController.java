@@ -51,7 +51,7 @@ public class UserController {
 	public boolean isNickname(@RequestParam("u_nickname") String u_nickname) {
 		log.info("isNicknameP()");
 		
-		return false;
+		return userService.isNickname(u_nickname);
 	}
 
 	// 내 정보 가져오기 

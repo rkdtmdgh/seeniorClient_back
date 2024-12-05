@@ -95,4 +95,15 @@
 	
 	</select>
 	
+	<select id="isNickname">
+	
+		SELECT 	
+			COUNT(*) 
+		FROM 
+			USER_ACCOUNT 
+		WHERE 
+			U_NICKNAME = #{u_nickname} 
+	
+	</select>
+	
 </mapper>

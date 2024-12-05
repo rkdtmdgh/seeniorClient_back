@@ -51,7 +51,13 @@ public class UserService {
 	public boolean isAccount(String u_id) {
 		log.info("isAccount()");
 		
-		return userMapper.isAccount(u_id);
+		log.info("u_id ----- {}", u_id);
+		
+		boolean result = userMapper.isAccount(u_id);
+		
+		log.info("result ----- {}", result);
+				
+		return result;
 	}
 
 	// 내 정보 가져오기
@@ -59,6 +65,13 @@ public class UserService {
 		log.info("getAccountInfoById()");
 		
 		return userMapper.selectUserAccountById(u_id);
+	}
+
+	// u_nickname 중복 확인 
+	public boolean isNickname(String u_nickname) {
+		log.info("isNickname()");
+		
+		return userMapper.isNickname(u_nickname);
 	}
 
 }

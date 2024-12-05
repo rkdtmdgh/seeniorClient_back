@@ -12,5 +12,7 @@ public interface UserMapper {
 	public boolean isAccount(String u_id);
 
 	public UserAccountDto selectUserAccountById(String u_id);
+
+	public boolean isNickname(String u_nickname);
 	
 }
