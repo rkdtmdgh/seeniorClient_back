@@ -44,7 +44,6 @@ public class SecurityConfig {
 		
 		http
 			.formLogin(login -> login
-					.loginPage("/user/sign_in_form")
 					.loginProcessingUrl("/user/sign_in_confirm")
 					.usernameParameter("u_id")
 					.passwordParameter("u_pw")

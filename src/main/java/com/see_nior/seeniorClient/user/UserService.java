@@ -51,13 +51,7 @@ public class UserService {
 	public boolean isAccount(String u_id) {
 		log.info("isAccount()");
 		
-		log.info("u_id ----- {}", u_id);
-		
-		boolean result = userMapper.isAccount(u_id);
-		
-		log.info("result ----- {}", result);
-				
-		return result;
+		return userMapper.isAccount(u_id);
 	}
 
 	// 내 정보 가져오기

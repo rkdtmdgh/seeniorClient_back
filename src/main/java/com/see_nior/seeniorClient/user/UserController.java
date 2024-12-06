@@ -49,7 +49,7 @@ public class UserController {
 	@GetMapping("/is_nickname")
 	@ResponseBody
 	public boolean isNickname(@RequestParam("u_nickname") String u_nickname) {
-		log.info("isNicknameP()");
+		log.info("isNickname()");
 		
 		return userService.isNickname(u_nickname);
 	}
