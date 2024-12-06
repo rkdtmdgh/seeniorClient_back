@@ -38,7 +38,8 @@ public class SecurityConfig {
 							"/image/**",
 							"/user/sign_up_confirm",
 							"/user/sign_in_confirm",
-							"/user/is_account"
+							"/user/is_account",
+							"/user/is_nickname"
 							).permitAll()
 					.anyRequest().authenticated());
 		
@@ -56,8 +57,7 @@ public class SecurityConfig {
 					.logoutUrl("/user/sign_out_confirm")
 					.logoutSuccessUrl("/user/sign_out_success")		// 로그아웃 성공 시 url 
 					.invalidateHttpSession(true)					// 세션 무효화
-					.permitAll());		
-		
+					.permitAll());
 		
 		http
 			.sessionManagement(sess -> sess
