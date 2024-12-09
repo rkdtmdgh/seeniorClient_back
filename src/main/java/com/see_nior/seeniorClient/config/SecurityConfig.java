@@ -2,6 +2,7 @@ package com.see_nior.seeniorClient.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +23,7 @@ public class SecurityConfig {
 	}
 	
 	@Bean SecurityFilterChain clientFilterChain(HttpSecurity http) throws Exception {
+		log.info("clientFilterChain()");
 		
 		http
 			.cors(cors -> cors.disable())
@@ -30,12 +32,10 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests(auth -> auth
 					.requestMatchers(
+							HttpMethod.OPTIONS, "/**"
+							).permitAll()
+					.requestMatchers(
 							"/",
-							"/css/**",
-							"/js/**",
-							"/quillEditor/**",
-							"/error/**",
-							"/image/**",
 							"/user/sign_up_confirm",
 							"/user/sign_in_confirm",
 							"/user/is_account",
@@ -45,6 +45,7 @@ public class SecurityConfig {
 		
 		http
 			.formLogin(login -> login
+					.loginPage("/user/sign_in_form")
 					.loginProcessingUrl("/user/sign_in_confirm")
 					.usernameParameter("u_id")
 					.passwordParameter("u_pw")
