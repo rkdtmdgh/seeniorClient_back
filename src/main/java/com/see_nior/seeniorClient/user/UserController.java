@@ -27,7 +27,7 @@ public class UserController {
 	// 신규 회원 가입
 	@PostMapping("/sign_up_confirm")
 	@ResponseBody
-	public boolean signUpConfirm(@RequestBody UserAccountDto userAccountDto) {
+	public Object signUpConfirm(@RequestBody UserAccountDto userAccountDto) {
 		log.info("signUpConfirm()");
 		
 		log.info("userAccountDto -------- {}", userAccountDto);
