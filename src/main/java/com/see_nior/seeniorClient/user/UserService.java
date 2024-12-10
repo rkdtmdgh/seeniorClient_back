@@ -1,5 +1,8 @@
 package com.see_nior.seeniorClient.user;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,29 +25,48 @@ public class UserService {
 	final static public boolean USER_SIGN_UP_FAIL = false;
 	
 	// 회원 가입 확인
-	public boolean signUpConfirm(UserAccountDto userAccountDto) {
+	public Object signUpConfirm(UserAccountDto userAccountDto) {
 		log.info("signUpConfirm()");
+		
+		// return 
+		// result = boolean
+		// reason = u_id, u_nickname, fail
+		
+		Map<String, Object> resultMap = new HashMap<>();
 		
 		// 아이디 중복 검사
 		boolean isAccount = 
 				userMapper.isAccount(userAccountDto.getU_id());
 		
-		if (!isAccount) {
-			
-			userAccountDto.setU_pw(passwordEncoder.encode(userAccountDto.getU_pw()));
-			
-			int signUpResult = userMapper.insertNewUser(userAccountDto);
-			
-			if (signUpResult >= 0) 
-				return SqlResult.SUCCESS.getValue();
-			else 
-				return SqlResult.FAIL.getValue();
-			
-		} else {
-			
-			return SqlResult.FAIL.getValue();
-			
+		if (isAccount) {
+			resultMap.put("result", SqlResult.FAIL.getValue());
+			resultMap.put("resson", "u_id");
+			return resultMap;
 		}
+		
+		// 닉네임 중복 검사
+		boolean isNickname =
+				userMapper.isNickname(userAccountDto.getU_nickname());
+		
+		if (isNickname) {
+			resultMap.put("result", SqlResult.FAIL.getValue());
+			resultMap.put("resson", "u_nickname");
+			return resultMap;
+		}
+		
+		userAccountDto.setU_pw(passwordEncoder.encode(userAccountDto.getU_pw()));
+		
+		int signUpResult = userMapper.insertNewUser(userAccountDto);
+		
+		if (signUpResult >= 0) {
+			resultMap.put("result", SqlResult.SUCCESS.getValue());
+			return resultMap;
+		} else {
+			resultMap.put("result", SqlResult.FAIL.getValue());
+			resultMap.put("reason", "fail");
+			return resultMap;
+		}
+
 	}
 
 	// 아이디 중복 확인
