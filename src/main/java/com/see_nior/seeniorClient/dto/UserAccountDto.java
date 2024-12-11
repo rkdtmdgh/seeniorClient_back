@@ -31,6 +31,7 @@ public class UserAccountDto {
 	private boolean u_iscredentialsnonexpired;		// 계정 자격 증명 유무. true = 만료 X, false = 만료
 	private boolean u_isenabled;					// 계정 사용 가능 유무. true = 사용 가능, false = 사용 X
 	private boolean u_is_deleted;					// 계정 삭제 유무. 		true = 삭제 X, false = 삭제
+	private String u_authority_role;
 	private String u_reg_date;
 	private String u_mod_date;
 	

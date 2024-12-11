@@ -2,12 +2,14 @@ package com.see_nior.seeniorClient.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -15,7 +17,7 @@ import lombok.extern.log4j.Log4j2;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+	
 	@Bean PasswordEncoder passwordEncoder() {
 		log.info("passwordEncoder()");
 		
@@ -26,14 +28,11 @@ public class SecurityConfig {
 		log.info("clientFilterChain()");
 		
 		http
-			.cors(cors -> cors.disable())
+			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.csrf(csrf -> csrf.disable());
 		
 		http
 			.authorizeHttpRequests(auth -> auth
-					.requestMatchers(
-							HttpMethod.OPTIONS, "/**"
-							).permitAll()
 					.requestMatchers(
 							"/**",
 							"/",
@@ -49,8 +48,8 @@ public class SecurityConfig {
 					.loginProcessingUrl("/user/sign_in_confirm")
 					.usernameParameter("u_id")
 					.passwordParameter("u_pw")
-					.defaultSuccessUrl("/") 				// 로그인 성공 시 url
-					.failureUrl("/user/sign_in_error")		// 로그인 실패 시 url 
+					.successHandler(new CustomSuccessHandler())
+					.failureHandler(new CustomFailureHandler())
 					.permitAll());
 		
 		http
@@ -68,6 +67,19 @@ public class SecurityConfig {
 				.sessionFixation().newSession());
 		
 		return http.build();
+	}
+	
+	@Bean CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.addAllowedOrigin("http://localhost:3000");
+		configuration.addAllowedMethod("*");
+		configuration.addAllowedHeader("*");
+		configuration.setAllowCredentials(true);
+		
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		
+		return source;
 	}
 	
 }
