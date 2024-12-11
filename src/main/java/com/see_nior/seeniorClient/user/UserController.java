@@ -30,8 +30,6 @@ public class UserController {
 	public Object signUpConfirm(@RequestBody UserAccountDto userAccountDto) {
 		log.info("signUpConfirm()");
 		
-		log.info("userAccountDto -------- {}", userAccountDto);
-		
 		// 회원 가입 성공 return = true, 실패 or 아이디 중복 return = false
 		return userService.signUpConfirm(userAccountDto);
 	}

@@ -21,9 +21,6 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final UserMapper userMapper;
 	
-	final static public boolean USER_SIGN_UP_SUCCESS = true;
-	final static public boolean USER_SIGN_UP_FAIL = false;
-	
 	// 회원 가입 확인
 	public Object signUpConfirm(UserAccountDto userAccountDto) {
 		log.info("signUpConfirm()");
