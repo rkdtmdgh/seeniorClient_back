@@ -40,7 +40,7 @@ public class UserService {
 		
 		if (isAccount) {
 			resultMap.put("result", SqlResult.FAIL.getValue());
-			resultMap.put("resson", "u_id");
+			resultMap.put("reason", "u_id");
 			return resultMap;
 		}
 		
@@ -50,7 +50,7 @@ public class UserService {
 		
 		if (isNickname) {
 			resultMap.put("result", SqlResult.FAIL.getValue());
-			resultMap.put("resson", "u_nickname");
+			resultMap.put("reason", "u_nickname");
 			return resultMap;
 		}
 		
