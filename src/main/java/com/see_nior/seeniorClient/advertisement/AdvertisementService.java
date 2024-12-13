@@ -19,14 +19,19 @@ public class AdvertisementService {
 	
 	final private AdvertisementMapper advertisementMapper;
 
-	// 홈 화면에서 보여질 광고 가져오기
-	public Object getAdvertisementListForMain(int page_limit) {
-		log.info("getAdvertisementListForMain()");
+	// 홈 화면에서 보여질 광고 가져오기(위치별 광고)
+	public Object getAdvertisementListForMainByCategory(int ad_category_no) {
+		log.info("getAdvertisementListForMainByCategory()");
 		
 		Map<String, Object> responseMap = new HashMap<>();
-		List<AdvertisementDto> advertisementDtos = advertisementMapper.getAdvertisementListForMain(page_limit);
-		responseMap.put("advertisementDtos", advertisementDtos);
+		List<AdvertisementDto> advertisementDtos = advertisementMapper.getAdvertisementListForMainByCategory(ad_category_no);
+		
+		if (advertisementDtos.size() <= 0) responseMap.put("advertisementDtos", null);
+		
+		else responseMap.put("advertisementDtos", advertisementDtos);
 
+		log.info("responseMap -------->{}", responseMap);
+		
 		return responseMap;
 		
 	}

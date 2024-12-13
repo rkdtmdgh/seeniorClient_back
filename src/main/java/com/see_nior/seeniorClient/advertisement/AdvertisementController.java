@@ -16,12 +16,12 @@ public class AdvertisementController {
 	
 	final private AdvertisementService advertisementService;
 	
-	// 홈 화면에서 보여질 광고 가져오기
+	// 홈 화면에서 보여질 광고 가져오기(위치별 광고)
 	@GetMapping("/main/get_advertisement_list")
-	public Object getAdvertisementListForMain(@RequestParam(value = "page_limit") int page_limit) {
-		log.info("getAdvertisementListForMain()");
+	public Object getAdvertisementListForMainByCategory(@RequestParam(value = "ad_category_no") int ad_category_no) {
+		log.info("getAdvertisementListForMainByCategory()");
 		
-		return advertisementService.getAdvertisementListForMain(page_limit);
+		return advertisementService.getAdvertisementListForMainByCategory(ad_category_no);
 		
 	}
 	
