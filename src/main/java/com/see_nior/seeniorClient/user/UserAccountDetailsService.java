@@ -1,5 +1,6 @@
 package com.see_nior.seeniorClient.user;
 
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,18 +21,21 @@ public class UserAccountDetailsService implements UserDetailsService {
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		log.info("loadUserByUsername()");
-		log.info("username ------ {}", username);
+		log.info("loadUserByUsername() ----- {}", username);
 		
-		UserAccountDto userAccountDto = userMapper.selectUserAccountById(username);		
+		UserAccountDto userAccountDto = userMapper.selectUserAccountById(username);
+		log.info("userAccountDto ------- {}", userAccountDto);
 		
-		log.info("userAccountDto -------- {}", userAccountDto);
-		
-		if (userAccountDto != null) {
-			return new UserAccountDetails(userAccountDto);
+		if (userAccountDto == null) {
+			throw new UsernameNotFoundException("해당 사용자를 찾을 수 없습니다.");
 		}
 		
-		return null;
+		if (!userAccountDto.isU_is_blocked()) {
+			throw new DisabledException("해당 계정은 차단되었습니다.");
+		}
+		
+		return new UserAccountDetails(userAccountDto);
+		
 	}
 
 }
