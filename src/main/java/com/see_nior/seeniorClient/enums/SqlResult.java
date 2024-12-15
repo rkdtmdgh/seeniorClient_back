@@ -10,7 +10,7 @@ public enum SqlResult {
 	private SqlResult(boolean value) {
 		this.value = value;
 	}
-	
+
 	public boolean getValue() {
 		return value;
 	}

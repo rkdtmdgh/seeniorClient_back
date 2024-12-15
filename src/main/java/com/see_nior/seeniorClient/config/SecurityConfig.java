@@ -11,6 +11,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -55,8 +56,15 @@ public class SecurityConfig {
 		http
 			.logout(logout -> logout
 					.logoutUrl("/user/sign_out_confirm")
-					.logoutSuccessUrl("/user/sign_out_success")		// 로그아웃 성공 시 url 
-					.invalidateHttpSession(true)					// 세션 무효화
+					.logoutSuccessHandler((request, response, authentication) -> {
+						log.info("sign_out_confirm success ----- {}", authentication.getName()); 
+						
+						response.setStatus(HttpServletResponse.SC_OK);
+						response.setContentType("application/json;charset=UTF-8");
+						response.getWriter().write("{\"signOutResult\": true}");
+						
+					})
+					.invalidateHttpSession(true)		// 세션 무효화
 					.permitAll());
 		
 		http
