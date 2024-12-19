@@ -3,6 +3,7 @@ package com.see_nior.seeniorClient.auth;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,8 @@ public class AuthController {
 		log.info("checkAuthentication() ----- {}", authentication.getName());
 	
 		if (authentication != null && authentication.isAuthenticated()) {
+			WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
+			log.info("session ID ------ {}", details.getSessionId());
 			return ResponseEntity.ok("Logged in");
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
