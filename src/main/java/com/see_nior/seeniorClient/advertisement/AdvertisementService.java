@@ -39,8 +39,6 @@ public class AdvertisementService {
 			responseMap.put("advertisementImgServerPath", advertisementImgServerPath);
 			
 		}
-
-		log.info("responseMap -------->{}", responseMap);
 		
 		return responseMap;
 		
