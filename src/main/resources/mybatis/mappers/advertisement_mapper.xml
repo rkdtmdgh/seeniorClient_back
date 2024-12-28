@@ -48,6 +48,8 @@
 		WHERE 
 			AD.AD_IS_DELETED = 1 
 		AND 
+			AC.AC_IS_DELETED = 1 
+		AND 
 			AD.AD_STATE = 1 
 		AND 
 			AD.AD_CATEGORY_NO = #{ad_category_no}
