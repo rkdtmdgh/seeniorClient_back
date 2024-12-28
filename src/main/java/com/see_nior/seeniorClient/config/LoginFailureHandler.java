@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class CustomFailureHandler implements AuthenticationFailureHandler {
+public class LoginFailureHandler implements AuthenticationFailureHandler {
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
@@ -21,9 +21,6 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
 		log.info("onAuthenticationFailure() ----- {}", exception.getMessage());
 		
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		response.setContentType("application/json");
-		response.getWriter().write("{\"signInResult\": false}");
-		
 	}
 	
 }

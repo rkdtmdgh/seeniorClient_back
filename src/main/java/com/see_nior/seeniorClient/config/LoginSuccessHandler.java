@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class CustomSuccessHandler implements AuthenticationSuccessHandler {
+public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -21,9 +21,6 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 		log.info("onAuthenticationSuccess()");
 		
 		response.setStatus(HttpServletResponse.SC_OK);
-		response.setContentType("application/json");
-		response.getWriter().write("{\"signInResult\": true}");
-		
 	}
 	
 }

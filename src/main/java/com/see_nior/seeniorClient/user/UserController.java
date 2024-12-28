@@ -72,7 +72,7 @@ public class UserController {
 	public boolean modifyConfirm(UserAccountDto userAccountDto) {
 		log.info("modifyConfirm()");
 		
-		return false;
+		return userService.modifyConfirm(userAccountDto);
 	}
 	
 	

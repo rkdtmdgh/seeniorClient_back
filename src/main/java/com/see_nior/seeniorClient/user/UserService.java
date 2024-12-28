@@ -87,4 +87,20 @@ public class UserService {
 		return userMapper.isNickname(u_nickname);
 	}
 
+	// 정보 수정 확인
+	public boolean modifyConfirm(UserAccountDto userAccountDto) {
+		log.info("modifyConfirm() ------- {}", userAccountDto.getU_id());
+		
+		boolean result = 
+				userMapper.isNickname(userAccountDto.getU_nickname());
+		
+		if (result) {
+			return SqlResult.FAIL.getValue();
+		}
+		
+		boolean modifyResult = userMapper.updateUserAccount(userAccountDto);
+		
+		return modifyResult;
+	}
+
 }
