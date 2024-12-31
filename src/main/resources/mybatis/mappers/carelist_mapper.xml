@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.see_nior.seeniorClient.carelist.mapper.CareListMapper">
+
+	<resultMap type="UserAccountDto" id="UserAccountDto">
+		<id column="u_no" property="u_no"/>
+		<result column="u_id" property="u_id"/>
+		<result column="u_pw" property="u_pw"/>
+		<result column="u_name" property="u_name"/>
+		<result column="u_phone" property="u_phone"/>
+		<result column="u_nickname" property="u_nickname"/>
+		<result column="u_gender" property="u_gender"/>
+		<result column="u_birth" property="u_birth"/>
+		<result column="u_zip_code" property="u_zip_code"/>
+		<result column="u_address" property="u_address"/>
+		<result column="u_detailed_address" property="u_detailed_address"/>
+		<result column="u_profile_img" property="u_profile_img"/>
+		<result column="u_company" property="u_company"/>
+		<result column="u_is_personal" property="u_is_personal"/>
+		<result column="u_social_id" property="u_social_id"/>
+		<result column="u_is_blocked" property="u_is_blocked"/>
+		<result column="u_blocked_reason" property="u_blocked_reason"/>
+		<result column="u_isaccountnonexpired" property="u_isaccountnonexpired"/>
+		<result column="u_isaccountnonlocked" property="u_isaccountnonlocked"/>
+		<result column="u_iscredentialsnonexpired" property="u_iscredentialsnonexpired"/>
+		<result column="u_isenabled" property="u_isenabled"/>
+		<result column="u_is_deleted" property="u_is_deleted"/>
+		<result column="u_reg_date" property="u_reg_date"/>
+		<result column="u_mod_date" property="u_mod_date"/>
+	</resultMap>
+
+	<resultMap type="CareListCategoryDto" id="CareListCategoryDto">
+		<id column="clc_no" property="clc_no" />
+		<result column="clc_user_no" property="clc_user_no" />
+		<result column="clc_name" property="clc_name" />
+		<result column="clc_is_deleted" property="clc_is_deleted" />
+		<result column="clc_reg_date" property="clc_reg_date" />
+		<result column="clc_mod_date" property="clc_mod_date" />
+		<collection property="userAccountDto" resultMap="UserAccountDto" />
+	</resultMap>
+	
+	<resultMap type="CareListDto" id="CareListDto">
+		<id column="cl_no" property="cl_no"/>
+		<result column="cl_user_no" property="cl_user_no"/>
+		<result column="cl_category_no" property="cl_category_no"/>
+		<result column="cl_name" property="cl_name"/>
+		<result column="cl_img" property="cl_img"/>
+		<result column="cl_dir_name" property="cl_dir_name"/>
+		<result column="cl_gender" property="cl_gender"/>
+		<result column="cl_age" property="cl_age"/>
+		<result column="cl_address" property="cl_address"/>
+		<result column="cl_blood_type" property="cl_blood_type"/>
+		<result column="cl_phone" property="cl_phone"/>
+		<result column="cl_emergency_contact_1" property="cl_emergency_contact_1"/>
+		<result column="cl_emergency_contact_2" property="cl_emergency_contact_2"/>
+		<result column="cl_emergency_contact_3" property="cl_emergency_contact_3"/>
+		<result column="cl_emergency_contact_4" property="cl_emergency_contact_4"/>
+		<result column="cl_favor_food" property="cl_favor_food"/>
+		<result column="cl_hate_food" property="cl_hate_food"/>
+		<result column="cl_diabetic_food" property="cl_diabetic_food"/>
+		<result column="cl_medications" property="cl_medications"/>
+		<result column="cl_hospital" property="cl_hospital"/>
+		<result column="cl_doctor" property="cl_doctor"/>
+		<result column="cl_hospital_tel" property="cl_hospital_tel"/>
+		<result column="cl_walk_state" property="cl_walk_state"/>
+		<result column="cl_assistive_device" property="cl_assistive_device"/>
+		<result column="cl_washing_assistance" property="cl_washing_assistance"/>
+		<result column="cl_toilet_assistance" property="cl_toilet_assistance"/>
+		<result column="cl_mental_state" property="cl_mental_state"/>
+		<result column="cl_social_state" property="cl_social_state"/>
+		<result column="cl_etc" property="cl_etc"/>
+		<result column="cl_favorites" property="cl_favorites"/>
+		<result column="cl_is_deleted" property="cl_is_deleted"/>
+		<result column="cl_reg_date" property="cl_reg_date"/>
+		<result column="cl_mod_date" property="cl_mod_date"/>
+		<collection property="careListCategoryDto" resultMap="CareListCategoryDto" />
+	</resultMap>
+	
+<!-- ////////////////////////////////////////// 케어리스트 카테고리 -->
+
+	<!-- 케어리스트 카테고리명 중복 확인 -->
+	<select id="isAdvertisementCategory"
+			parameterType="Integer"
+			resultType="boolean">
+			
+		SELECT 
+			COUNT(*) 
+		FROM 
+			CARE_LIST_CATEGORY 
+		WEHER 
+			CLC_NAME = #{clc_name}
+	
+	</select>
+
+
+	<!-- 케어리스트 카테고리 등록하기 -->
+	<insert id="insertNewCareListCategory"
+			parameterType="CareListCategoryDto">
+			
+		INSERT INTO 
+			CARE_LIST_CATEGORY
+			(CLC_USER_NO, CLC_NAME) 
+		VALUES 
+			(#{u_no}, #{clc_name})
+	
+	</insert>
+	
+	<!-- 모든 케어리스트 카테고리 가져오기 -->
+	<select id="getCareListCategoryList"
+			resultMap="CareListCategoryDto">
+	
+		SELECT 
+			* 
+		FROM 
+			CARE_LIST_CATEGORY 
+		WHERE 
+			CLC_IS_DELETED = 1 
+		ORDER BY 
+			CLC_NO DESC
+	
+	</select>
+	
+	<!-- 모든 케어리스트 카테고리 가져오기(페이지네이션) -->
+	<select id="getCareListCategoryListWithPage"
+			parameterType="Integer"
+			resultMap="CareListCategoryDto">
+	
+		SELECT 
+			* 
+		FROM 
+			CARE_LIST_CATEGORY 
+		WHERE 
+			CLC_IS_DELETED = 1 
+		ORDER BY 
+			${sortValue} ${order} 
+		LIMIT 
+			#{start}, #{limit}
+	
+	</select>
+	
+	<!-- 케어리스트 카테고리의 총 리스트 개수 구하기 -->
+	<select id="getAllCareListCategoryCnt"
+			resultType="Integer">
+			
+		SELECT 
+			CONUT(*) 
+		FROM 
+			CARE_LIST_CATEGORY 
+		WHERE 
+			CLC_IS_DELETED = 1
+	
+	</select>
+	
+	<!-- 케어리스트 카테고리 수정하기 -->
+	<update id="updateCareListCategory"
+			parameterType="CareListCategoryDto">
+			
+		UPDATE 
+			CARE_LIST_CATEGORY 
+		SET 
+			CLC_NAME = #{clc_name}, 
+			CLC_MOD_DATE = NOW() 
+		WHERE 
+			CLC_NO = #{clc_no}	
+	
+	</update>
+	
+	<!-- 케어리스트 카테고리 삭제하기 -->
+	<update id="deleteCareListCategory"
+			parameterType="Integer">
+			
+		UPDATE 
+			CARE_LIST_CATEGORY 
+		SET 
+			CLC_IS_DELETED = 0, 
+			CLC_MOD_DATE = NOW() 
+		WHERE 
+			CLC_NO = #{clc_no}
+	
+	</update>
+	
+	
+<!-- ////////////////////////////////////////// 케어리스트 -->
+
+</mapper>

@@ -24,6 +24,6 @@ public class AdvertisementDto {
 	private String ad_reg_date;
 	private String ad_mod_date;
 	
-	AdvertisementCategoryDto advertisementCategoryDto;
+	private AdvertisementCategoryDto advertisementCategoryDto;
 	
 }

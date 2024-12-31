@@ -11,8 +11,10 @@ public class CareListDto {
 	
 	private int cl_no;
 	private int cl_user_no;
-	private String cl_group;
+	private int cl_category_no;
 	private String cl_name;
+	private String cl_img;
+	private String cl_dir_name;
 	private String cl_gender;
 	private int cl_age;
 	private String cl_address;
@@ -40,5 +42,7 @@ public class CareListDto {
 	private int cl_is_deleted;
 	private String cl_reg_date;
 	private String cl_mod_date;
+	
+	private CareListCategoryDto careListCategoryDto;
 
 }
