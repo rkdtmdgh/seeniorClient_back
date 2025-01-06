@@ -103,4 +103,21 @@ public class UserService {
 		return modifyResult;
 	}
 
+	// 비밀번호 확인
+	public boolean checkPw(String u_id, String u_pw) {
+		log.info("checkPw()");
+		
+		UserAccountDto userAccountDto = 
+				userMapper.selectUserAccountById(u_id);
+		
+		return passwordEncoder.matches(u_pw, userAccountDto.getU_pw());
+	}
+
+	// 비밀번호 변경 확인
+	public boolean modifyPwConfirm(String u_pw, String u_id) {
+		log.info("modifyPwConfirm()");
+		
+		return userMapper.updateUserPw(u_id, passwordEncoder.encode(u_pw));
+	}
+
 }
