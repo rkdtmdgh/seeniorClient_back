@@ -53,9 +53,9 @@ public class SecurityConfig {
 					.failureHandler(new LoginFailureHandler())
 					.permitAll());
 		
-		http
-			.oauth2Login((oauth2) -> oauth2
-					.userInfoEndpoint());
+//		http
+//			.oauth2Login((oauth2) -> oauth2
+//					.userInfoEndpoint());
 		
 		http
 			.logout(logout -> logout

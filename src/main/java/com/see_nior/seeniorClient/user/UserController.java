@@ -61,6 +61,8 @@ public class UserController {
 		UserAccountDto userAccountDto = 
 				userService.getAccountInfoById(principal.getName());
 		
+		userAccountDto.setU_pw("");
+		
 		return userAccountDto;
 	}
 	
