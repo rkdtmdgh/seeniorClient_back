@@ -14,5 +14,7 @@ public interface UserMapper {
 	public UserAccountDto selectUserAccountById(String u_id);
 
 	public boolean isNickname(String u_nickname);
+
+	public boolean updateUserAccount(UserAccountDto userAccountDto);
 	
 }

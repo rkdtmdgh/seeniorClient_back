@@ -94,6 +94,7 @@
 	
 	</select>
 	
+	<!-- u_nickname 중복 확인 -->
 	<select id="isNickname">
 	
 		SELECT 	
@@ -104,5 +105,27 @@
 			U_NICKNAME = #{u_nickname} 
 	
 	</select>
+	
+	<!-- 정보 수정 확인 -->
+	<update id="updateUserAccount">
+	
+		UPDATE 
+			USER_ACCOUNT 
+		SET 
+			U_NAME = #{u_name}, 
+			U_PHONE = #{u_phone}, 
+			U_NICKNAME = #{u_nickname}, 
+			U_NAME = #{u_name}, 
+			U_NAME = #{u_name}, 
+			U_NAME = #{u_name}, 
+			U_NAME = #{u_name}, 
+			U_NAME = #{u_name}, 
+		WHERE 
+			U_ID = #{u_id}
+	
+	</update>
+	
+	
+	
 	
 </mapper>

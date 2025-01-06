@@ -49,9 +49,13 @@ public class SecurityConfig {
 					.loginProcessingUrl("/user/sign_in_confirm")
 					.usernameParameter("u_id")
 					.passwordParameter("u_pw")
-					.successHandler(new CustomSuccessHandler())
-					.failureHandler(new CustomFailureHandler())
+					.successHandler(new LoginSuccessHandler())
+					.failureHandler(new LoginFailureHandler())
 					.permitAll());
+		
+//		http
+//			.oauth2Login((oauth2) -> oauth2
+//					.userInfoEndpoint());
 		
 		http
 			.logout(logout -> logout
