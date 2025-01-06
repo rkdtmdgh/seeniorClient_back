@@ -115,15 +115,31 @@
 			U_NAME = #{u_name}, 
 			U_PHONE = #{u_phone}, 
 			U_NICKNAME = #{u_nickname}, 
-			U_NAME = #{u_name}, 
-			U_NAME = #{u_name}, 
-			U_NAME = #{u_name}, 
+			U_GENDER = #{u_gender}, 
+			U_BIRTH = #{u_birth}, 
+			u_zip_code = #{u_zip_code}, 
 			U_NAME = #{u_name}, 
 			U_NAME = #{u_name}, 
 		WHERE 
 			U_ID = #{u_id}
 	
 	</update>
+	
+	<update id="updateUserPw">
+	
+		UPDATE 
+			USER_ACCOUNT 
+		SET 
+			U_PW = #{u_pw}, 
+			U_MOD_DATE = NOW()
+		WHERE 
+			U_ID = #{u_id} 
+		
+	</update>
+	
+	
+	
+	
 	
 	
 	
