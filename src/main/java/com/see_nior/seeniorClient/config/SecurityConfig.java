@@ -54,6 +54,10 @@ public class SecurityConfig {
 					.permitAll());
 		
 		http
+			.oauth2Login((oauth2) -> oauth2
+					.userInfoEndpoint());
+		
+		http
 			.logout(logout -> logout
 					.logoutUrl("/user/sign_out_confirm")
 					.logoutSuccessHandler((request, response, authentication) -> {
