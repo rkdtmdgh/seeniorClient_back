@@ -18,5 +18,7 @@ public interface UserMapper {
 	public boolean updateUserAccount(UserAccountDto userAccountDto);
 
 	public boolean updateUserPw(String u_id, String u_pw);
+
+	public int selectUserNoById(String u_id);
 	
 }

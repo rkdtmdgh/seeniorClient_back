@@ -137,7 +137,16 @@
 		
 	</update>
 	
+	<select id="selectUserNoById">
 	
+		SELECT 
+			U_NO 
+		FROM 
+			USER_ACCOUNT 
+		WHERE 
+			U_ID = #{u_id} 
+	
+	</select>
 	
 	
 	
