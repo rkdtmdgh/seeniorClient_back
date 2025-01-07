@@ -73,11 +73,18 @@ public class UserService {
 		return userMapper.isAccount(u_id);
 	}
 
-	// 내 정보 가져오기
+	// 내 정보 가져오기 (전체 정보)
 	public UserAccountDto getAccountInfoById(String u_id) {
 		log.info("getAccountInfoById()");
 		
 		return userMapper.selectUserAccountById(u_id);
+	}
+	
+	// 내 u_no 가져오기 by u_id
+	public int selectUserNoById(String u_id) {
+		log.info("selectUserNoById()");
+		
+		return userMapper.selectUserNoById(u_id);
 	}
 
 	// u_nickname 중복 확인 
