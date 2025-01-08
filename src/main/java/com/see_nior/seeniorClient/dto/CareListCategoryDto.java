@@ -15,7 +15,5 @@ public class CareListCategoryDto {
 	private int clc_is_deleted;
 	private String clc_reg_date;
 	private String clc_mod_date;
-	
-	private UserAccountDto userAccountDto;
 
 }

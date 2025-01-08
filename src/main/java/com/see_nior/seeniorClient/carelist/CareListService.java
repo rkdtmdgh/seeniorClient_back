@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.see_nior.seeniorClient.carelist.mapper.CareListMapper;
 import com.see_nior.seeniorClient.dto.CareListCategoryDto;
-import com.see_nior.seeniorClient.dto.UserAccountDto;
+import com.see_nior.seeniorClient.dto.CareListDto;
 import com.see_nior.seeniorClient.enums.SqlResult;
 import com.see_nior.seeniorClient.user.UserService;
+import com.see_nior.seeniorClient.util.CareListPagingUtil;
 import com.see_nior.seeniorClient.util.ImageFileService;
-import com.see_nior.seeniorClient.util.PagingUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,10 +29,18 @@ public class CareListService {
 /////////////////////////////////////////////////////// 케어리스트 카테고리	
 	
 	// 케어리스트 카테고리명 중복 확인
-	public boolean isCareListCategory(String clc_name) {
+	public boolean isCareListCategory(String clc_name, String u_id) {
 		log.info("isCareListCategory()");
 		
-		boolean isCareListCategory = careListMapper.isCareListCategory(clc_name);
+		Map<String, Object> isCareListParams = new HashMap<>();
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		
+		isCareListParams.put("clc_name", clc_name);
+		isCareListParams.put("u_no", u_no);
+		
+		boolean isCareListCategory = careListMapper.isCareListCategory(isCareListParams);
 		
 		return isCareListCategory;
 		
@@ -45,10 +53,10 @@ public class CareListService {
 		Map<String, Object> insertParams = new HashMap<>();
 		
 		// u_id 값으로 u_no 가져오기
-		UserAccountDto loginedUserDto = userService.getAccountInfoById(u_id);
+		int u_no = userService.selectUserNoById(u_id);
 		
 		insertParams.put("clc_name", clc_name);
-		insertParams.put("u_no", loginedUserDto.getU_no());
+		insertParams.put("u_no", u_no);
 		
 		int createCategoryResult = careListMapper.insertNewCareListCategory(insertParams);
 		
@@ -60,12 +68,15 @@ public class CareListService {
 	}
 	
 	// 모든 케어리스트 카테고리 가져오기 (케어리스트에서 <select> 박스)
-	public Map<String, Object> getCategoryList() {
+	public Map<String, Object> getCategoryList(String u_id) {
 		log.info("getCategoryList()");
 		
 		Map<String, Object> responseMap = new HashMap<>();
 		
-		List<CareListCategoryDto> careListCategoryDtos = (List<CareListCategoryDto>) careListMapper.getCareListCategoryList();
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		
+		List<CareListCategoryDto> careListCategoryDtos = (List<CareListCategoryDto>) careListMapper.getCareListCategoryList(u_no);
 		
 		responseMap.put("careListCategoryDtos", careListCategoryDtos);
 		
@@ -74,12 +85,15 @@ public class CareListService {
 
 	//페이지 번호에 따른 케어리스트 카테고리 리스트들 가져오기
 	public Map<String, Object> getCareListCategoryListWithPage(int page_limit, String sortValue, String order,
-			int page) {
+			int page, String u_id) {
 		log.info("getCareListCategoryListWithPage()");
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
 		
 		Map<String, Object> pagingList = new HashMap<>();
 		
-		List<CareListCategoryDto> careListCategoryDtos = careListMapper.getCareListCategoryListWithPage(PagingUtil.pagingParams(page_limit, sortValue, order, page));
+		List<CareListCategoryDto> careListCategoryDtos = careListMapper.getCareListCategoryListWithPage(CareListPagingUtil.pagingParams(page_limit, sortValue, order, page, u_no));
 		
 		pagingList.put("careListCategoryDtos", careListCategoryDtos);
 		
@@ -88,13 +102,16 @@ public class CareListService {
 	}
 
 	// 케어리스트 카테고리의 총 페이지 개수 구하기
-	public Map<String, Object> getCareListCategoryListPageNum(int page_limit, int block_limit, int page) {
+	public Map<String, Object> getCareListCategoryListPageNum(int page_limit, int page, String u_id) {
 		log.info("getCareListCategoryListPageNum()");
 		
-		// 전체 리스트 개수 조회
-		int careListCategoryListCnt = careListMapper.getAllCareListCategoryCnt();
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
 		
-		return PagingUtil.pageNum(page_limit, block_limit, "careListCategoryListCnt", careListCategoryListCnt, page);
+		// 전체 리스트 개수 조회
+		int careListCategoryListCnt = careListMapper.getAllCareListCategoryCnt(u_no);
+		
+		return CareListPagingUtil.pageNum(page_limit, "careListCategoryListCnt", careListCategoryListCnt, page, u_no);
 		
 	}
 
@@ -124,9 +141,75 @@ public class CareListService {
 		
 	}
 
-	
-
 /////////////////////////////////////////////////////// 케어리스트	
+	
+	
+	// 페이지 번호에 따른 모든 케어리스트 가져오기
+	public Map<String, Object> getCareListWithPage(int page_limit, int page, String sortValue,
+			String order, String u_id) {
+		log.info("getCareListWithPage()");
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		
+		Map<String, Object> pagingList = new HashMap<>();
+		
+		List<CareListDto> careListDtos = careListMapper.getCareListWithPage(CareListPagingUtil.pagingParams(page_limit, sortValue, order, page, u_no));
+		pagingList.put("careListDtos", careListDtos);
+		
+		return pagingList;
+		
+	}
+
+	// 모든 케어리스트 총 페이지 개수 가져오기
+	public Map<String, Object> getCareListPageNum(int page_limit, int page, String u_id) {
+		log.info("getCareListPageNum()");
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		
+		// 전체 리스트 개수 조회
+		int careListCnt = careListMapper.getAllCareListCnt(u_no);
+		
+		return CareListPagingUtil.pageNum(page_limit, "careListCnt", careListCnt, page, u_no);
+
+	}
+
+	// 페이지 번호에 따른 카테고리별 케어리스트 가져오기
+	public Map<String, Object> getCareListByCategoryWithPage(int page_limit, int page, String sortValue, String order, int infoNo, String u_id) {
+		log.info("getCareListByCategoryWithPage()");
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		
+		Map<String, Object> pagingList = new HashMap<>();
+		
+		List<CareListDto> careListDtos = careListMapper.getCareListByCategoryWithPage(CareListPagingUtil.pagingParamsForSelectBox(page_limit, sortValue, order, page, infoNo, u_no));
+		pagingList.put("careListDtos", careListDtos);
+		
+		return pagingList;
+		
+	}
+
+	// 카테고리별 케어리스트 페이지 개수 가져오기
+	public Map<String, Object> getCareListByCategoryPageNum(int page_limit, int page, int infoNo, String u_id) {
+		log.info("getCareListPageNum()");
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		
+		Map<String, Object> selectParams = new HashMap<>();
+		
+		selectParams.put("u_no", u_no);
+		selectParams.put("infoNo", infoNo);
+		
+		// 전체 리스트 개수 조회
+		int careListByCategoryCnt = careListMapper.getCareListByCategoryCnt(selectParams);
+		
+		return CareListPagingUtil.pageNum(page_limit, "careListByCategoryCnt", careListByCategoryCnt, page, u_no);
+		
+	}
+	
 	
 
 }
