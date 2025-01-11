@@ -8,6 +8,7 @@
 		<id column="clc_no" property="clc_no" />
 		<result column="clc_user_no" property="clc_user_no" />
 		<result column="clc_name" property="clc_name" />
+		<result column="clc_item_cnt" property="clc_item_cnt" />
 		<result column="clc_is_deleted" property="clc_is_deleted" />
 		<result column="clc_reg_date" property="clc_reg_date" />
 		<result column="clc_mod_date" property="clc_mod_date" />
@@ -53,15 +54,15 @@
 <!-- ////////////////////////////////////////// 케어리스트 카테고리 -->
 
 	<!-- 케어리스트 카테고리명 중복 확인 -->
-	<select id="isAdvertisementCategory"
-			parameterType="Integer"
+	<select id="isCareListCategory"
+			parameterType="Map"
 			resultType="boolean">
 			
 		SELECT 
 			COUNT(*) 
 		FROM 
 			CARE_LIST_CATEGORY 
-		WEHER 
+		WHERE 
 			CLC_NAME = #{clc_name} 
 		AND 
 			CLC_USER_NO = #{u_no}
@@ -103,19 +104,25 @@
 	<select id="getCareListCategoryListWithPage"
 			parameterType="Map"
 			resultMap="CareListCategoryDto">
-	
+			
 		SELECT 
-			* 
+			CLC.*, 
+			(SELECT 
+				COUNT(*) 
+			FROM 
+				CARE_LIST AS CL 
+			WHERE 
+				CL.CL_CATEGORY_NO = CLC.CLC_NO 
+			AND 
+				CL.CL_IS_DELETED = 1) AS CLC_ITEM_CNT 
 		FROM 
-			CARE_LIST_CATEGORY 
+			CARE_LIST_CATEGORY AS CLC 
 		WHERE 
-			CLC_IS_DELETED = 1 
-		AND 
-			CLC_USER_NO = #{u_no} 
+			CLC.CLC_IS_DELETED = 1 
 		ORDER BY 
-			${sortValue} ${order} 
+			CLC.${sortValue} ${order} 
 		LIMIT 
-			#{start}, #{limit}
+			#{start}, #{limit}	
 	
 	</select>
 	
@@ -125,13 +132,35 @@
 			resultType="Integer">
 			
 		SELECT 
-			CONUT(*) 
+			COUNT(*) 
 		FROM 
 			CARE_LIST_CATEGORY 
 		WHERE 
 			CLC_IS_DELETED = 1 
 		AND 
 			CLC_USER_NO = #{u_no}
+	
+	</select>
+	
+	<!-- 케어리스트 카테고리 한 개 가져오기 -->
+	<select id="getCareListCategory"
+			parameterType="Integer"
+			resultMap="CareListCategoryDto">
+			
+		SELECT 
+			CLC.*, 
+			(SELECT 
+				COUNT(*) 
+			FROM 
+				CARE_LIST AS CL 
+			WHERE 
+				CL.CL_CATEGORY_NO - CLC.CLC_NO 
+			AND 
+				CL.CL_IS_DELETED = 1) AS CLC_ITEM_CNT 
+		FROM 
+			CARE_LIST_CATEGORY AS CLC 
+		WHERE 
+			CLC.CLC_NO = #{clc_no}
 	
 	</select>
 	
@@ -166,7 +195,9 @@
 	
 <!-- ////////////////////////////////////////// 케어리스트 -->
 
-	<!-- 페이지 번호에 따른 모든 케어리스트 가져오기 -->
+
+<!-- 
+	<! 페이지 번호에 따른 모든 케어리스트 가져오기 >
 	<select id="getCareListWithPage"
 			parameterType="Map"
 			resultMap="CareListDto">
@@ -193,7 +224,7 @@
 	
 	</select>
 	
-	<!-- 모든 케어리스트 총 개수 가져오기 -->
+	<! 모든 케어리스트 총 개수 가져오기 >
 	<select id="getAllCareListCnt"
 			parameterType="Integer"
 			resultType="Integer">
@@ -214,6 +245,8 @@
 			CL.CL_USER_NO = #{u_no} 
 	
 	</select>
+ -->	
+	
 	
 	<!-- 페이지 번호에 따른 카테고리별 케어리스트 가져오기 -->
 	<select id="getCareListByCategoryWithPage"
@@ -233,8 +266,10 @@
 			CL.CL_IS_DELETED = 1 
 		AND 
 			CLC.CLC_IS_DELETED = 1 
+		<if test="infoNo != null">
 		AND 
 			CL.CL_CATEGORY_NO = #{infoNo}
+		</if>
 		AND 
 			CL.CL_USER_NO = #{u_no} 
 		ORDER BY 
@@ -261,10 +296,31 @@
 			CL.CL_IS_DELETED = 1 
 		AND 
 			CLC.CLC_IS_DELETED = 1 
+		<if test="infoNo != null">
 		AND 
 			CL.CL_CATEGORY_NO = #{infoNo} 
+		</if>
 		AND 
 			CL.CL_USER_NO = #{u_no} 	
+	
+	</select>
+	
+	<!-- 케어리스트 한 개 가져오기 -->
+	<select id="getCareListByNo"
+			parameterType="Integer"
+			resultMap="CareListDto">
+			
+		SELECT 
+			CL.*, 
+			CLC.* 
+		FROM 
+			CARE_LIST AS CL 
+		JOIN 
+			CARE_LIST_CATEGORY AS CLC 
+		ON 
+			CL.CL_CATEGORY_NO = CLC.CLC_CATEGORY_NO 
+		WHERE 
+			CL.CL_NO = #{cl_no}
 	
 	</select>
 
