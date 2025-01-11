@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.see_nior.seeniorClient.dto.CareListCategoryDto;
+import com.see_nior.seeniorClient.dto.CareListDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +30,7 @@ public class CareListController {
 	@GetMapping("/cate_info/is_carelist_category")
 	public boolean isCareListCategory(@RequestParam(value = "clc_name") String clc_name, Principal principal) {
 		log.info("isCareListCategory()");
+		log.info("principal ---------> {}", principal);
 		
 		boolean isCareListCategory = careListService.isCareListCategory(clc_name, principal.getName());
 		
@@ -80,6 +83,17 @@ public class CareListController {
 		
 	}
 	
+	// 케어리스트 카테고리 한 개 가져오기
+	@GetMapping("/cate_info/get_category")
+	public Object getCategory(@RequestParam(value = "clc_no") int clc_no) {
+		log.info("getCategory()");
+		
+		CareListCategoryDto careListCategoryDto = careListService.getCareListCategory(clc_no);	
+				
+		return careListCategoryDto;
+		
+	}
+	
 	// 케어리스트 카테고리 수정하기
 	@PostMapping("/cate_info/modify_category_confirm")
 	public boolean modifyCategoryConfirm(CareListCategoryDto careListCategoryDto) {
@@ -96,27 +110,27 @@ public class CareListController {
 	public boolean deleteCategoryConfirm(@RequestParam(value = "clc_no") int clc_no) {
 		log.info("deleteCategoryConfirm()");
 		
-		boolean deleteCategoryConfirm = careListService.deleteCategoryConfirm(clc_no);
+		boolean deleteCategoryResult = careListService.deleteCategoryConfirm(clc_no);
 
-		return deleteCategoryConfirm;
+		return deleteCategoryResult;
 		
 	}
 	
 //////////////////////////////////////////////////// 케어리스트
-	
-/*	
+
 	// 케어리스트 등록하기
 	@PostMapping("/info/create_confirm")
-	public boolean createConfirm(CareListDto careListDto) {
+	public boolean createConfirm(CareListDto careListDto, MultipartFile multipartFile) {
 		log.info("createConfirm()");
 		
-//		boolean createResult = careListService.createConfirm(careListDto);
-//		
-//		return createResult;
+		boolean createResult = careListService.createConfirm(careListDto);
+		
+		return createResult;
 		
 	}
- */
+
 	
+/*
 	// 모든 케어리스트 가져오기
 	@GetMapping("/info/get_care_list")
 	public Object getCareList(
@@ -139,6 +153,7 @@ public class CareListController {
 		return careListWithPage;
 		
 	}
+*/
 	
 	// 카테고리별 케어리스트 가져오기
 	@GetMapping("/info/get_care_list_by_category")
@@ -147,7 +162,7 @@ public class CareListController {
 			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value = "sortValue", required = false, defaultValue = "cl_no") String sortValue,
 			@RequestParam(value = "order", required = false, defaultValue = "desc") String order,
-			@RequestParam(value = "infoNo") int infoNo, Principal principal) {
+			@RequestParam(value = "infoNo", required = false, defaultValue = "null") Integer infoNo, Principal principal) {
 		log.info("getCareListByCategory()");
 		
 		// 페이지 번호에 따른 카테고리별 케어리스트 가져오기
@@ -165,10 +180,33 @@ public class CareListController {
 		
 	}
 	
+	// 케어리스트 한 개 가져오기
+	@GetMapping("/info/get_care_list_by_no")
+	public Object getCareListByNo(@RequestParam(value = "cl_no") int cl_no) {
+		log.info("getCareListByNo()");
+		
+		CareListDto careListDto = careListService.getCareListByNo(cl_no);
+		
+		return careListDto;
+		
+	}
+	
 	
 	// 케어리스트 수정하기
 	
 	
+/*
 	// 케어리스트 삭제하기
+	@PostMapping("/info/delete_care_list_confirm")
+	public boolean deleteCareListConfirm(@RequestParam(value = "cl_no") int cl_no) {
+		log.info("deleteCareListConfirm()");
+		
+		boolean deleteCareListResult = careListService.deleteCareListConfirm(cl_no);
+		
+		return deleteCareListResult;
+		
+	}
+*/
+	
 	
 }

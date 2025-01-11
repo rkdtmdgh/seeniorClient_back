@@ -59,7 +59,7 @@ public class CareListPagingUtil {
 		
 	}
 	
-	// 리스트 가져오기 params
+	// select 리스트 가져오기 params
 	public static Map<String, Object> pagingParamsForSelectBox(int page_limit, String sortValue, String order, int page, Object info_no, int u_no) {
 		
 		Map<String, Object> pagingParams = new HashMap<>();
@@ -75,5 +75,6 @@ public class CareListPagingUtil {
 		return pagingParams;
 		
 	}
+
 	
 }

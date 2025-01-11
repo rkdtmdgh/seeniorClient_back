@@ -27,6 +27,9 @@ public interface CareListMapper {
 
 	// 케어리스트 카테고리의 총 페이지 개수 구하기
 	public int getAllCareListCategoryCnt(int u_no);
+	
+	// 케어리스트 카테고리 한 개 가져오기
+	public CareListCategoryDto getCareListCategory(int clc_no);
 
 	// 케어리스트 카테고리 수정하기
 	public int updateCareListCategory(CareListCategoryDto careListCategoryDto);
@@ -47,6 +50,10 @@ public interface CareListMapper {
 
 	// 카테고리별 케어리스트 총 개수 가져오기
 	public int getCareListByCategoryCnt(Map<String, Object> selectParams);
+
+	// 케어리스트 한 개 가져오기
+	public CareListDto getCareListByNo(int cl_no);
+
 	
 	
 	

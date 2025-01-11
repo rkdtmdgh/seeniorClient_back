@@ -114,6 +114,18 @@ public class CareListService {
 		return CareListPagingUtil.pageNum(page_limit, "careListCategoryListCnt", careListCategoryListCnt, page, u_no);
 		
 	}
+	
+	// 케어리스트 카테고리 한 개 가져오기
+	public CareListCategoryDto getCareListCategory(int clc_no) {
+		log.info("getCareListCategory()");
+		
+		CareListCategoryDto careListCategoryDto = careListMapper.getCareListCategory(clc_no);
+		if (careListCategoryDto == null) throw new RuntimeException("careListCategoryDto is null!!");
+		
+		return careListCategoryDto;
+		
+	}
+	
 
 	// 케어리스트 카테고리 수정하기
 	public boolean modifyCategoryConfirm(CareListCategoryDto careListCategoryDto) {
@@ -142,6 +154,15 @@ public class CareListService {
 	}
 
 /////////////////////////////////////////////////////// 케어리스트	
+	
+	// 케어리스트 등록하기
+	public boolean createConfirm(CareListDto careListDto) {
+		log.info("createConfirm()");
+		
+		
+		return false;
+	}
+	
 	
 	
 	// 페이지 번호에 따른 모든 케어리스트 가져오기
@@ -176,7 +197,7 @@ public class CareListService {
 	}
 
 	// 페이지 번호에 따른 카테고리별 케어리스트 가져오기
-	public Map<String, Object> getCareListByCategoryWithPage(int page_limit, int page, String sortValue, String order, int infoNo, String u_id) {
+	public Map<String, Object> getCareListByCategoryWithPage(int page_limit, int page, String sortValue, String order, Integer infoNo, String u_id) {
 		log.info("getCareListByCategoryWithPage()");
 		
 		// u_id 값으로 u_no 가져오기
@@ -192,7 +213,7 @@ public class CareListService {
 	}
 
 	// 카테고리별 케어리스트 페이지 개수 가져오기
-	public Map<String, Object> getCareListByCategoryPageNum(int page_limit, int page, int infoNo, String u_id) {
+	public Map<String, Object> getCareListByCategoryPageNum(int page_limit, int page, Integer infoNo, String u_id) {
 		log.info("getCareListPageNum()");
 		
 		// u_id 값으로 u_no 가져오기
@@ -209,6 +230,32 @@ public class CareListService {
 		return CareListPagingUtil.pageNum(page_limit, "careListByCategoryCnt", careListByCategoryCnt, page, u_no);
 		
 	}
+	
+	// 케어리스트 한 개 가져오기
+	public CareListDto getCareListByNo(int cl_no) {
+		log.info("getCareListByNo()");
+		
+		CareListDto careListDto = careListMapper.getCareListByNo(cl_no);
+		if (careListDto == null) throw new RuntimeException("careListDto is null!!");
+		
+		return careListDto;
+		
+	}
+	
+	
+	
+
+	// 케어리스트 삭제하기
+	public boolean deleteCareListConfirm(int cl_no) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	
+
+	
+
+	
 	
 	
 
