@@ -46,9 +46,14 @@ public class CareListService {
 		
 	}
 	
+/*
 	// 케어리스트 카테고리 등록하기
 	public boolean createCategoryConfirm(String clc_name, String u_id) {
 		log.info("createCategoryConfirm()");
+		
+		// return
+		// result = boolean
+		// reason = limit
 		
 		Map<String, Object> insertParams = new HashMap<>();
 		
@@ -66,6 +71,51 @@ public class CareListService {
 		else return SqlResult.SUCCESS.getValue();
 		
 	}
+*/
+	
+	// 케어리스트 카테고리 등록하기
+	public Object createCategoryConfirm(String clc_name, String u_id) {
+		log.info("createCategoryConfirm()");
+		
+		Map<String, Object> insertParams = new HashMap<>();
+		
+		// return
+		// result = boolean
+		// reason = limit
+		Map<String, Object> resultMap = new HashMap<>();
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		
+		// 로그인한 회원의 케어리스트 카테고리 개수 조회
+		int careListCategoryListCnt = careListMapper.getAllCareListCategoryCnt(u_no);
+		log.info("careListCategoryListCnt -------> {}", careListCategoryListCnt);
+		
+		if (careListCategoryListCnt >= 50) {
+			log.info("50개 초과!!");
+			resultMap.put("result", SqlResult.FAIL.getValue());
+			resultMap.put("reason", "limit");
+			return resultMap;
+		} 
+		
+		insertParams.put("clc_name", clc_name);
+		insertParams.put("u_no", u_no);
+		
+		int createCategoryResult = careListMapper.insertNewCareListCategory(insertParams);
+		
+		// DB에 입력 성공
+		if (createCategoryResult >= 0) {
+			resultMap.put("result", SqlResult.SUCCESS.getValue());
+			return resultMap;
+	
+		} else {
+			resultMap.put("result", SqlResult.FAIL.getValue());
+			resultMap.put("reason", "fail");
+			return resultMap;
+			
+		}
+		
+	}
 	
 	// 모든 케어리스트 카테고리 가져오기 (케어리스트에서 <select> 박스)
 	public Map<String, Object> getCategoryList(String u_id) {
@@ -81,11 +131,11 @@ public class CareListService {
 		responseMap.put("careListCategoryDtos", careListCategoryDtos);
 		
 		return responseMap;
-	}
+	}	
 
+/*
 	//페이지 번호에 따른 케어리스트 카테고리 리스트들 가져오기
-	public Map<String, Object> getCareListCategoryListWithPage(int page_limit, String sortValue, String order,
-			int page, String u_id) {
+	public Map<String, Object> getCareListCategoryListWithPage(String sortValue, String order, String u_id) {
 		log.info("getCareListCategoryListWithPage()");
 		
 		// u_id 값으로 u_no 가져오기
@@ -93,16 +143,18 @@ public class CareListService {
 		
 		Map<String, Object> pagingList = new HashMap<>();
 		
-		List<CareListCategoryDto> careListCategoryDtos = careListMapper.getCareListCategoryListWithPage(CareListPagingUtil.pagingParams(page_limit, sortValue, order, page, u_no));
+		List<CareListCategoryDto> careListCategoryDtos = careListMapper.getCareListCategoryListWithPage(CareListPagingUtil.allListParams(sortValue, order, u_no));
 		
 		pagingList.put("careListCategoryDtos", careListCategoryDtos);
 		
 		return pagingList;
 		
 	}
+*/
 
+/*
 	// 케어리스트 카테고리의 총 페이지 개수 구하기
-	public Map<String, Object> getCareListCategoryListPageNum(int page_limit, int page, String u_id) {
+	public Map<String, Object> getCareListCategoryListPageNum(String u_id) {
 		log.info("getCareListCategoryListPageNum()");
 		
 		// u_id 값으로 u_no 가져오기
@@ -114,6 +166,7 @@ public class CareListService {
 		return CareListPagingUtil.pageNum(page_limit, "careListCategoryListCnt", careListCategoryListCnt, page, u_no);
 		
 	}
+*/
 	
 	// 케어리스트 카테고리 한 개 가져오기
 	public CareListCategoryDto getCareListCategory(int clc_no) {
