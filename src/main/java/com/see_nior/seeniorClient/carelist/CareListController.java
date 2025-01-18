@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.see_nior.seeniorClient.dto.CareListCategoryDto;
 import com.see_nior.seeniorClient.dto.CareListDto;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -40,12 +38,24 @@ public class CareListController {
 		
 	}
 
+/*
 	// 케어리스트 카테고리 등록하기
 	@PostMapping("/cate_info/create_category_confirm")
 	public boolean createCategoryConfirm(@RequestParam(value = "clc_name") String clc_name, Principal principal) {
 		log.info("createCategoryConfirm()");
 		
 		boolean createCategoryResult = careListService.createCategoryConfirm(clc_name, principal.getName());
+		
+		return createCategoryResult;
+		
+	}
+*/
+	// 케어리스트 카테고리 등록하기
+	@PostMapping("/cate_info/create_category_confirm")
+	public Object createCategoryConfirm(@RequestParam(value = "clc_name") String clc_name, Principal principal) {
+		log.info("createCategoryConfirm()");
+		
+		Object createCategoryResult = careListService.createCategoryConfirm(clc_name, principal.getName());
 		
 		return createCategoryResult;
 		
@@ -62,6 +72,18 @@ public class CareListController {
 		
 	}
 	
+	// 모든 케어리스트 카테고리 가져오기
+	@GetMapping("/cate_info/get_category_list")
+	public Object getCategoryList(Principal principal) {
+		log.info("getCategoryListSelect()");
+		
+		Map<String, Object> careListCategoryDtos = careListService.getCategoryList(principal.getName());
+		
+		return careListCategoryDtos;
+		
+	}
+	
+/*
 	// 모든 케어리스트 카테고리 가져오기(페이지네이션)
 	@GetMapping("/cate_info/get_category_list")
 	public Object getCategoryList(
@@ -84,6 +106,7 @@ public class CareListController {
 		return careListCategoryListWithPage;
 		
 	}
+*/
 	
 	// 케어리스트 카테고리 한 개 가져오기
 	@GetMapping("/cate_info/get_category")
