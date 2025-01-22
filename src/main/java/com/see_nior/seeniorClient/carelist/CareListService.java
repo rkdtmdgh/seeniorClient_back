@@ -92,7 +92,6 @@ public class CareListService {
 		log.info("careListCategoryListCnt -------> {}", careListCategoryListCnt);
 		
 		if (careListCategoryListCnt >= 50) {
-			log.info("50개 초과!!");
 			resultMap.put("result", SqlResult.FAIL.getValue());
 			resultMap.put("reason", "limit");
 			return resultMap;
