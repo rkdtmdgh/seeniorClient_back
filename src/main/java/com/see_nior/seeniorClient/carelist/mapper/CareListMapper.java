@@ -39,6 +39,12 @@ public interface CareListMapper {
 
 ///////////////////////////////////// 케어리스트
 	
+	// 케어리스트 테이블의 maxNo값 구하기
+	public Integer getCareListMaxNo();
+	
+	// 케어리스트 등록하기
+	public int insertNewCareList(CareListDto careListDto);
+	
 	// 페이지 번호에 따른 모든 케어리스트 가져오기
 	public List<CareListDto> getCareListWithPage(Map<String, Object> pagingParams);
 
@@ -53,6 +59,12 @@ public interface CareListMapper {
 
 	// 케어리스트 한 개 가져오기
 	public CareListDto getCareListByNo(int cl_no);
+
+	// 케어리스트 삭제 하기
+	public int deleteCareList(int cl_no);
+
+
+	
 
 	
 	
