@@ -1,6 +1,7 @@
 package com.see_nior.seeniorClient.carelist;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,6 +62,7 @@ public class CareListController {
 		
 	}
 	
+/*
 	// 모든 케어리스트 카테고리 가져오기 (케어리스트에서 <select> 박스)
 	@GetMapping("/cate_info/get_category_list_select")
 	public Object getCategoryListSelect(Principal principal) {
@@ -71,6 +73,7 @@ public class CareListController {
 		return careListCategoryDtos;
 		
 	}
+*/
 	
 	// 모든 케어리스트 카테고리 가져오기
 	@GetMapping("/cate_info/get_category_list")
@@ -145,10 +148,12 @@ public class CareListController {
 
 	// 케어리스트 등록하기
 	@PostMapping("/info/create_confirm")
-	public boolean createConfirm(CareListDto careListDto, MultipartFile multipartFile) {
+	public boolean createConfirm(
+			@RequestParam(value = "files") List<MultipartFile> files,
+			CareListDto careListDto, Principal principal) {
 		log.info("createConfirm()");
 		
-		boolean createResult = careListService.createConfirm(careListDto);
+		boolean createResult = careListService.createConfirm(files, careListDto, principal.getName());
 		
 		return createResult;
 		
@@ -220,7 +225,6 @@ public class CareListController {
 	// 케어리스트 수정하기
 	
 	
-/*
 	// 케어리스트 삭제하기
 	@PostMapping("/info/delete_care_list_confirm")
 	public boolean deleteCareListConfirm(@RequestParam(value = "cl_no") int cl_no) {
@@ -231,7 +235,6 @@ public class CareListController {
 		return deleteCareListResult;
 		
 	}
-*/
 	
 	
 }

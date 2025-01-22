@@ -1,11 +1,22 @@
 package com.see_nior.seeniorClient.carelist;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.see_nior.seeniorClient.carelist.mapper.CareListMapper;
 import com.see_nior.seeniorClient.dto.CareListCategoryDto;
 import com.see_nior.seeniorClient.dto.CareListDto;
@@ -92,7 +103,6 @@ public class CareListService {
 		log.info("careListCategoryListCnt -------> {}", careListCategoryListCnt);
 		
 		if (careListCategoryListCnt >= 50) {
-			log.info("50개 초과!!");
 			resultMap.put("result", SqlResult.FAIL.getValue());
 			resultMap.put("reason", "limit");
 			return resultMap;
@@ -209,14 +219,108 @@ public class CareListService {
 /////////////////////////////////////////////////////// 케어리스트	
 	
 	// 케어리스트 등록하기
-	public boolean createConfirm(CareListDto careListDto) {
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public boolean createConfirm(List<MultipartFile> files, CareListDto careListDto, String u_id) {
 		log.info("createConfirm()");
 		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		careListDto.setCl_user_no(u_no);
 		
-		return false;
+		int createResult = 0;
+		
+		// 케어리스트 사진을 등록 할 시
+		if (files != null && files.size() != 0 && files.get(0).getSize() != 0) {
+			
+			// 이미지 서버에 요청할 파일 저장 경로 생성
+			Date now = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+			String date = dateFormat.format(now);
+			
+			// careList 테이블에서 maxNo값 가져오기
+			Integer maxNo = careListMapper.getCareListMaxNo();
+			if (maxNo == null) maxNo = 0;
+			
+			String filePath = "\\careList\\" + (maxNo + 1) + "\\" + date;
+			
+			// 이미지 저장 요청
+			ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
+			
+			if (savedFile != null) {
+				log.info("uploadFile SUCCESS!!");
+				
+				ObjectMapper objectMapper = new ObjectMapper();
+				
+				try {
+					
+					Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody(), new TypeReference<Map<String, Object>>() {});
+					
+					String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
+					
+					// 디렉토리명과 이미지 URL 세팅
+					careListDto.setCl_dir_name(date);
+					careListDto.setCl_img(savedFileName);
+					
+				} catch (JsonMappingException e) {
+					log.info("JsonMappingException()");
+					e.printStackTrace();
+					
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+					
+					return SqlResult.FAIL.getValue();
+					
+				} catch (JsonProcessingException e) {
+					log.info("JsonProcessingException!!");
+					e.printStackTrace();
+					
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+					
+					return SqlResult.FAIL.getValue();
+					
+				}
+				
+				createResult = careListMapper.insertNewCareList(careListDto);
+				
+				// DB에 입력 실패
+				if (createResult <= 0) {
+					log.info("insertNewCareList() error!!");
+					
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+					return SqlResult.FAIL.getValue();
+					
+				} 
+				
+				// DB에 입력 성공
+				else return SqlResult.SUCCESS.getValue();
+			
+				
+			} else {
+				log.info("uploadFile FAIL!!");
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+				return SqlResult.FAIL.getValue();
+				
+			}
+			
+		} else {
+			createResult = careListMapper.insertNewCareList(careListDto);
+			
+			// DB에 입력 실패
+			if (createResult <= 0) {
+				log.info("insertNewCareList() error!!");
+				
+				return SqlResult.FAIL.getValue();
+				
+			} 
+			
+			// DB에 입력 성공
+			else return SqlResult.SUCCESS.getValue();
+			
+		}
+		
 	}
-	
-	
 	
 	// 페이지 번호에 따른 모든 케어리스트 가져오기
 	public Map<String, Object> getCareListWithPage(int page_limit, int page, String sortValue,
@@ -300,8 +404,44 @@ public class CareListService {
 
 	// 케어리스트 삭제하기
 	public boolean deleteCareListConfirm(int cl_no) {
-		// TODO Auto-generated method stub
-		return false;
+		log.info("deleteCareListConfirm()");
+		
+		CareListDto deleteCareListDto = careListMapper.getCareListByNo(cl_no);
+		
+		List<String> deleteFolderPath = new ArrayList<>();
+		
+		String folderPath = "\\careList\\" + deleteCareListDto.getCl_no();
+		deleteFolderPath.add(folderPath);
+		
+		ResponseEntity<String> deleteFolderResult = imageFileService.deleteFolders(deleteFolderPath);
+		
+		// 이미지 서버에서 deleteFolder요청이 성공한 경우
+		if (deleteFolderResult.getBody().equals("1")) {
+			log.info("deleteFolder SUCCESS!!");
+			
+			int deleteResult = careListMapper.deleteCareList(cl_no);
+			
+			// DB에 입력 실패
+			if (deleteResult <= 0) {
+				log.info("케어리스트 DB데이터 삭제 실패!!");
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+				return SqlResult.FAIL.getValue();
+				
+			}
+			// DB에 입력 성공
+			else return SqlResult.SUCCESS.getValue();
+			
+		} else {
+			log.info("deleteFolder FAIL!!");
+			
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			
+			return SqlResult.FAIL.getValue();
+			
+		}
+		
 	}
 
 	

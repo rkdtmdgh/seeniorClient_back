@@ -195,6 +195,52 @@
 	
 <!-- ////////////////////////////////////////// 케어리스트 -->
 
+	<!-- 케어리스트 테이블의 maxNo값 구하기 -->
+	<select id="getCareListMaxNo"
+			resultType="Integer">
+			
+		SELECT 
+			MAX(CL_NO) 
+		FROM 
+			CARE_LIST
+	
+	</select>
+	
+	<!-- 케어리스트 등록하기 -->
+	<insert id="insertNewCareList"
+			parameterType="CareListDto">
+		
+		INSERT INTO 
+			CARE_LIST
+			(CL_USER_NO, CL_CATEGORY_NO, CL_NAME, 
+			<if test="cl_img != null">
+			CL_IMG, 
+			</if>
+			<if test="cl_dir_name != null">
+			CL_DIR_NAME, 
+			</if>
+			CL_GENDER, CL_AGE, CL_ADDRESS, CL_BLOOD_TYPE, CL_PHONE, CL_EMERGENCY_CONTACT_1, 
+			CL_EMERGENCY_CONTACT_2, CL_EMERGENCY_CONTACT_3, CL_EMERGENCY_CONTACT_4, 
+			CL_FAVOR_FOOD, CL_HATE_FOOD, CL_DIABETIC_FOOD, CL_MEDICATIONS, CL_HOSPITAL, 
+			CL_DOCTOR, CL_HOSPITAL_TEL, CL_WALK_STATE, CL_ASSISTIVE_DEVICE, CL_WASHING_ASSISTANCE, 
+			CL_TOILET_ASSISTANCE, CL_MENTAL_STATE, CL_SOCIAL_STATE, CL_ETC, 
+			CL_FAVORITES, CL_IS_DELETED, CL_REG_DATE, CL_MOD_DATE) 
+		VALUES
+			(#{cl_user_no}, #{cl_category_no}, #{cl_name}, 
+			<if test="cl_img != null">
+			#{cl_img}, 
+			</if>
+			<if test="cl_dir_name != null">
+			#{cl_dir_name}, 
+			</if>
+			#{cl_gender}, #{cl_age}, #{cl_address}, #{cl_blood_type}, #{cl_phone}, #{cl_emergency_contact_1}, 
+			#{cl_emergency_contact_2}, #{cl_emergency_contact_3}, #{cl_emergency_contact_4}, 
+			#{cl_favor_food}, #{cl_hate_food}, #{cl_diabetic_food}, #{cl_medications}, #{cl_hospital}, 
+			#{cl_doctor}, #{cl_hospital_tel}, #{cl_walk_state}, #{cl_assistive_device}, #{cl_washing_assistance}, 
+			#{cl_toilet_assistance}, #{cl_mental_state}, #{cl_social_state}, #{cl_etc}, 
+			#{cl_favorites}, #{cl_is_deleted}, NOW(), NOW())
+			
+	</insert>
 
 <!-- 
 	<! 페이지 번호에 따른 모든 케어리스트 가져오기 >
@@ -246,7 +292,6 @@
 	
 	</select>
  -->	
-	
 	
 	<!-- 페이지 번호에 따른 카테고리별 케어리스트 가져오기 -->
 	<select id="getCareListByCategoryWithPage"
@@ -323,6 +368,20 @@
 			CL.CL_NO = #{cl_no}
 	
 	</select>
+	
+	<!-- 케어리스트 삭제 하기 -->
+	<update id="deleteCareList"
+			parameterType="Integer">
+			
+		UPDATE 
+			CARE_LIST 
+		SET 
+			CL_IS_DELETED = 0, 
+			CL_MOD_DATE = NOW() 
+		WHERE 
+			CL_NO = #{cl_no}
+	
+	</update>
 
 
 </mapper>
