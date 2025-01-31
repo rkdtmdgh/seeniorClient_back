@@ -219,8 +219,8 @@
 			<if test="cl_dir_name != null">
 			CL_DIR_NAME, 
 			</if>
-			CL_GENDER, CL_AGE, CL_ADDRESS, CL_BLOOD_TYPE, CL_PHONE, CL_EMERGENCY_CONTACT_1, 
-			CL_EMERGENCY_CONTACT_2, CL_EMERGENCY_CONTACT_3, CL_EMERGENCY_CONTACT_4, 
+			CL_GENDER, CL_AGE, CL_ZIP_CODE, CL_ADDRESS, CL_DETAIL_ADDRESS, CL_BLOOD_TYPE, CL_PHONE, 
+			CL_EMERGENCY_CONTACT_1, CL_EMERGENCY_CONTACT_2, CL_EMERGENCY_CONTACT_3, CL_EMERGENCY_CONTACT_4, 
 			CL_FAVOR_FOOD, CL_HATE_FOOD, CL_DIABETIC_FOOD, CL_MEDICATIONS, CL_HOSPITAL, 
 			CL_DOCTOR, CL_HOSPITAL_TEL, CL_WALK_STATE, CL_ASSISTIVE_DEVICE, CL_WASHING_ASSISTANCE, 
 			CL_TOILET_ASSISTANCE, CL_MENTAL_STATE, CL_SOCIAL_STATE, CL_ETC, 
@@ -233,8 +233,8 @@
 			<if test="cl_dir_name != null">
 			#{cl_dir_name}, 
 			</if>
-			#{cl_gender}, #{cl_age}, #{cl_address}, #{cl_blood_type}, #{cl_phone}, #{cl_emergency_contact_1}, 
-			#{cl_emergency_contact_2}, #{cl_emergency_contact_3}, #{cl_emergency_contact_4}, 
+			#{cl_gender}, #{cl_age}, #{cl_zip_code}, #{cl_address}, #{cl_detail_address}, #{cl_blood_type}, #{cl_phone}, 
+			#{cl_emergency_contact_1}, #{cl_emergency_contact_2}, #{cl_emergency_contact_3}, #{cl_emergency_contact_4}, 
 			#{cl_favor_food}, #{cl_hate_food}, #{cl_diabetic_food}, #{cl_medications}, #{cl_hospital}, 
 			#{cl_doctor}, #{cl_hospital_tel}, #{cl_walk_state}, #{cl_assistive_device}, #{cl_washing_assistance}, 
 			#{cl_toilet_assistance}, #{cl_mental_state}, #{cl_social_state}, #{cl_etc}, 
