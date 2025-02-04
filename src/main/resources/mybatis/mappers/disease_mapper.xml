@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.see_nior.seeniorClient.disease.mapper.DiseaseMapper">
+
+	<resultMap type="DiseaseCategoryDto" id="DiseaseCategoryDto">
+		<id column="dc_no" property="dc_no" />
+		<result column="dc_name" property="dc_name" />		
+		<result column="dc_is_deleted" property="dc_is_deleted" />
+		<result column="dc_item_cnt" property="dc_item_cnt" />
+		<result column="dc_reg_date" property="dc_reg_date" />
+		<result column="dc_mod_date" property="dc_mod_date" />
+	</resultMap>
+
+	<resultMap type="DiseaseDto" id="DiseaseDto">
+		<id column="d_no" property="d_no" />
+		<result column="d_category_no" property="d_category_no" />
+		<result column="d_name" property="d_name" />
+		<result column="d_info" property="d_info" />
+		<result column="d_good_food" property="d_good_food" />
+		<result column="d_bad_food" property="d_bad_food" />
+		<result column="d_is_deleted" property="d_is_deleted" />
+		<result column="d_reg_date" property="d_reg_date" />
+		<result column="d_mod_date" property="d_mod_date" />
+		<collection property="diseaseCategoryDto" resultMap="DiseaseCategoryDto" />
+	</resultMap>
+	
+<!-- 질환 카테고리 관련 -->
+
+	<!-- 모든 질환 카테고리 가져오기 (질환 리스트에서 select박스 => 비동기) -->
+	<select id="getDiseaseCategoryList"
+			resultMap="DiseaseCategoryDto">
+	
+		SELECT 
+			* 
+		FROM 
+			DISEASE_CATEGORY 
+		WHERE 
+			DC_IS_DELETED = 1 
+		ORDER BY 
+			DC_NAME ASC
+
+	</select>
+	
+<!-- 질환 관련 -->
+
+	<!-- 카테고리별 질환 가져오기(케어리스트 등록창에서 <select>박스) -->
+	<select id="getDiseaseByCategorySelect"
+			parameterType="Integer"
+			resultMap="DiseaseDto">
+
+		SELECT 
+			D.*, 
+			DC.* 
+		FROM 
+			DISEASE AS D 
+		JOIN 
+			DISEASE_CATEGORY AS DC 
+		ON 
+			D.D_CATEGORY_NO = DC.DC_NO 
+		WHERE 
+			D.D_IS_DELETED = 1 
+		AND 
+			DC.DC_IS_DELETED = 1 
+		AND 
+			D.D_CATEGORY_NO = #{infoNo}
+		ORDER BY 
+			D.D_NAME ASC
+	
+	</select>
+
+	<!-- 검색한 질환 가져오기(케어리스트 등록 창) -->
+	<select id="getSearchDiseaseListSelect"
+			parameterType="Map"
+			resultMap="DiseaseDto">
+			
+		SELECT 
+			D.*, 
+			DC.* 
+		FROM 
+			DISEASE AS D 
+		LEFT JOIN 
+			DISEASE_CATEGORY AS DC 
+		ON 
+			D.D_CATEGORY_NO = DC.DC_NO 
+		WHERE 
+			D.D_IS_DELETED = 1 
+		AND 
+			DC.DC_IS_DELETED = 1 
+		AND 
+			D.${searchPart} LIKE CONCAT('%', #{searchString}, '%')
+		ORDER BY 
+			D.${sortValue} ${order} 		
+	
+	</select>
+
+
+
+	<!-- 페이지 번호에 따른 카테고리별 질환 가져오기 -->
+	<select id="getDiseaseListByCategoryWithPage"
+			resultMap="DiseaseDto">
+	
+		SELECT 
+			D.*, 
+			DC.* 
+		FROM 
+			DISEASE AS D 
+		LEFT JOIN 
+			DISEASE_CATEGORY AS DC 
+		ON 
+			D.D_CATEGORY_NO = DC.DC_NO 
+		WHERE 
+			D.D_IS_DELETED = 1 
+		AND 
+			DC.DC_IS_DELETED = 1 
+		<if test="infoNo != null">
+		AND 
+			D.D_CATEGORY_NO = #{infoNo}
+		</if>
+		ORDER BY 
+			D.${sortValue} ${order} 
+		LIMIT 
+			#{start}, #{limit}
+	
+	</select>
+
+
+</mapper>
+
+
+
+

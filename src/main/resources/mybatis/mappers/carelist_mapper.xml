@@ -22,9 +22,12 @@
 		<result column="cl_img" property="cl_img"/>
 		<result column="cl_dir_name" property="cl_dir_name"/>
 		<result column="cl_gender" property="cl_gender"/>
-		<result column="cl_age" property="cl_age"/>
+		<result column="cl_birth" property="cl_birth"/>
+		<result column="cl_zip_code" property="cl_zip_code"/>
 		<result column="cl_address" property="cl_address"/>
-		<result column="cl_blood_type" property="cl_blood_type"/>
+		<result column="cl_detail_address" property="cl_detail_address"/>
+		<result column="cl_blood_type_rh" property="cl_blood_type_rh"/>
+		<result column="cl_blood_type_abo" property="cl_blood_type_abo"/>
 		<result column="cl_phone" property="cl_phone"/>
 		<result column="cl_emergency_contact_1" property="cl_emergency_contact_1"/>
 		<result column="cl_emergency_contact_2" property="cl_emergency_contact_2"/>
@@ -65,7 +68,9 @@
 		WHERE 
 			CLC_NAME = #{clc_name} 
 		AND 
-			CLC_USER_NO = #{u_no}
+			CLC_USER_NO = #{u_no} 
+		AND 
+			CLC_IS_DELETED = 1 
 	
 	</select>
 
@@ -219,7 +224,7 @@
 			<if test="cl_dir_name != null">
 			CL_DIR_NAME, 
 			</if>
-			CL_GENDER, CL_AGE, CL_ZIP_CODE, CL_ADDRESS, CL_DETAIL_ADDRESS, CL_BLOOD_TYPE, CL_PHONE, 
+			CL_GENDER, CL_BIRTH, CL_ZIP_CODE, CL_ADDRESS, CL_DETAIL_ADDRESS, CL_BLOOD_TYPE_RH, CL_BLOOD_TYPE_ABO, CL_PHONE, 
 			CL_EMERGENCY_CONTACT_1, CL_EMERGENCY_CONTACT_2, CL_EMERGENCY_CONTACT_3, CL_EMERGENCY_CONTACT_4, 
 			CL_FAVOR_FOOD, CL_HATE_FOOD, CL_DIABETIC_FOOD, CL_MEDICATIONS, CL_HOSPITAL, 
 			CL_DOCTOR, CL_HOSPITAL_TEL, CL_WALK_STATE, CL_ASSISTIVE_DEVICE, CL_WASHING_ASSISTANCE, 
@@ -233,7 +238,7 @@
 			<if test="cl_dir_name != null">
 			#{cl_dir_name}, 
 			</if>
-			#{cl_gender}, #{cl_age}, #{cl_zip_code}, #{cl_address}, #{cl_detail_address}, #{cl_blood_type}, #{cl_phone}, 
+			#{cl_gender}, #{cl_age}, #{cl_zip_code}, #{cl_address}, #{cl_detail_address}, #{cl_blood_type_rh}, #{cl_blood_type_abo} #{cl_phone}, 
 			#{cl_emergency_contact_1}, #{cl_emergency_contact_2}, #{cl_emergency_contact_3}, #{cl_emergency_contact_4}, 
 			#{cl_favor_food}, #{cl_hate_food}, #{cl_diabetic_food}, #{cl_medications}, #{cl_hospital}, 
 			#{cl_doctor}, #{cl_hospital_tel}, #{cl_walk_state}, #{cl_assistive_device}, #{cl_washing_assistance}, 
@@ -303,7 +308,7 @@
 			CLC.* 
 		FROM 
 			CARE_LIST AS CL 
-		JOIN 
+		LEFT JOIN 
 			CARE_LIST_CATEGORY AS CLC 
 		ON 
 			CL.CL_CATEGORY_NO = CLC.CLC_NO 
@@ -311,10 +316,14 @@
 			CL.CL_IS_DELETED = 1 
 		AND 
 			CLC.CLC_IS_DELETED = 1 
-		<if test="infoNo != null">
-		AND 
-			CL.CL_CATEGORY_NO = #{infoNo}
-		</if>
+		<choose>
+		    <when test="infoNo != null and infoNo != -1">
+		        AND CL.CL_CATEGORY_NO = #{infoNo}
+		    </when>
+		    <when test="infoNo == -1">
+		        AND CL.CL_FAVORITES = 0
+		    </when>
+		</choose>
 		AND 
 			CL.CL_USER_NO = #{u_no} 
 		ORDER BY 
