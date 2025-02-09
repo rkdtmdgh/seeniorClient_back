@@ -33,8 +33,6 @@
 		<result column="cl_emergency_contact_2" property="cl_emergency_contact_2"/>
 		<result column="cl_emergency_contact_3" property="cl_emergency_contact_3"/>
 		<result column="cl_emergency_contact_4" property="cl_emergency_contact_4"/>
-		<result column="cl_favor_food" property="cl_favor_food"/>
-		<result column="cl_hate_food" property="cl_hate_food"/>
 		<result column="cl_diabetic_food" property="cl_diabetic_food"/>
 		<result column="cl_medications" property="cl_medications"/>
 		<result column="cl_hospital" property="cl_hospital"/>
@@ -226,7 +224,7 @@
 			</if>
 			CL_GENDER, CL_BIRTH, CL_ZIP_CODE, CL_ADDRESS, CL_DETAIL_ADDRESS, CL_BLOOD_TYPE_RH, CL_BLOOD_TYPE_ABO, CL_PHONE, 
 			CL_EMERGENCY_CONTACT_1, CL_EMERGENCY_CONTACT_2, CL_EMERGENCY_CONTACT_3, CL_EMERGENCY_CONTACT_4, 
-			CL_FAVOR_FOOD, CL_HATE_FOOD, CL_DIABETIC_FOOD, CL_MEDICATIONS, CL_HOSPITAL, 
+			CL_DIABETIC_FOOD, CL_MEDICATIONS, CL_HOSPITAL, 
 			CL_DOCTOR, CL_HOSPITAL_TEL, CL_WALK_STATE, CL_ASSISTIVE_DEVICE, CL_WASHING_ASSISTANCE, 
 			CL_TOILET_ASSISTANCE, CL_MENTAL_STATE, CL_SOCIAL_STATE, CL_ETC, 
 			CL_FAVORITES, CL_IS_DELETED, CL_REG_DATE, CL_MOD_DATE) 
@@ -240,7 +238,7 @@
 			</if>
 			#{cl_gender}, #{cl_age}, #{cl_zip_code}, #{cl_address}, #{cl_detail_address}, #{cl_blood_type_rh}, #{cl_blood_type_abo} #{cl_phone}, 
 			#{cl_emergency_contact_1}, #{cl_emergency_contact_2}, #{cl_emergency_contact_3}, #{cl_emergency_contact_4}, 
-			#{cl_favor_food}, #{cl_hate_food}, #{cl_diabetic_food}, #{cl_medications}, #{cl_hospital}, 
+			#{cl_diabetic_food}, #{cl_medications}, #{cl_hospital}, 
 			#{cl_doctor}, #{cl_hospital_tel}, #{cl_walk_state}, #{cl_assistive_device}, #{cl_washing_assistance}, 
 			#{cl_toilet_assistance}, #{cl_mental_state}, #{cl_social_state}, #{cl_etc}, 
 			#{cl_favorites}, #{cl_is_deleted}, NOW(), NOW())

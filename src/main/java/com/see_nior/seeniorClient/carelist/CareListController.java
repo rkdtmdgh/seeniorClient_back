@@ -39,18 +39,6 @@ public class CareListController {
 		
 	}
 
-/*
-	// 케어리스트 카테고리 등록하기
-	@PostMapping("/cate_info/create_category_confirm")
-	public boolean createCategoryConfirm(@RequestParam(value = "clc_name") String clc_name, Principal principal) {
-		log.info("createCategoryConfirm()");
-		
-		boolean createCategoryResult = careListService.createCategoryConfirm(clc_name, principal.getName());
-		
-		return createCategoryResult;
-		
-	}
-*/
 	// 케어리스트 카테고리 등록하기
 	@PostMapping("/cate_info/create_category_confirm")
 	public Object createCategoryConfirm(@RequestParam(value = "clc_name") String clc_name, Principal principal) {

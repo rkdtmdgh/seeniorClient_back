@@ -48,7 +48,7 @@ public class DiseaseController {
 	// 검색한 질환 가져오기(케어리스트 등록 창)
 	@GetMapping("/info/search_disease_list_select")
 	public Object searchDiseaseListSelect(
-			@RequestParam(value = "searchPart") String searchPart,
+			@RequestParam(value = "searchPart", defaultValue = "d_name") String searchPart,
 			@RequestParam(value = "searchString") String searchString,
 			@RequestParam(value = "sortValue", required = false, defaultValue = "d_name") String sortValue,
 			@RequestParam(value = "order", required = false, defaultValue = "asc") String order) {
