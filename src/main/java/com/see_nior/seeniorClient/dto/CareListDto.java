@@ -27,8 +27,6 @@ public class CareListDto {
 	private String cl_emergency_contact_2;
 	private String cl_emergency_contact_3;
 	private String cl_emergency_contact_4;
-	private String cl_favor_food;
-	private String cl_hate_food;
 	private boolean cl_diabetic_food;
 	private String cl_medications;
 	private String cl_hospital;
