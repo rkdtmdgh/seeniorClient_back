@@ -138,10 +138,10 @@ public class CareListController {
 	@PostMapping("/info/create_confirm")
 	public boolean createConfirm(
 			@RequestParam(value = "files") List<MultipartFile> files,
-			CareListDto careListDto, Principal principal) {
+			CareListDto careListDto, List<Integer> d_nos, Principal principal) {
 		log.info("createConfirm()");
 		
-		boolean createResult = careListService.createConfirm(files, careListDto, principal.getName());
+		boolean createResult = careListService.createConfirm(files, careListDto, d_nos, principal.getName());
 		
 		return createResult;
 		

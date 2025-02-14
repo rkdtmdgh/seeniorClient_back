@@ -244,6 +244,7 @@
 			#{cl_favorites}, #{cl_is_deleted}, NOW(), NOW())
 			
 	</insert>
+	
 
 <!-- 
 	<! 페이지 번호에 따른 모든 케어리스트 가져오기 >
