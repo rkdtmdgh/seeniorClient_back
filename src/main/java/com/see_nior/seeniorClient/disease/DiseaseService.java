@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.see_nior.seeniorClient.disease.mapper.DiseaseMapper;
 import com.see_nior.seeniorClient.dto.DiseaseCategoryDto;
 import com.see_nior.seeniorClient.dto.DiseaseDto;
+import com.see_nior.seeniorClient.util.PagingUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -54,6 +55,7 @@ public class DiseaseService {
 		
 	}
 
+/*
 	// 검색한 질환 가져오기(케어리스트 등록 창)
 	public Map<String, Object> getSearchDiseaseListSelect(String searchPart, String searchString, String sortValue,	String order) {
 		log.info("getSearchDiseaseListSelect()");
@@ -74,7 +76,35 @@ public class DiseaseService {
 		return diseaseDtos;
 		
 	}
+*/
 	
+	// 페이지에 따른 질환 가져오기(검색한 질환)
+	public Map<String, Object> getSearchDiseaseListWithPage(int page_limit, String searchPart, String searchString, String sortValue, String order, int page) {
+		log.info("getSearchDiseaseListWithPage()");
+		
+		Map<String, Object> pagingList = new HashMap<>();
+		
+		List<DiseaseDto> searchDiseaseDtos = diseaseMapper.getSearchDisease(PagingUtil.searchPagingParams(page_limit, searchPart, searchString, sortValue, order, page));
+		pagingList.put("diseaseDtos", searchDiseaseDtos);
+		
+		return pagingList;
+		
+	}
+
+	// 질환의 총 페이지 개수 구하기(검색한 질환)
+	public Map<String, Object> getSearchDiseaseListPageNum(int page_limit, int block_limit, String searchPart, String searchString, int page) {
+		log.info("getSearchDiseaseListPageNum()");
+		
+		Map<String, Object> searchParams = new HashMap<>();
+		searchParams.put("searchPart", searchPart);
+		searchParams.put("searchString", searchString);
+		
+		// 전체 리스트 개수 조회
+		int searchDiseaseListCnt = diseaseMapper.getSearchDiseaseListCnt(searchParams);
+		
+		return PagingUtil.pageNum(page_limit, block_limit, "searchDiseaseListCnt", searchDiseaseListCnt, page);
+		
+	}
 	
 /*	
 	// 페이지 번호에 따른 카테고리별 질환 가져오기
