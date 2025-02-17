@@ -31,15 +31,23 @@
 	<!-- 모든 질환 카테고리 가져오기 (질환 리스트에서 select박스 => 비동기) -->
 	<select id="getDiseaseCategoryList"
 			resultMap="DiseaseCategoryDto">
-	
+			
 		SELECT 
-			* 
+   			DC.*, 
+    		(SELECT 
+    			COUNT(*) 
+   			FROM 
+   				DISEASE AS D 
+   			WHERE 
+   				D.D_CATEGORY_NO = DC.DC_NO 
+   			AND 
+   				D.D_IS_DELETED = 1) AS DC_ITEM_CNT 
 		FROM 
-			DISEASE_CATEGORY 
+   			DISEASE_CATEGORY AS DC
 		WHERE 
-			DC_IS_DELETED = 1 
+			DC.DC_IS_DELETED = 1 
 		ORDER BY 
-			DC_NAME ASC
+			DC.DC_NAME ASC
 
 	</select>
 	
