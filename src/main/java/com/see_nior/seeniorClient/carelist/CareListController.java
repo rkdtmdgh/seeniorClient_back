@@ -137,8 +137,8 @@ public class CareListController {
 	// 케어리스트 등록하기
 	@PostMapping("/info/create_confirm")
 	public boolean createConfirm(
-			@RequestParam(value = "files") List<MultipartFile> files,
-			CareListDto careListDto, List<Integer> d_nos, Principal principal) {
+			@RequestParam(value = "files") List<MultipartFile> files, CareListDto careListDto, 
+			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos, Principal principal) {
 		log.info("createConfirm()");
 		
 		boolean createResult = careListService.createConfirm(files, careListDto, d_nos, principal.getName());

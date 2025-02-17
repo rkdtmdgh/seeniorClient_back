@@ -31,7 +31,7 @@ public class DiseaseService {
 		
 		List<DiseaseCategoryDto> diseaseCategoryDto = (List<DiseaseCategoryDto>) diseaseMapper.getDiseaseCategoryList();
 		
-		diseaseCategoryDtos.put("diseaseCategoryDto", diseaseCategoryDto);
+		diseaseCategoryDtos.put("diseaseCategoryDtos", diseaseCategoryDto);
 		
 		return diseaseCategoryDtos;
 		
@@ -49,7 +49,7 @@ public class DiseaseService {
 		
 		List<DiseaseDto> diseaseDto = (List<DiseaseDto>) diseaseMapper.getDiseaseByCategorySelect(infoNo);
 		
-		diseaseDtos.put("diseaseDto", diseaseDto);
+		diseaseDtos.put("diseaseDtos", diseaseDto);
 		
 		return diseaseDtos;
 		
