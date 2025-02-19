@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import com.see_nior.seeniorClient.jwt.JwtFilter;
 import com.see_nior.seeniorClient.jwt.JwtUtil;
 import com.see_nior.seeniorClient.jwt.LoginFilter;
 
@@ -103,19 +104,19 @@ public class SecurityConfig {
 //			.oauth2Login((oauth2) -> oauth2
 //					.userInfoEndpoint());
 		
-		http
-			.logout(logout -> logout
-					.logoutUrl("/user/sign_out_confirm")
-					.logoutSuccessHandler((request, response, authentication) -> {
-						log.info("sign_out_confirm success ----- {}", authentication.getName()); 
-						
-						response.setStatus(HttpServletResponse.SC_OK);
-						response.setContentType("application/json;charset=UTF-8");
-						response.getWriter().write("{\"signOutResult\": true}");
-						
-					})
-					.invalidateHttpSession(true)		// 세션 무효화
-					.permitAll());
+//		http
+//			.logout(logout -> logout
+//					.logoutUrl("/user/sign_out_confirm")
+//					.logoutSuccessHandler((request, response, authentication) -> {
+//						log.info("sign_out_confirm success ----- {}", authentication.getName()); 
+//						
+//						response.setStatus(HttpServletResponse.SC_OK);
+//						response.setContentType("application/json;charset=UTF-8");
+//						response.getWriter().write("{\"signOutResult\": true}");
+//						
+//					})
+//					.invalidateHttpSession(true)		// 세션 무효화
+//					.permitAll());
 		
 //		http
 //			.sessionManagement(sess -> sess
@@ -124,12 +125,16 @@ public class SecurityConfig {
 //			.sessionManagement(sess -> sess
 //				.sessionFixation().newSession());
 		
+		//JWTFilter 등록
+        http
+            .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
+		
 		// 필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
-        .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        	.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 		
 		http
-        .sessionManagement((session) -> session
+        	.sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		
 		return http.build();

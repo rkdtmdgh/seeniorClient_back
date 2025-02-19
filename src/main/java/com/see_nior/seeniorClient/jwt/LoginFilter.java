@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,10 +12,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.see_nior.seeniorClient.user.CustomUserDetails;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -49,19 +49,22 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 			Authentication authentication) throws IOException, ServletException {
 		log.info("login success");
 		
-		CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-	
-		String u_id = customUserDetails.getUsername();
+		// 유저 정보
+		String u_id = authentication.getName();
 		
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 		Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
 		GrantedAuthority authority = iterator.next();
-		
 		String role = authority.getAuthority();
 		
-		String token = jwtUtil.createJwt(u_id, role, 60*60*10L);
+		// 토큰 생성
+		String access = jwtUtil.createJwt("access", u_id, role, 60*60*10L);
+		String refresh = jwtUtil.createJwt("refresh", u_id, role, 60*60*10L);
 		
-		response.addHeader("Authorization", "Bearer " + token);
+		//응답 설정
+	    response.setHeader("access", access);
+	    response.addCookie(createCookie("refresh", refresh));
+	    response.setStatus(HttpStatus.OK.value());
 	}
 	
 	// 로그인 실패 시 
@@ -71,6 +74,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		log.info("login fail");
 		
 		response.setStatus(401);
+	}
+	
+	private Cookie createCookie(String key, String value) {
+
+	    Cookie cookie = new Cookie(key, value);
+	    cookie.setMaxAge(24*60*60);
+	    //cookie.setSecure(true);
+	    //cookie.setPath("/");
+	    cookie.setHttpOnly(true);
+
+	    return cookie;
 	}
 	
 }
