@@ -15,7 +15,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RequiredArgsConstructor
 @Service
-public class UserAccountDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
 	final private UserMapper userMapper;
 	
@@ -34,7 +34,7 @@ public class UserAccountDetailsService implements UserDetailsService {
 			throw new DisabledException("해당 계정은 차단되었습니다.");
 		}
 		
-		return new UserAccountDetails(userAccountDto);
+		return new CustomUserDetails(userAccountDto);
 		
 	}
 

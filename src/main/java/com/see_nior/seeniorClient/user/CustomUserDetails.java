@@ -14,7 +14,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RequiredArgsConstructor
 @SuppressWarnings("serial")
-public class UserAccountDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
 	final private UserAccountDto userAccountDto;
 
