@@ -24,22 +24,32 @@ public class RedisService {
 
     // refrshToken TTL 설정 O
     public void setValues(String key, String data, Duration duration) {
+    	log.info("setValues()");
+    	
+    	redisTemplate.delete(key);
+    	
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
         values.set(key, data, duration);
     }
 
     // redis에 저장된 refreshToken 삭제
     public void deleteValues(String key) {
+    	log.info("deleteValues()");
+    	
         redisTemplate.delete(key);
     }
 
     // redis에 저장된 refreshToken 조회
     public String getValues(String key) {
+    	log.info("getValues()");
+    	
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
         return (String) values.get(key);
     }
 
     public boolean checkExistsValue(String value) {
+    	log.info("checkExistsValue()");
+    	
         return value == null;
     }
     

@@ -19,9 +19,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import com.see_nior.seeniorClient.jwt.JwtFilter;
 import com.see_nior.seeniorClient.jwt.JwtUtil;
 import com.see_nior.seeniorClient.jwt.LoginFilter;
+import com.see_nior.seeniorClient.redis.RedisService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -34,6 +34,7 @@ public class SecurityConfig {
 	// AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
+    private final RedisService redisService;
 	
 	@Bean PasswordEncoder passwordEncoder() {
 		log.info("passwordEncoder()");
@@ -65,6 +66,7 @@ public class SecurityConfig {
 		                    configuration.setAllowedHeaders(Collections.singletonList("*"));
 		                    configuration.setMaxAge(3600L);
 		                    
+		                    configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
 							configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 							
 							return configuration;
@@ -131,7 +133,7 @@ public class SecurityConfig {
 		
 		// 필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
-        	.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        	.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisService), UsernamePasswordAuthenticationFilter.class);
 		
 		http
         	.sessionManagement((session) -> session

@@ -30,59 +30,55 @@ public class JwtFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		log.info("doFilterInternal()");
 		
-		// request에서 Authorization 헤더를 찾음
+		// 요청 헤더에서 access 를 찾음
 		String accessToken = request.getHeader("access");
 		
-		// Authorization 헤더 검증
+		// 요청 헤더에 access 가 없는 경우 
 		if (accessToken == null) {
-
             log.info("token null");
+            
             filterChain.doFilter(request, response);
-						
-			// 조건이 해당되면 메소드 종료 (필수)
             return;
         }
 		
-		log.info("authorization now");
-
+		// Bearer 제거 <- oAuth2를 이용했다고 명시적으로 붙여주는 타입인데 JWT를 검증하거나 정보를 추출 시 제거해줘야한다.
+		String originToken = accessToken.substring(7);
+		
 		// 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
 		try {
-			if (jwtUtil.isExpired(accessToken)) {
+			if (jwtUtil.isExpired(originToken)) {
 			
-				//response body
 			    PrintWriter writer = response.getWriter();
 			    writer.print("access token expired");
 
-			    //response status code
 			    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			    return;
 			}
 		} catch (ExpiredJwtException e) {
 
-		    //response body
 		    PrintWriter writer = response.getWriter();
 		    writer.print("access token expired");
 
-		    //response status code
 		    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		    return;
 		}
 		
-		String category = jwtUtil.getCategory(accessToken);
+		// accessToken인지 refreshToken인지 확인
+		String category = jwtUtil.getCategory(originToken);
 		
+		// JWTFilter는 요청에 대해 accessToken만 취급하므로 access인지 확인
 		if (!category.equals("access")) {
 
-		    // response body
 		    PrintWriter writer = response.getWriter();
 		    writer.print("invalid access token");
 
-		    // response status code
 		    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		    return;
 		}
         
-        String u_id = jwtUtil.getU_id(accessToken);
-        String role = jwtUtil.getRole(accessToken);
+		// 사용자명과 권한을 accessToken에서 추출
+        String u_id = jwtUtil.getU_id(originToken);
+        String role = jwtUtil.getRole(originToken);
         
         UserAccountDto userAccountDto = new UserAccountDto();
         userAccountDto.setU_id(u_id);

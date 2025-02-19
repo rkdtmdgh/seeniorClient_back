@@ -1,6 +1,7 @@
 package com.see_nior.seeniorClient.jwt;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -11,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.see_nior.seeniorClient.redis.RedisService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,6 +29,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final AuthenticationManager authenticationManager;
 	private final JwtUtil jwtUtil;
+	private final RedisService redisService;
 	
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -58,12 +62,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String role = authority.getAuthority();
 		
 		// 토큰 생성
-		String access = jwtUtil.createJwt("access", u_id, role, 60*60*10L);
-		String refresh = jwtUtil.createJwt("refresh", u_id, role, 60*60*10L);
+		String accessToken = jwtUtil.createJwt("access", u_id, role, 60000L);
+		String refreshToken = jwtUtil.createJwt("refresh", u_id, role, 86400000L);
+		
+		redisService.setValues(u_id, refreshToken, Duration.ofMillis(86400000L));
 		
 		//응답 설정
-	    response.setHeader("access", access);
-	    response.addCookie(createCookie("refresh", refresh));
+	    response.setHeader("access", "Bearer " + accessToken);
+	    response.addCookie(createCookie("refresh", refreshToken));
 	    response.setStatus(HttpStatus.OK.value());
 	}
 	
