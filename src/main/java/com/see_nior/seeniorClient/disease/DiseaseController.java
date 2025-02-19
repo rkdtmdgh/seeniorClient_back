@@ -71,7 +71,6 @@ public class DiseaseController {
 	@GetMapping("/info/search_disease_list")
 	public Object searchDiseaseList(
 			@RequestParam(value = "page_limit") int page_limit,
-			@RequestParam(value = "block_limit") int block_limit,
 			@RequestParam(value = "searchPart", defaultValue = "d_name") String searchPart,
 			@RequestParam(value = "searchString") String searchString,
 			@RequestParam(value = "sortValue", required = false, defaultValue = "d_no") String sortValue,
@@ -83,7 +82,7 @@ public class DiseaseController {
 		Map<String, Object> searchDiseaseListWithPage = diseaseService.getSearchDiseaseListWithPage(page_limit, searchPart, searchString, sortValue, order, page);
 		
 		// 검색 질환 총 페이지 개수 가져오기
-		Map<String, Object> searchDiseaseListPageNum = diseaseService.getSearchDiseaseListPageNum(page_limit, block_limit, searchPart, searchString, page);
+		Map<String, Object> searchDiseaseListPageNum = diseaseService.getSearchDiseaseListPageNum(page_limit, searchPart, searchString, page);
 		
 		searchDiseaseListWithPage.put("searchDiseaseListPageNum", searchDiseaseListPageNum);
 		searchDiseaseListWithPage.put("searchPart", searchPart);

@@ -78,7 +78,7 @@ public class DiseaseService {
 	}
 */
 	
-	// 페이지에 따른 질환 가져오기(검색한 질환)
+	// 페이지에 따른 질환 가져오기(검색한 질환 / 무한스크롤)
 	public Map<String, Object> getSearchDiseaseListWithPage(int page_limit, String searchPart, String searchString, String sortValue, String order, int page) {
 		log.info("getSearchDiseaseListWithPage()");
 		
@@ -92,7 +92,7 @@ public class DiseaseService {
 	}
 
 	// 질환의 총 페이지 개수 구하기(검색한 질환)
-	public Map<String, Object> getSearchDiseaseListPageNum(int page_limit, int block_limit, String searchPart, String searchString, int page) {
+	public Map<String, Object> getSearchDiseaseListPageNum(int page_limit, String searchPart, String searchString, int page) {
 		log.info("getSearchDiseaseListPageNum()");
 		
 		Map<String, Object> searchParams = new HashMap<>();
@@ -102,7 +102,7 @@ public class DiseaseService {
 		// 전체 리스트 개수 조회
 		int searchDiseaseListCnt = diseaseMapper.getSearchDiseaseListCnt(searchParams);
 		
-		return PagingUtil.pageNum(page_limit, block_limit, "searchDiseaseListCnt", searchDiseaseListCnt, page);
+		return PagingUtil.pageNumInfinity(page_limit, "searchDiseaseListCnt", searchDiseaseListCnt, page);
 		
 	}
 	
