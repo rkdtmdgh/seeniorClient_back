@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class PagingUtil {
 
-	// pageNum 계산
+	// pageNum 계산 (페이지 block_limit 필요시)
 	public static Map<String, Object> pageNum(int page_limit, int block_limit, String listName, int listCnt, int page) {
 		
 		Map<String, Object> pageNum = new HashMap<>();
@@ -31,6 +31,22 @@ public class PagingUtil {
 		pageNum.put("endPage", endPage);
 		pageNum.put("pageLimit", page_limit);
 		pageNum.put("blockLimit", block_limit);		
+		return pageNum;
+		
+	}
+	
+	// pageNum 계산 (무한 스크롤 사용 시)
+	public static Map<String, Object> pageNumInfinity(int page_limit, String listName, int listCnt, int page) {
+		
+		Map<String, Object> pageNum = new HashMap<>();
+		
+		// 전체 페이지 개수 계산
+		int maxPage = (int) (Math.ceil((double) listCnt / page_limit));
+		
+		pageNum.put(listName, listCnt);
+		pageNum.put("page", page);
+		pageNum.put("maxPage", maxPage);
+		pageNum.put("pageLimit", page_limit);
 		return pageNum;
 		
 	}

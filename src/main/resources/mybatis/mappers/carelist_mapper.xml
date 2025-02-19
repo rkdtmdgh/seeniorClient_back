@@ -222,7 +222,7 @@
 			<if test="cl_dir_name != null">
 			CL_DIR_NAME, 
 			</if>
-			CL_GENDER, CL_BIRTH, CL_ZIP_CODE, CL_ADDRESS, CL_DETAIL_ADDRESS, CL_BLOOD_TYPE_RH, CL_BLOOD_TYPE_ABO, CL_PHONE, 
+			CL_GENDER, CL_BIRTH, CL_ZIP_CODE, CL_ADDRESS, CL_DETAILED_ADDRESS, CL_BLOOD_TYPE_RH, CL_BLOOD_TYPE_ABO, CL_PHONE, 
 			CL_EMERGENCY_CONTACT_1, CL_EMERGENCY_CONTACT_2, CL_EMERGENCY_CONTACT_3, CL_EMERGENCY_CONTACT_4, 
 			CL_DIABETIC_FOOD, CL_MEDICATIONS, CL_HOSPITAL, 
 			CL_DOCTOR, CL_HOSPITAL_TEL, CL_WALK_STATE, CL_ASSISTIVE_DEVICE, CL_WASHING_ASSISTANCE, 
@@ -236,7 +236,7 @@
 			<if test="cl_dir_name != null">
 			#{cl_dir_name}, 
 			</if>
-			#{cl_gender}, #{cl_age}, #{cl_zip_code}, #{cl_address}, #{cl_detail_address}, #{cl_blood_type_rh}, #{cl_blood_type_abo} #{cl_phone}, 
+			#{cl_gender}, #{cl_age}, #{cl_zip_code}, #{cl_address}, #{cl_detailed_address}, #{cl_blood_type_rh}, #{cl_blood_type_abo} #{cl_phone}, 
 			#{cl_emergency_contact_1}, #{cl_emergency_contact_2}, #{cl_emergency_contact_3}, #{cl_emergency_contact_4}, 
 			#{cl_diabetic_food}, #{cl_medications}, #{cl_hospital}, 
 			#{cl_doctor}, #{cl_hospital_tel}, #{cl_walk_state}, #{cl_assistive_device}, #{cl_washing_assistance}, 
@@ -244,6 +244,7 @@
 			#{cl_favorites}, #{cl_is_deleted}, NOW(), NOW())
 			
 	</insert>
+	
 
 <!-- 
 	<! 페이지 번호에 따른 모든 케어리스트 가져오기 >

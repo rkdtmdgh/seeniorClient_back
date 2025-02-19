@@ -63,6 +63,8 @@ public interface CareListMapper {
 	// 케어리스트 삭제 하기
 	public int deleteCareList(int cl_no);
 
+	
+
 
 	
 

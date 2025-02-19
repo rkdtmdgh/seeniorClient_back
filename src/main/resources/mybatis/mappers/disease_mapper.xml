@@ -31,15 +31,23 @@
 	<!-- 모든 질환 카테고리 가져오기 (질환 리스트에서 select박스 => 비동기) -->
 	<select id="getDiseaseCategoryList"
 			resultMap="DiseaseCategoryDto">
-	
+			
 		SELECT 
-			* 
+   			DC.*, 
+    		(SELECT 
+    			COUNT(*) 
+   			FROM 
+   				DISEASE AS D 
+   			WHERE 
+   				D.D_CATEGORY_NO = DC.DC_NO 
+   			AND 
+   				D.D_IS_DELETED = 1) AS DC_ITEM_CNT 
 		FROM 
-			DISEASE_CATEGORY 
+   			DISEASE_CATEGORY AS DC
 		WHERE 
-			DC_IS_DELETED = 1 
+			DC.DC_IS_DELETED = 1 
 		ORDER BY 
-			DC_NAME ASC
+			DC.DC_NAME ASC
 
 	</select>
 	
@@ -63,8 +71,10 @@
 			D.D_IS_DELETED = 1 
 		AND 
 			DC.DC_IS_DELETED = 1 
+		<if test="infoNo != null">
 		AND 
 			D.D_CATEGORY_NO = #{infoNo}
+		</if>
 		ORDER BY 
 			D.D_NAME ASC
 	
@@ -94,8 +104,56 @@
 			D.${sortValue} ${order} 		
 	
 	</select>
+	
+	<!-- 페이지에 따른 질환 가져오기(검색한 질환) -->
+	<select id="getSearchDisease"
+			parameterType="Map"
+			resultMap="DiseaseDto">
+			
+		SELECT 
+			D.*, 
+			DC.* 
+		FROM 
+			DISEASE D  
+		JOIN 
+			DISEASE_CATEGORY DC 
+		WHERE 
+			D.D_CATEGORY_NO = DC.DC_NO 
+		AND 
+			D.D_IS_DELETED = 1 
+		AND 
+			DC.DC_IS_DELETED = 1 
+		AND 
+			D.${searchPart} LIKE CONCAT('%', #{searchString}, '%')
+		ORDER BY 
+			D.${sortValue} ${order} 
+		LIMIT 
+			#{start}, #{limit}
+	
+	</select>
+	
+	<!-- 질환의 총 리스트 개수 구하기(검색한 질환) -->
+	<select id="getSearchDiseaseListCnt"
+			parameterType="Map"
+			resultType="Integer">
 
-
+		SELECT 
+			COUNT(*) 
+		FROM 
+			DISEASE AS D 
+		JOIN 
+			DISEASE_CATEGORY AS DC 
+		ON 
+			D.D_CATEGORY_NO = DC.DC_NO 
+		WHERE 
+			D.D_IS_DELETED = 1 
+		AND 
+			DC.DC_IS_DELETED = 1 
+		AND 
+			${searchPart} LIKE CONCAT('%', #{searchString}, '%')
+	
+	</select>
+	
 
 	<!-- 페이지 번호에 따른 카테고리별 질환 가져오기 -->
 	<select id="getDiseaseListByCategoryWithPage"
@@ -124,6 +182,18 @@
 			#{start}, #{limit}
 	
 	</select>
+	
+	<!-- 케어리스트 노인의 질환 insert하기 -->
+	<insert id="insertNewCarePersonDisease"
+			parameterType="Map">
+			
+		INSERT INTO
+			CARE_PERSON_DISEASE
+				(CPD_CARE_LIST_NO, CPD_DISEASE_NO) 
+			VALUES
+				(#{last_cl_no}, #{d_no})
+	
+	</insert>
 
 
 </mapper>

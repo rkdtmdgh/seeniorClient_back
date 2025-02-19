@@ -36,7 +36,7 @@ public class DiseaseController {
 	
 	// 카테고리별 질환 가져오기(케어리스트 등록창에서 <select>박스)
 	@GetMapping("/info/get_disease_list_by_category_select")
-	public Object getDiseaseListByCategorySelect(@RequestParam(value = "infoNo") int infoNo) {
+	public Object getDiseaseListByCategorySelect(@RequestParam(value = "infoNo", defaultValue = "null") int infoNo) {
 		log.info("getDiseaseListByCategorySelect()");
 		
 		Map<String, Object> diseaseDtos = diseaseService.getDiseaseListByCategorySelect(infoNo);
@@ -45,6 +45,7 @@ public class DiseaseController {
 		
 	}
 	
+/*
 	// 검색한 질환 가져오기(케어리스트 등록 창)
 	@GetMapping("/info/search_disease_list_select")
 	public Object searchDiseaseListSelect(
@@ -64,6 +65,35 @@ public class DiseaseController {
 		return searchDiseaseListSelect;
 		
 	}
+*/
+	
+	// 검색한 질환 가져오기
+	@GetMapping("/info/search_disease_list")
+	public Object searchDiseaseList(
+			@RequestParam(value = "page_limit") int page_limit,
+			@RequestParam(value = "searchPart", defaultValue = "d_name") String searchPart,
+			@RequestParam(value = "searchString") String searchString,
+			@RequestParam(value = "sortValue", required = false, defaultValue = "d_no") String sortValue,
+			@RequestParam(value = "order", required = false, defaultValue = "desc") String order,
+			@RequestParam(value = "page", required = false, defaultValue = "1") int page) {
+		log.info("searchDiseaseList()");
+		
+		// 페이지 번호에 따른 검색 질환 리스트들 가져오기
+		Map<String, Object> searchDiseaseListWithPage = diseaseService.getSearchDiseaseListWithPage(page_limit, searchPart, searchString, sortValue, order, page);
+		
+		// 검색 질환 총 페이지 개수 가져오기
+		Map<String, Object> searchDiseaseListPageNum = diseaseService.getSearchDiseaseListPageNum(page_limit, searchPart, searchString, page);
+		
+		searchDiseaseListWithPage.put("searchDiseaseListPageNum", searchDiseaseListPageNum);
+		searchDiseaseListWithPage.put("searchPart", searchPart);
+		searchDiseaseListWithPage.put("searchString", searchString);
+		searchDiseaseListWithPage.put("sortValue", sortValue);
+		searchDiseaseListWithPage.put("order", order);
+		
+		return searchDiseaseListWithPage;
+		
+	}
+	
 	
 /*
 	// 카테고리별 질환 가져오기

@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.see_nior.seeniorClient.carelist.mapper.CareListMapper;
+import com.see_nior.seeniorClient.disease.mapper.DiseaseMapper;
 import com.see_nior.seeniorClient.dto.CareListCategoryDto;
 import com.see_nior.seeniorClient.dto.CareListDto;
 import com.see_nior.seeniorClient.enums.SqlResult;
@@ -34,6 +35,7 @@ import lombok.extern.log4j.Log4j2;
 public class CareListService {
 	
 	final private CareListMapper careListMapper;
+	final private DiseaseMapper diseaseMapper;
 	final private ImageFileService imageFileService;
 	final private UserService userService;
 
@@ -221,7 +223,7 @@ public class CareListService {
 	// 케어리스트 등록하기
 	@SuppressWarnings("unchecked")
 	@Transactional
-	public boolean createConfirm(List<MultipartFile> files, CareListDto careListDto, String u_id) {
+	public boolean createConfirm(List<MultipartFile> files, CareListDto careListDto, List<Integer> d_nos, String u_id) {
 		log.info("createConfirm()");
 		
 		// u_id 값으로 u_no 가져오기
@@ -316,7 +318,49 @@ public class CareListService {
 			} 
 			
 			// DB에 입력 성공
-			else return SqlResult.SUCCESS.getValue();
+			else {
+				
+				// d_nos의 길이가 0이라면 바로 return 처리
+				if (d_nos.size() <= 0) return SqlResult.SUCCESS.getValue();
+				
+				else {
+					
+					// 방금 저장된 케어리스트의 cl_no를 가져오기
+					int last_cl_no = careListMapper.getCareListMaxNo();
+					
+					// last_cl_no를 기준으로 CARE_PERSON_DISEASE 테이블 업데이트 하기
+					for (int i = 0; i < d_nos.size(); i++) {
+						
+						int d_no = d_nos.get(i);
+						
+						Map<String, Object> insertParams = new HashMap<>();
+						
+						insertParams.put("last_cl_no", last_cl_no);
+						insertParams.put("d_no", d_no);
+						
+						int cpdCreateResult = diseaseMapper.insertNewCarePersonDisease(insertParams);
+						
+						if (cpdCreateResult <= 1) return SqlResult.SUCCESS.getValue();
+						
+						else {
+							log.error("carePersonDisease insert error!");
+							SqlResult.FAIL.getValue();
+							
+						}
+						
+					}
+					
+					
+					
+					return SqlResult.SUCCESS.getValue();
+					
+					
+				}
+				
+				
+			}
+				
+				
 			
 		}
 		
