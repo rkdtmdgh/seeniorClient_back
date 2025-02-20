@@ -81,7 +81,7 @@ public class ReissueController {
         redisService.setValues(u_id, newRefreshToken, Duration.ofMillis(86400000L));
         
         // response
-        response.setHeader("access", newAccessToken);
+        response.setHeader("access", "Bearer " + newAccessToken);
         response.addCookie(createCookie("refresh", newRefreshToken));
 
         return new ResponseEntity<>(HttpStatus.OK);
