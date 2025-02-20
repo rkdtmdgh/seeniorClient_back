@@ -79,7 +79,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 			AuthenticationException failed) throws IOException, ServletException {
 		log.info("login fail");
 		
-		response.setStatus(401);
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 	}
 	
 	private Cookie createCookie(String key, String value) {
