@@ -20,5 +20,9 @@ public interface UserMapper {
 	public boolean updateUserPw(String u_id, String u_pw);
 
 	public int selectUserNoById(String u_id);
+
+	public boolean isSocialId(String u_social_id);
+
+	public UserAccountDto selectUserAccountBySocialId(String u_social_id);
 	
 }

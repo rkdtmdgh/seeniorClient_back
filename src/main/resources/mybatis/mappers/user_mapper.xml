@@ -16,6 +16,9 @@
 				U_NICKNAME, 
 				U_GENDER, 
 				U_BIRTH, 
+				<if test="u_social_id != '' and u_social_id != null">
+					U_SOCIAL_ID, 
+				</if>
 				<if test="u_zip_code != '' and u_zip_code != null">
 					U_ZIP_CODE,
 				</if>
@@ -44,6 +47,9 @@
 			#{u_nickname}, 
 			#{u_gender}, 
 			#{u_birth}, 
+			<if test="u_social_id != '' and u_social_id != null">
+				#{u_social_id}, 
+			</if>
 			<if test="u_address != '' and u_address != null">
 				#{u_zip_code}, 
 			</if>
@@ -79,7 +85,7 @@
 	
 	</select>
 	
-	<!-- 내 정보 가져오기 by id -->
+	<!-- 내 정보 가져오기 by u_id -->
 	<select id="selectUserAccountById"
 			resultType="UserAccountDto">
 	
@@ -91,6 +97,21 @@
 			U_IS_DELETED = 1 
 		AND 
 			U_ID = #{u_id} 
+	
+	</select>
+	
+	<!-- 내 정보 가져오기 by u_social_id -->
+	<select id="selectUserAccountBySocialId"
+			resultType="UserAccountDto">
+	
+		SELECT 
+			* 
+		FROM 
+			USER_ACCOUNT 
+		WHERE 
+			U_IS_DELETED = 1 
+		AND 
+			U_SOCIAL_ID = #{u_social_id} 
 	
 	</select>
 	
@@ -148,9 +169,18 @@
 	
 	</select>
 	
-	
-	
-	
-	
+	<select id="isSocialId">
+		
+		SELECT 
+			U_SOCIAL_ID
+		FROM 
+			USER_ACCOUT 
+		WHERE 
+			U_SOCIAL_ID = #{u_social_id}
+		AND 
+			U_IS_DELETED = 1 
+			
+		
+	</select>
 	
 </mapper>
