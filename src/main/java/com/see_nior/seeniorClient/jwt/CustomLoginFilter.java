@@ -25,7 +25,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RequiredArgsConstructor
-public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final AuthenticationManager authenticationManager;
 	private final JwtUtil jwtUtil;
@@ -62,7 +62,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String role = authority.getAuthority();
 		
 		// 토큰 생성
-		String accessToken = jwtUtil.createJwt("access", u_id, role, 60000L);
+		String accessToken = jwtUtil.createJwt("access", u_id, role, 600000L);
 		String refreshToken = jwtUtil.createJwt("refresh", u_id, role, 86400000L);
 		
 		redisService.setValues(u_id, refreshToken, Duration.ofMillis(86400000L));

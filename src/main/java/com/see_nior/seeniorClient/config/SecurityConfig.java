@@ -16,9 +16,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import com.see_nior.seeniorClient.OAuth.CustomOAuth2SuccessHandler;
+import com.see_nior.seeniorClient.OAuth.CustomOAtuth2UserService;
+import com.see_nior.seeniorClient.jwt.CustomLoginFilter;
 import com.see_nior.seeniorClient.jwt.JwtFilter;
 import com.see_nior.seeniorClient.jwt.JwtUtil;
-import com.see_nior.seeniorClient.jwt.LoginFilter;
 import com.see_nior.seeniorClient.redis.RedisService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +37,8 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
+    private final CustomOAtuth2UserService custumOAtuth2UserService;
+    private final CustomOAuth2SuccessHandler customSuccessHandler;
 	
 	@Bean PasswordEncoder passwordEncoder() {
 		log.info("passwordEncoder()");
@@ -79,7 +83,8 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests(auth -> auth
 					.requestMatchers(
-							"/",
+							"/", 
+							"/reissue", 
 							"/login", 
 							"/user/sign_up_confirm",
 							"/user/is_account",
@@ -102,9 +107,12 @@ public class SecurityConfig {
 		http
         	.httpBasic((auth) -> auth.disable());
 		
-//		http
-//			.oauth2Login((oauth2) -> oauth2
-//					.userInfoEndpoint());
+		// oauth2
+        http
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(customSuccessHandler)
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(custumOAtuth2UserService)));
 		
 //		http
 //			.logout(logout -> logout
@@ -129,11 +137,11 @@ public class SecurityConfig {
 		
 		//JWTFilter 등록
         http
-            .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
+            .addFilterBefore(new JwtFilter(jwtUtil), CustomLoginFilter.class);
 		
 		// 필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
-        	.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisService), UsernamePasswordAuthenticationFilter.class);
+        	.addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisService), UsernamePasswordAuthenticationFilter.class);
 		
 		http
         	.sessionManagement((session) -> session

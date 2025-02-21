@@ -29,6 +29,14 @@ public class UserService {
 		// result = boolean
 		// reason = u_id, u_nickname, fail
 		
+//		if (userAccountDto.getU_social_id() != null) {
+//			
+//			String u_id = userAccountDto.getU_social_id() + "@seenior.com";
+//			
+//			userAccountDto.setU_id(null);
+//			
+//		}
+		
 		Map<String, Object> resultMap = new HashMap<>();
 		
 		// 아이디 중복 검사
@@ -73,11 +81,18 @@ public class UserService {
 		return userMapper.isAccount(u_id);
 	}
 
-	// 내 정보 가져오기 (전체 정보)
+	// 내 정보 가져오기 (전체 정보) by u_id 
 	public UserAccountDto getAccountInfoById(String u_id) {
 		log.info("getAccountInfoById()");
 		
 		return userMapper.selectUserAccountById(u_id);
+	}
+	
+	// 내 정보 가져오기 (전체 정보) by u_social_id 
+	public UserAccountDto getAccountInfoBySocialId(String u_social_id) {
+		log.info("getAccountInfoById()");
+		
+		return userMapper.selectUserAccountBySocialId(u_social_id);
 	}
 	
 	// 내 u_no 가져오기 by u_id
@@ -125,6 +140,13 @@ public class UserService {
 		log.info("modifyPwConfirm()");
 		
 		return userMapper.updateUserPw(u_id, passwordEncoder.encode(u_pw));
+	}
+	
+	// u_social_id 존재 확인
+	public boolean isSocialId(String u_social_id) {
+		log.info("isSocialId() ---- {}", u_social_id);
+		
+		return userMapper.isSocialId(u_social_id);
 	}
 
 }
