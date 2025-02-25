@@ -66,9 +66,11 @@ public class CareListController {
 	// 모든 케어리스트 카테고리 가져오기
 	@GetMapping("/cate_info/get_category_list")
 	public Object getCategoryList(Principal principal) {
-		log.info("getCategoryListSelect()");
+		log.info("getCategoryList()");
 		
 		Map<String, Object> careListCategoryDtos = careListService.getCategoryList(principal.getName());
+		log.info("careListCategoryDtos ------> {}", careListCategoryDtos);
+		
 		
 		return careListCategoryDtos;
 		
