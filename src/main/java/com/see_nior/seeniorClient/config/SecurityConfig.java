@@ -88,7 +88,10 @@ public class SecurityConfig {
 							"/login", 
 							"/user/sign_up_confirm",
 							"/user/is_account",
-							"/user/is_nickname"
+							"/user/is_nickname", 
+							"/disease/cate_info/get_category_list_select",
+							"/disease/info/get_disease_list_by_category_select",
+							"/disease/info/search_disease_list"
 							).permitAll()
 					.anyRequest().authenticated());
 		
