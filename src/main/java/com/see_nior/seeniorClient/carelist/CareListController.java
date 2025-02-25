@@ -66,9 +66,11 @@ public class CareListController {
 	// 모든 케어리스트 카테고리 가져오기
 	@GetMapping("/cate_info/get_category_list")
 	public Object getCategoryList(Principal principal) {
-		log.info("getCategoryListSelect()");
+		log.info("getCategoryList()");
 		
 		Map<String, Object> careListCategoryDtos = careListService.getCategoryList(principal.getName());
+		log.info("careListCategoryDtos ------> {}", careListCategoryDtos);
+		
 		
 		return careListCategoryDtos;
 		
@@ -137,7 +139,7 @@ public class CareListController {
 	// 케어리스트 등록하기
 	@PostMapping("/info/create_confirm")
 	public boolean createConfirm(
-			@RequestParam(value = "files") List<MultipartFile> files, CareListDto careListDto, 
+			@RequestParam(value = "cl_img") List<MultipartFile> files, CareListDto careListDto, 
 			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos, Principal principal) {
 		log.info("createConfirm()");
 		
