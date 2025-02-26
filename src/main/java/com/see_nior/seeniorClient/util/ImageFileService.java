@@ -26,7 +26,7 @@ public class ImageFileService {
 	final private RestTemplate restTemplate;
 
     public ResponseEntity<String> uploadFiles(List<MultipartFile> files, String filePath) {
-        
+    	
     	try {
     		
     		log.info("uploadFiles()");

@@ -19,7 +19,7 @@ public class CareListDto {
 	private String cl_birth;
 	private String cl_zip_code;
 	private String cl_address;
-	private String cl_detail_address;
+	private String cl_detailed_address;
 	private boolean cl_blood_type_rh;
 	private String cl_blood_type_abo;
 	private String cl_phone;
