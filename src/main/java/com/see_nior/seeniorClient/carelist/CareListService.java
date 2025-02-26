@@ -239,6 +239,8 @@ public class CareListService {
 			Date now = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 			String date = dateFormat.format(now);
+			log.info("date ----------> {}", date);
+			
 			
 			// careList 테이블에서 maxNo값 가져오기
 			Integer maxNo = careListMapper.getCareListMaxNo();
@@ -249,38 +251,26 @@ public class CareListService {
 			// 이미지 저장 요청
 			ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
 			
-			if (savedFile != null) {
-				log.info("uploadFile SUCCESS!!");
+			// 이미지 서버에 저장 실패 시 즉시 롤백 후 FAIL 반환
+			if (savedFile == null) {
+				log.info("uploadFIle FAIL!!");
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				return SqlResult.FAIL.getValue();
 				
-				ObjectMapper objectMapper = new ObjectMapper();
+			}
+			
+			log.info("uploadFile SUCCESS!!");
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+			
+			try {
 				
-				try {
-					
-					Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody(), new TypeReference<Map<String, Object>>() {});
-					
-					String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
-					
-					// 디렉토리명과 이미지 URL 세팅
-					careListDto.setCl_dir_name(date);
-					careListDto.setCl_img(savedFileName);
-					
-				} catch (JsonMappingException e) {
-					log.info("JsonMappingException()");
-					e.printStackTrace();
-					
-					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-					
-					return SqlResult.FAIL.getValue();
-					
-				} catch (JsonProcessingException e) {
-					log.info("JsonProcessingException!!");
-					e.printStackTrace();
-					
-					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-					
-					return SqlResult.FAIL.getValue();
-					
-				}
+				Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody(), new TypeReference<Map<String, Object>>() {});
+				String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
+				
+				// 디렉토리명과 이미지 URL 세팅
+				careListDto.setCl_dir_name(date);
+				careListDto.setCl_img(savedFileName);
 				
 				createResult = careListMapper.insertNewCareList(careListDto);
 				
@@ -295,10 +285,18 @@ public class CareListService {
 				
 				// DB에 입력 성공
 				else return SqlResult.SUCCESS.getValue();
-			
 				
-			} else {
-				log.info("uploadFile FAIL!!");
+			} catch (JsonMappingException e) {
+				log.info("JsonMappingException()");
+				e.printStackTrace();
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+				return SqlResult.FAIL.getValue();
+				
+			} catch (JsonProcessingException e) {
+				log.info("JsonProcessingException!!");
+				e.printStackTrace();
 				
 				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 				
@@ -313,12 +311,11 @@ public class CareListService {
 			if (createResult <= 0) {
 				log.info("insertNewCareList() error!!");
 				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 				return SqlResult.FAIL.getValue();
 				
-			} 
-			
 			// DB에 입력 성공
-			else {
+			} else {
 				
 				// d_nos의 길이가 0이라면 바로 return 처리
 				if (d_nos.size() <= 0) return SqlResult.SUCCESS.getValue();
@@ -329,38 +326,27 @@ public class CareListService {
 					int last_cl_no = careListMapper.getCareListMaxNo();
 					
 					// last_cl_no를 기준으로 CARE_PERSON_DISEASE 테이블 업데이트 하기
-					for (int i = 0; i < d_nos.size(); i++) {
-						
-						int d_no = d_nos.get(i);
-						
+					for (int d_no : d_nos) {
 						Map<String, Object> insertParams = new HashMap<>();
-						
 						insertParams.put("last_cl_no", last_cl_no);
 						insertParams.put("d_no", d_no);
 						
 						int cpdCreateResult = diseaseMapper.insertNewCarePersonDisease(insertParams);
 						
-						if (cpdCreateResult <= 1) return SqlResult.SUCCESS.getValue();
-						
-						else {
-							log.error("carePersonDisease insert error!");
-							SqlResult.FAIL.getValue();
+						if (cpdCreateResult <= 0) {
+							log.info("carePersonDisease insert error!");
+							TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+							return SqlResult.FAIL.getValue();
 							
 						}
 						
 					}
 					
-					
-					
 					return SqlResult.SUCCESS.getValue();
-					
 					
 				}
 				
-				
 			}
-				
-				
 			
 		}
 		

@@ -1,6 +1,7 @@
 package com.see_nior.seeniorClient.carelist;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.see_nior.seeniorClient.dto.CareListCategoryDto;
 import com.see_nior.seeniorClient.dto.CareListDto;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -69,8 +71,6 @@ public class CareListController {
 		log.info("getCategoryList()");
 		
 		Map<String, Object> careListCategoryDtos = careListService.getCategoryList(principal.getName());
-		log.info("careListCategoryDtos ------> {}", careListCategoryDtos);
-		
 		
 		return careListCategoryDtos;
 		
@@ -139,11 +139,18 @@ public class CareListController {
 	// 케어리스트 등록하기
 	@PostMapping("/info/create_confirm")
 	public boolean createConfirm(
-			@RequestParam(value = "cl_img") List<MultipartFile> files, CareListDto careListDto, 
-			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos, Principal principal) {
+			@RequestParam(value = "cl_img", required = false) List<MultipartFile> files, CareListDto careListDto, 
+			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos, Principal principal, HttpServletRequest request) {
 		log.info("createConfirm()");
 		
+		// 요청 파라미터 출력
+	    log.info("===== Request Parameters =====");
+	    request.getParameterMap().forEach((key, values) -> {
+	        log.info("Param: {} = {}", key, Arrays.toString(values));
+	    });
+		
 		boolean createResult = careListService.createConfirm(files, careListDto, d_nos, principal.getName());
+		log.info("createResult ---------> {}", createResult);
 		
 		return createResult;
 		

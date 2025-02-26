@@ -25,7 +25,7 @@
 		<result column="cl_birth" property="cl_birth"/>
 		<result column="cl_zip_code" property="cl_zip_code"/>
 		<result column="cl_address" property="cl_address"/>
-		<result column="cl_detail_address" property="cl_detail_address"/>
+		<result column="cl_detailed_address" property="cl_detailed_address"/>
 		<result column="cl_blood_type_rh" property="cl_blood_type_rh"/>
 		<result column="cl_blood_type_abo" property="cl_blood_type_abo"/>
 		<result column="cl_phone" property="cl_phone"/>
@@ -236,7 +236,7 @@
 			<if test="cl_dir_name != null">
 			#{cl_dir_name}, 
 			</if>
-			#{cl_gender}, #{cl_age}, #{cl_zip_code}, #{cl_address}, #{cl_detailed_address}, #{cl_blood_type_rh}, #{cl_blood_type_abo} #{cl_phone}, 
+			#{cl_gender}, #{cl_birth}, #{cl_zip_code}, #{cl_address}, #{cl_detailed_address}, #{cl_blood_type_rh}, #{cl_blood_type_abo}, #{cl_phone}, 
 			#{cl_emergency_contact_1}, #{cl_emergency_contact_2}, #{cl_emergency_contact_3}, #{cl_emergency_contact_4}, 
 			#{cl_diabetic_food}, #{cl_medications}, #{cl_hospital}, 
 			#{cl_doctor}, #{cl_hospital_tel}, #{cl_walk_state}, #{cl_assistive_device}, #{cl_washing_assistance}, 
