@@ -91,7 +91,8 @@ public class SecurityConfig {
 							"/user/is_nickname", 
 							"/disease/cate_info/get_category_list_select",
 							"/disease/info/get_disease_list_by_category_select",
-							"/disease/info/search_disease_list"
+							"/disease/info/search_disease_list", 
+							"/advertisement/main/get_advertisement_list"
 							).permitAll()
 					.anyRequest().authenticated());
 		
