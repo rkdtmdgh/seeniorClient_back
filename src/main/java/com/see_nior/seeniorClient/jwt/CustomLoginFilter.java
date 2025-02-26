@@ -62,10 +62,10 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		String role = authority.getAuthority();
 		
 		// 토큰 생성
-		String accessToken = jwtUtil.createJwt("access", u_id, role, 600000L);
-		String refreshToken = jwtUtil.createJwt("refresh", u_id, role, 86400000L);
+		String accessToken = jwtUtil.createJwt("access", u_id, role, 10 * 1000L);
+		String refreshToken = jwtUtil.createJwt("refresh", u_id, role, 15 * 1000L);
 		
-		redisService.setValues(u_id, refreshToken, Duration.ofMillis(86400000L));
+		redisService.setValues(u_id, refreshToken, Duration.ofMillis(15 * 1000L));
 		
 		//응답 설정
 	    response.setHeader("access", "Bearer " + accessToken);
