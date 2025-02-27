@@ -139,7 +139,7 @@ public class CareListController {
 	// 케어리스트 등록하기
 	@PostMapping("/info/create_confirm")
 	public boolean createConfirm(
-			@RequestParam(value = "cl_img", required = false) List<MultipartFile> files, CareListDto careListDto, 
+			@RequestParam(value = "files", required = false) List<MultipartFile> files, CareListDto careListDto, 
 			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos, Principal principal, HttpServletRequest request) {
 		log.info("createConfirm()");
 		
