@@ -13,12 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.see_nior.seeniorClient.carelist.mapper.CareListMapper;
-import com.see_nior.seeniorClient.disease.mapper.DiseaseMapper;
 import com.see_nior.seeniorClient.dto.CareListCategoryDto;
 import com.see_nior.seeniorClient.dto.CareListDto;
 import com.see_nior.seeniorClient.enums.SqlResult;
@@ -35,7 +32,6 @@ import lombok.extern.log4j.Log4j2;
 public class CareListService {
 	
 	final private CareListMapper careListMapper;
-	final private DiseaseMapper diseaseMapper;
 	final private ImageFileService imageFileService;
 	final private UserService userService;
 
@@ -220,7 +216,8 @@ public class CareListService {
 
 /////////////////////////////////////////////////////// 케어리스트	
 	
-	// 케어리스트 등록하기
+/*
+	// 케어리스트 등록하기 (기존)
 	@SuppressWarnings("unchecked")
 	@Transactional
 	public boolean createConfirm(List<MultipartFile> files, CareListDto careListDto, List<Integer> d_nos, String u_id) {
@@ -338,7 +335,7 @@ public class CareListService {
 							TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 							return SqlResult.FAIL.getValue();
 							
-						}
+						} 
 						
 					}
 					
@@ -351,6 +348,95 @@ public class CareListService {
 		}
 		
 	}
+*/
+	
+	// 케어리스트 등록하기 (수정)
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public boolean createConfirm(List<MultipartFile> files, CareListDto careListDto, List<Integer> d_nos, String u_id) {
+		log.info("createConfirm()");
+		
+		try {
+		
+			// u_id 값으로 u_no 가져오기
+			int u_no = userService.selectUserNoById(u_id);
+			// u_no를 cl_user_no에 할당
+			careListDto.setCl_user_no(u_no);
+			
+			int createResult = 0;
+			
+			// 케어리스트 테이블에 정보 등록하기
+			createResult = careListMapper.insertNewCareList(careListDto);
+			
+			// 케어리스트 테이블에 정보 등록 실패 시
+			if (createResult <= 0) throw new RuntimeException("CARE_LIST TABLE INSERT FAIL!!");
+		
+			// 등록 성공 시 CARE_PERSON_DISEASE 테이블에 케어리스트의 질병 정보 등록하기
+			
+			// 마지막에 등록된 cl_no 가져오기
+			int last_cl_no = careListMapper.getCareListMaxNo();
+			
+			// last_cl_no를 기준으로 CARE_PERSON_DISEASE 테이블 업데이트 하기
+			for (int d_no : d_nos) {
+				Map<String, Object> insertParams = new HashMap<>();
+				insertParams.put("last_cl_no", last_cl_no);
+				insertParams.put("d_no", d_no);
+				
+				int cpdCreateResult = careListMapper.insertNewCarePersonDisease(insertParams);
+				
+				if (cpdCreateResult <= 0) throw new RuntimeException("CARE_PERSON_DISEAE TABLE INSERT FAIL!!");
+				
+			}
+			
+			// 이미지 첨부를 안했을 시 여기서  반환
+			if (files == null || files.isEmpty()) return SqlResult.SUCCESS.getValue();
+			
+		
+			// 이미지 서버에 요청할 파일 저장 경로 생성
+			Date now = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+			String date = dateFormat.format(now);
+			
+			String filePath = "\\careList\\" + last_cl_no + "\\" + date;
+			
+			// 이미지 저장 요청
+			ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
+			
+			// 이미지 서버에 저장 실패 시 즉시 롤백 후 FAIL 반환
+			if (savedFile == null) throw new RuntimeException("uploadFile FAIL!!");
+			
+			log.info("uploadFile SUCCESS!!");
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+				
+			Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody() , new TypeReference<Map<String, Object>>() {} );
+			String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
+			
+			// 디렉토리명과 이미지 URL을 CARE_LIST 테이블에 업데이트
+			Map<String, Object> updateImgColumnParams = new HashMap<>();
+			
+			updateImgColumnParams.put("last_cl_no", last_cl_no);
+			updateImgColumnParams.put("cl_dir_name", date);
+			updateImgColumnParams.put("cl_img", savedFileName);
+			
+			createResult = careListMapper.updateImgColumn(updateImgColumnParams);
+			
+			if (createResult <= 0) throw new RuntimeException("updateImgColumn FAIL!!");
+			
+			return SqlResult.SUCCESS.getValue();
+				
+		} catch(Exception e) {
+			
+			log.info("Exception 발생: {}", e.getMessage(), e);
+			
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			
+			return SqlResult.FAIL.getValue();
+			
+		}
+			
+		}
+	
 	
 	// 페이지 번호에 따른 모든 케어리스트 가져오기
 	public Map<String, Object> getCareListWithPage(int page_limit, int page, String sortValue,

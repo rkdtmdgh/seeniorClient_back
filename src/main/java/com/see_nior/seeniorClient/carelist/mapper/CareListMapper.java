@@ -45,6 +45,12 @@ public interface CareListMapper {
 	// 케어리스트 등록하기
 	public int insertNewCareList(CareListDto careListDto);
 	
+	// 케어리스트 노인의 질환 insert하기
+	public int insertNewCarePersonDisease(Map<String, Object> insertParams);
+	
+	// 케어리스트 테이블에 Img 관련 컬럼들 업데이트
+	public int updateImgColumn(Map<String, Object> updateImgColumnParams);
+	
 	// 페이지 번호에 따른 모든 케어리스트 가져오기
 	public List<CareListDto> getCareListWithPage(Map<String, Object> pagingParams);
 
@@ -62,6 +68,8 @@ public interface CareListMapper {
 
 	// 케어리스트 삭제 하기
 	public int deleteCareList(int cl_no);
+
+	
 
 	
 

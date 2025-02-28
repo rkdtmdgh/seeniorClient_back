@@ -35,8 +35,7 @@ public interface DiseaseMapper {
 	// 페이지 번호에 따른 카테고리별 질환 가져오기
 	public List<DiseaseDto> getDiseaseListByCategoryWithPage(Map<String, Object> pagingParamsForSelectBox);
 
-	// 케어리스트 노인의 질환 insert하기
-	public int insertNewCarePersonDisease(Map<String, Object> insertParams);
+	
 
 	
 

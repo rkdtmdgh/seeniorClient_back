@@ -215,28 +215,16 @@
 		
 		INSERT INTO 
 			CARE_LIST
-			(CL_USER_NO, CL_CATEGORY_NO, CL_NAME, 
-			<if test="cl_img != null">
-			CL_IMG, 
-			</if>
-			<if test="cl_dir_name != null">
-			CL_DIR_NAME, 
-			</if>
-			CL_GENDER, CL_BIRTH, CL_ZIP_CODE, CL_ADDRESS, CL_DETAILED_ADDRESS, CL_BLOOD_TYPE_RH, CL_BLOOD_TYPE_ABO, CL_PHONE, 
+			(CL_USER_NO, CL_CATEGORY_NO, CL_NAME, CL_GENDER, CL_BIRTH, 
+			CL_ZIP_CODE, CL_ADDRESS, CL_DETAILED_ADDRESS, CL_BLOOD_TYPE_RH, CL_BLOOD_TYPE_ABO, CL_PHONE, 
 			CL_EMERGENCY_CONTACT_1, CL_EMERGENCY_CONTACT_2, CL_EMERGENCY_CONTACT_3, CL_EMERGENCY_CONTACT_4, 
 			CL_DIABETIC_FOOD, CL_MEDICATIONS, CL_HOSPITAL, 
 			CL_DOCTOR, CL_HOSPITAL_TEL, CL_WALK_STATE, CL_ASSISTIVE_DEVICE, CL_WASHING_ASSISTANCE, 
 			CL_TOILET_ASSISTANCE, CL_MENTAL_STATE, CL_SOCIAL_STATE, CL_ETC, 
 			CL_FAVORITES, CL_IS_DELETED, CL_REG_DATE, CL_MOD_DATE) 
 		VALUES
-			(#{cl_user_no}, #{cl_category_no}, #{cl_name}, 
-			<if test="cl_img != null">
-			#{cl_img}, 
-			</if>
-			<if test="cl_dir_name != null">
-			#{cl_dir_name}, 
-			</if>
-			#{cl_gender}, #{cl_birth}, #{cl_zip_code}, #{cl_address}, #{cl_detailed_address}, #{cl_blood_type_rh}, #{cl_blood_type_abo}, #{cl_phone}, 
+			(#{cl_user_no}, #{cl_category_no}, #{cl_name}, #{cl_gender}, #{cl_birth}, 
+			#{cl_zip_code}, #{cl_address}, #{cl_detailed_address}, #{cl_blood_type_rh}, #{cl_blood_type_abo}, #{cl_phone}, 
 			#{cl_emergency_contact_1}, #{cl_emergency_contact_2}, #{cl_emergency_contact_3}, #{cl_emergency_contact_4}, 
 			#{cl_diabetic_food}, #{cl_medications}, #{cl_hospital}, 
 			#{cl_doctor}, #{cl_hospital_tel}, #{cl_walk_state}, #{cl_assistive_device}, #{cl_washing_assistance}, 
@@ -244,7 +232,31 @@
 			#{cl_favorites}, #{cl_is_deleted}, NOW(), NOW())
 			
 	</insert>
+	 
+	<!-- 케어리스트 노인의 질환 insert하기 -->
+	<insert id="insertNewCarePersonDisease"
+			parameterType="Map">
+			
+		INSERT INTO
+			CARE_PERSON_DISEASE
+				(CPD_CARE_LIST_NO, CPD_DISEASE_NO) 
+			VALUES
+				(#{last_cl_no}, #{d_no})
 	
+	</insert>
+	
+	<!-- 케어리스트 테이블에 Img 관련 컬럼들 업데이트 -->
+	<update id="updateImgColumn">
+	
+		UPDATE 
+			CARE_LIST 
+		SET 
+			CL_DIR_NAME = #{cl_dir_name}, 
+			CL_IMG  = #{cl_img} 
+		WHERE 
+			CL_NO = #{last_cl_no}
+	
+	</update>
 
 <!-- 
 	<! 페이지 번호에 따른 모든 케어리스트 가져오기 >
