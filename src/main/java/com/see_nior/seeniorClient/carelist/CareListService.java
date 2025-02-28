@@ -220,7 +220,8 @@ public class CareListService {
 
 /////////////////////////////////////////////////////// 케어리스트	
 	
-	// 케어리스트 등록하기
+/*
+	// 케어리스트 등록하기 (기존)
 	@SuppressWarnings("unchecked")
 	@Transactional
 	public boolean createConfirm(List<MultipartFile> files, CareListDto careListDto, List<Integer> d_nos, String u_id) {
@@ -338,7 +339,7 @@ public class CareListService {
 							TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 							return SqlResult.FAIL.getValue();
 							
-						}
+						} 
 						
 					}
 					
@@ -351,6 +352,141 @@ public class CareListService {
 		}
 		
 	}
+*/
+	
+	// 케어리스트 등록하기 (수정)
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public boolean createConfirm(List<MultipartFile> files, CareListDto careListDto, List<Integer> d_nos, String u_id) {
+		log.info("createConfirm()");
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		careListDto.setCl_user_no(u_no);
+		
+		int createResult = 0;
+		
+		// 케어리스트 사진을 등록 할 시
+		if (files != null && files.size() != 0 && files.get(0).getSize() != 0) {
+			
+			// 이미지 서버에 요청할 파일 저장 경로 생성
+			Date now = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+			String date = dateFormat.format(now);
+			log.info("date ----------> {}", date);
+			
+			
+			// careList 테이블에서 maxNo값 가져오기
+			Integer maxNo = careListMapper.getCareListMaxNo();
+			if (maxNo == null) maxNo = 0;
+			
+			String filePath = "\\careList\\" + (maxNo + 1) + "\\" + date;
+			
+			// 이미지 저장 요청
+			ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
+			
+			// 이미지 서버에 저장 실패 시 즉시 롤백 후 FAIL 반환
+			if (savedFile == null) {
+				log.info("uploadFIle FAIL!!");
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				return SqlResult.FAIL.getValue();
+				
+			}
+			
+			log.info("uploadFile SUCCESS!!");
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+			
+			try {
+				
+				Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody(), new TypeReference<Map<String, Object>>() {});
+				String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
+				
+				// 디렉토리명과 이미지 URL 세팅
+				careListDto.setCl_dir_name(date);
+				careListDto.setCl_img(savedFileName);
+				
+				createResult = careListMapper.insertNewCareList(careListDto);
+				
+				// DB에 입력 실패
+				if (createResult <= 0) {
+					log.info("insertNewCareList() error!!");
+					
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+					return SqlResult.FAIL.getValue();
+					
+				} 
+				
+				// DB에 입력 성공
+				else return SqlResult.SUCCESS.getValue();
+				
+			} catch (JsonMappingException e) {
+				log.info("JsonMappingException()");
+				e.printStackTrace();
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+				return SqlResult.FAIL.getValue();
+				
+			} catch (JsonProcessingException e) {
+				log.info("JsonProcessingException!!");
+				e.printStackTrace();
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+				return SqlResult.FAIL.getValue();
+				
+			}
+			
+		} else {
+			createResult = careListMapper.insertNewCareList(careListDto);
+			
+			// DB에 입력 실패
+			if (createResult <= 0) {
+				log.info("insertNewCareList() error!!");
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				return SqlResult.FAIL.getValue();
+				
+			// DB에 입력 성공
+			} else {
+				
+				// d_nos의 길이가 0이라면 바로 return 처리
+				if (d_nos.size() <= 0) return SqlResult.SUCCESS.getValue();
+				
+				else {
+					
+					// 방금 저장된 케어리스트의 cl_no를 가져오기
+					int last_cl_no = careListMapper.getCareListMaxNo();
+					
+					// last_cl_no를 기준으로 CARE_PERSON_DISEASE 테이블 업데이트 하기
+					for (int d_no : d_nos) {
+						Map<String, Object> insertParams = new HashMap<>();
+						insertParams.put("last_cl_no", last_cl_no);
+						insertParams.put("d_no", d_no);
+						
+						int cpdCreateResult = diseaseMapper.insertNewCarePersonDisease(insertParams);
+						
+						if (cpdCreateResult <= 0) {
+							log.info("carePersonDisease insert error!");
+							TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+							return SqlResult.FAIL.getValue();
+							
+						} 
+						
+					}
+					
+					return SqlResult.SUCCESS.getValue();
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	
 	// 페이지 번호에 따른 모든 케어리스트 가져오기
 	public Map<String, Object> getCareListWithPage(int page_limit, int page, String sortValue,
