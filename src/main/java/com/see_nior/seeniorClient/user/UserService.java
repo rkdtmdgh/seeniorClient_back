@@ -90,6 +90,16 @@ public class UserService {
 		
 		Map<String, Object> resultMap = new HashMap<>();
 		
+		// 닉네임 중복 검사
+		boolean isNickname =
+				userMapper.isNickname(userAccountDto.getU_nickname());
+		
+		if (isNickname) {
+			resultMap.put("result", SqlResult.FAIL.getValue());
+			resultMap.put("reason", "u_nickname");
+			return resultMap;
+		}
+		
 		int signUpResult = userMapper.insertNewUser(userAccountDto);
 		
 		if (signUpResult >= 0) {
