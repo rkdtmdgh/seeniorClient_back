@@ -3,6 +3,7 @@ package com.see_nior.seeniorClient.jwt;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -68,6 +69,8 @@ public class LogoutController {
         cookie.setMaxAge(0);
         cookie.setPath("/");
 
+        SecurityContextHolder.clearContext();
+        
         response.setStatus(HttpServletResponse.SC_OK);
         response.addCookie(cookie);
 	}

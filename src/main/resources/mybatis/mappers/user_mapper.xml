@@ -172,9 +172,9 @@
 	<select id="isSocialId">
 		
 		SELECT 
-			U_SOCIAL_ID
+			COUNT(U_SOCIAL_ID)
 		FROM 
-			USER_ACCOUT 
+			USER_ACCOUNT 
 		WHERE 
 			U_SOCIAL_ID = #{u_social_id}
 		AND 

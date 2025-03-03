@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.see_nior.seeniorClient.OAuth.CustomOAuth2SuccessHandler;
 import com.see_nior.seeniorClient.OAuth.CustomOAtuth2UserService;
+import com.see_nior.seeniorClient.OAuth.CustomOAuth2FailureHandler;
 import com.see_nior.seeniorClient.jwt.CustomLoginFilter;
 import com.see_nior.seeniorClient.jwt.JwtFilter;
 import com.see_nior.seeniorClient.jwt.JwtUtil;
@@ -32,29 +33,30 @@ import lombok.extern.log4j.Log4j2;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-	
+
 	// AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
     private final CustomOAtuth2UserService custumOAtuth2UserService;
     private final CustomOAuth2SuccessHandler customSuccessHandler;
-	
+    private final CustomOAuth2FailureHandler customFailureHandler;
+
 	@Bean PasswordEncoder passwordEncoder() {
 		log.info("passwordEncoder()");
-		
+
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	// AuthenticationManager Bean 등록
 	@Bean AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-		
+
 		return configuration.getAuthenticationManager();
 	}
-	
+
 	@Bean SecurityFilterChain clientFilterChain(HttpSecurity http) throws Exception {
 		log.info("clientFilterChain()");
-		
+
 		http
 			.cors(cors -> cors
 					.configurationSource(new CorsConfigurationSource() {
@@ -76,10 +78,10 @@ public class SecurityConfig {
 							return configuration;
 						}
 					}));
-			
+
 		http
 			.csrf(csrf -> csrf.disable());
-		
+
 		http
 			.authorizeHttpRequests(auth -> auth
 					.requestMatchers(
@@ -95,7 +97,7 @@ public class SecurityConfig {
 							"/advertisement/main/get_advertisement_list"
 							).permitAll()
 					.anyRequest().authenticated());
-		
+
 //		http
 //			.formLogin(login -> login
 //					.loginProcessingUrl("/user/sign_in_confirm")
@@ -104,23 +106,32 @@ public class SecurityConfig {
 //					.successHandler(new LoginSuccessHandler())
 //					.failureHandler(new LoginFailureHandler())
 //					.permitAll());
-		
+
 		http
 			.formLogin(login -> login.disable());
-		
+
 		http
         	.httpBasic((auth) -> auth.disable());
-		
+
+        // 필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
+        http
+        	.addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisService), UsernamePasswordAuthenticationFilter.class);
+
+        //JWTFilter 등록
+        http
+        	.addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
 		// oauth2
         http
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(customSuccessHandler)
+                        .failureHandler(customFailureHandler)
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                                 .userService(custumOAtuth2UserService)));
-		
+
 //		http
 //			.logout(logout -> logout
-//					.logoutUrl("/user/sign_out_confirm")
+//					.logoutUrl("/logout")
 //					.logoutSuccessHandler((request, response, authentication) -> {
 //						log.info("sign_out_confirm success ----- {}", authentication.getName()); 
 //						
@@ -138,14 +149,6 @@ public class SecurityConfig {
 //				.maxSessionsPreventsLogin(false))
 //			.sessionManagement(sess -> sess
 //				.sessionFixation().newSession());
-		
-		//JWTFilter 등록
-        http
-            .addFilterBefore(new JwtFilter(jwtUtil), CustomLoginFilter.class);
-		
-		// 필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
-        http
-        	.addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisService), UsernamePasswordAuthenticationFilter.class);
 		
 		http
         	.sessionManagement((session) -> session
