@@ -182,22 +182,7 @@
 			#{start}, #{limit}
 	
 	</select>
-	
-	<!-- 케어리스트 노인의 질환 insert하기 -->
-	<insert id="insertNewCarePersonDisease"
-			parameterType="Map">
-			
-		INSERT INTO
-			CARE_PERSON_DISEASE
-				(CPD_CARE_LIST_NO, CPD_DISEASE_NO) 
-			VALUES
-				(#{last_cl_no}, #{d_no})
-	
-	</insert>
-
 
 </mapper>
-
-
 
 
