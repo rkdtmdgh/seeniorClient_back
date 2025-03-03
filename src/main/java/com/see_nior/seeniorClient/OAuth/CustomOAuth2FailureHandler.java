@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.see_nior.seeniorClient.dto.OAuth2Response;
+import com.see_nior.seeniorClient.enums.UrlPath;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +31,7 @@ public class CustomOAuth2FailureHandler extends SimpleUrlAuthenticationFailureHa
             String u_social_id = oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId();
             
             // OAuth2Response 정보를 쿼리 파라미터로 변환
-            String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/OAuth2Result")
+            String redirectUrl = UriComponentsBuilder.fromUriString(UrlPath.OATUTH2_LOGIN_REDIRECT_URI.getValue())
             		.queryParam("result", "fail")
                     .queryParam("u_social_id", u_social_id)
                     .encode()
@@ -38,7 +39,7 @@ public class CustomOAuth2FailureHandler extends SimpleUrlAuthenticationFailureHa
 
             response.sendRedirect(redirectUrl);
         } else {
-            response.sendRedirect("http://localhost:3000/OAuth2Result?result=error");
+            response.sendRedirect(UrlPath.OATUTH2_LOGIN_REDIRECT_URI.getValue() + "?result=error");
         }
 		
 	}

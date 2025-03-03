@@ -37,8 +37,8 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
     private final CustomOAtuth2UserService custumOAtuth2UserService;
-    private final CustomOAuth2SuccessHandler customSuccessHandler;
-    private final CustomOAuth2FailureHandler customFailureHandler;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
 
 	@Bean PasswordEncoder passwordEncoder() {
 		log.info("passwordEncoder()");
@@ -101,8 +101,8 @@ public class SecurityConfig {
 				.loginProcessingUrl("/login")
 				.usernameParameter("u_id")
 				.passwordParameter("u_pw")
-				.successHandler(new LoginSuccessHandler(jwtUtil, redisService))
-				.failureHandler(new LoginFailureHandler())
+				.successHandler(new CustomLoginSuccessHandler(jwtUtil, redisService))
+				.failureHandler(new CustomLoginFailureHandler())
 				.permitAll());
 
 		http
@@ -115,8 +115,8 @@ public class SecurityConfig {
 		// oauth2
         http
             .oauth2Login(oauth2 -> oauth2
-                .successHandler(customSuccessHandler)
-                .failureHandler(customFailureHandler)
+                .successHandler(customOAuth2SuccessHandler)
+                .failureHandler(customOAuth2FailureHandler)
                 .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                     .userService(custumOAtuth2UserService)));
 
