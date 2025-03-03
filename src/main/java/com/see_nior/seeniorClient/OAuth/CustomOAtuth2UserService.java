@@ -6,6 +6,10 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.see_nior.seeniorClient.dto.GoogleResponse;
+import com.see_nior.seeniorClient.dto.KakaoResponse;
+import com.see_nior.seeniorClient.dto.NaverResponse;
+import com.see_nior.seeniorClient.dto.OAuth2Response;
 import com.see_nior.seeniorClient.dto.UserAccountDto;
 import com.see_nior.seeniorClient.user.mapper.UserMapper;
 

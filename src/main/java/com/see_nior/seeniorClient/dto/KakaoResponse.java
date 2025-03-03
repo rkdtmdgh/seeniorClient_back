@@ -1,4 +1,4 @@
-package com.see_nior.seeniorClient.OAuth;
+package com.see_nior.seeniorClient.dto;
 
 import java.util.Map;
 
