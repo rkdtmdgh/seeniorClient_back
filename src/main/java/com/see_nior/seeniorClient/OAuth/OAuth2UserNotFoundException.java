@@ -2,6 +2,8 @@ package com.see_nior.seeniorClient.OAuth;
 
 import org.springframework.security.core.AuthenticationException;
 
+import com.see_nior.seeniorClient.dto.OAuth2Response;
+
 @SuppressWarnings("serial")
 public class OAuth2UserNotFoundException extends AuthenticationException {
 

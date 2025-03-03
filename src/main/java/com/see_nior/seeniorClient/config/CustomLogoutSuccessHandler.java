@@ -1,14 +1,18 @@
-package com.see_nior.seeniorClient.jwt;
+package com.see_nior.seeniorClient.config;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.stereotype.Component;
 
+import com.see_nior.seeniorClient.jwt.JwtUtil;
 import com.see_nior.seeniorClient.redis.RedisService;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,16 +20,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Controller
+@Component
 @RequiredArgsConstructor
-public class LogoutController {
+public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
 	private final JwtUtil jwtUtil;
 	private final RedisService redisService;
 	
-	@PostMapping("/logout")
-	public void logout(HttpServletRequest request, HttpServletResponse response) {
-		log.info("logout()");
+	@Override
+	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+			throws IOException, ServletException {
+		log.info("onLogoutSuccess()");
 		
 		// 클라이언트에서 보낸 쿠키 확인
 		Cookie[] cookies = request.getCookies();
@@ -73,6 +78,7 @@ public class LogoutController {
         
         response.setStatus(HttpServletResponse.SC_OK);
         response.addCookie(cookie);
+		
 	}
 	
 }

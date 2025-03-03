@@ -3,7 +3,6 @@ package com.see_nior.seeniorClient.user;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
