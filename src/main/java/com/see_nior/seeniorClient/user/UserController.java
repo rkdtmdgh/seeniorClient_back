@@ -30,7 +30,11 @@ public class UserController {
 		log.info("signUpConfirm()");
 		
 		// 회원 가입 성공 return = true, 실패 or 아이디 중복 return = false
-		return userService.signUpConfirm(userAccountDto);
+		if (userAccountDto.getU_social_id() == null) 
+			return userService.signUpConfirm(userAccountDto);
+		else 
+			return userService.oauth2SignUpConfirm(userAccountDto);
+		
 	}
 	
 	// 아이디 중복 여부 확인

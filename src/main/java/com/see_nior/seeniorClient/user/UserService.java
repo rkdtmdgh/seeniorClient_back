@@ -1,7 +1,9 @@
 package com.see_nior.seeniorClient.user;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,18 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final UserMapper userMapper;
 	
+	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+	private static final SecureRandom RANDOM = new SecureRandom();
+	
+	public static String generateRandomPassword(int length) {
+		StringBuilder password = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = RANDOM.nextInt(CHARACTERS.length());
+            password.append(CHARACTERS.charAt(index));
+        }
+        return password.toString();
+	}
+	
 	// 회원 가입 확인
 	public Object signUpConfirm(UserAccountDto userAccountDto) {
 		log.info("signUpConfirm()");
@@ -28,14 +42,6 @@ public class UserService {
 		// return 
 		// result = boolean
 		// reason = u_id, u_nickname, fail
-		
-//		if (userAccountDto.getU_social_id() != null) {
-//			
-//			String u_id = userAccountDto.getU_social_id() + "@seenior.com";
-//			
-//			userAccountDto.setU_id(null);
-//			
-//		}
 		
 		Map<String, Object> resultMap = new HashMap<>();
 		
@@ -72,6 +78,29 @@ public class UserService {
 			return resultMap;
 		}
 
+	}
+	
+	public Object oauth2SignUpConfirm(UserAccountDto userAccountDto) {
+		log.info("oauth2SignUpConfirm() ----- {}", userAccountDto.getU_social_id());
+		
+		String u_pw = generateRandomPassword(10);
+		
+		userAccountDto.setU_id(userAccountDto.getU_social_id());
+		userAccountDto.setU_pw(passwordEncoder.encode(u_pw));
+		
+		Map<String, Object> resultMap = new HashMap<>();
+		
+		int signUpResult = userMapper.insertNewUser(userAccountDto);
+		
+		if (signUpResult >= 0) {
+			resultMap.put("result", SqlResult.SUCCESS.getValue());
+			return resultMap;
+		} else {
+			resultMap.put("result", SqlResult.FAIL.getValue());
+			resultMap.put("reason", "fail");
+			return resultMap;
+		}
+		
 	}
 
 	// 아이디 중복 확인
