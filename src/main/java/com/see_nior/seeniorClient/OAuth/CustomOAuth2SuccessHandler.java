@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.see_nior.seeniorClient.jwt.JwtUtil;
 import com.see_nior.seeniorClient.redis.RedisService;
@@ -42,16 +43,23 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String role = auth.getAuthority();
         
         // accessToken과 refreshToken 생성
-        String accessToken = jwtUtil.createJwt("access", u_name, role, 600000L);
         String refreshToken = jwtUtil.createJwt("refresh", u_name, role, 86400000L);
 		
         // redis에 insert (key = u_name / value = refreshToken)
         redisService.setValues(u_name, refreshToken, Duration.ofMillis(86400000L));
         
         // 응답
-        response.setHeader("access", "Bearer " + accessToken);
         response.addCookie(createCookie("refresh", refreshToken));
-        response.setStatus(HttpStatus.OK.value());
+        
+        // 리다이렉트 URL
+        String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/OAuth2Result")
+                .queryParam("result", "success")
+                .encode()
+                .toUriString();
+
+        // 리다이렉트 실행
+        response.sendRedirect(redirectUrl);
+	
 	}
 	
 	private Cookie createCookie(String key, String value) {
