@@ -24,7 +24,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class LoginSuccessHandler implements AuthenticationSuccessHandler {
+public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final JwtUtil jwtUtil;
 	private final RedisService redisService;

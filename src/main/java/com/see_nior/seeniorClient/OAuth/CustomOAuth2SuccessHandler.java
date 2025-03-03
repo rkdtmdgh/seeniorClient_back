@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.see_nior.seeniorClient.enums.UrlPath;
 import com.see_nior.seeniorClient.jwt.JwtUtil;
 import com.see_nior.seeniorClient.redis.RedisService;
 
@@ -51,7 +52,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         response.addCookie(createCookie("refresh", refreshToken));
         
         // 리다이렉트 URL
-        String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/OAuth2Result")
+        String redirectUrl = UriComponentsBuilder.fromUriString(UrlPath.OATUTH2_LOGIN_REDIRECT_URI.getValue())
                 .queryParam("result", "success")
                 .encode()
                 .toUriString();

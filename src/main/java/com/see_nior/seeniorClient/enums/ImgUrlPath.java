@@ -20,6 +20,5 @@ public enum ImgUrlPath {
 	public String getValue() {
 		return value;
 	}
-	
 
 }
