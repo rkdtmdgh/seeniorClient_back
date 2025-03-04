@@ -1,15 +1,24 @@
 package com.see_nior.seeniorClient.user;
 
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.see_nior.seeniorClient.dto.UserAccountDto;
 import com.see_nior.seeniorClient.enums.SqlResult;
 import com.see_nior.seeniorClient.user.mapper.UserMapper;
+import com.see_nior.seeniorClient.util.ImageFileService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,6 +30,7 @@ public class UserService {
 	
 	private final PasswordEncoder passwordEncoder;
 	private final UserMapper userMapper;
+	private final ImageFileService imageFileService;
 	
 	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
 	private static final SecureRandom RANDOM = new SecureRandom();
@@ -148,9 +158,10 @@ public class UserService {
 	}
 
 	// 정보 수정 확인
-	public boolean modifyConfirm(UserAccountDto userAccountDto) {
+	public boolean modifyConfirm(List<MultipartFile> files, UserAccountDto userAccountDto) {
 		log.info("modifyConfirm() ------- {}", userAccountDto.getU_id());
 		
+		// 닉네임 중복검사
 		boolean result = 
 				userMapper.isNickname(userAccountDto.getU_nickname());
 		
@@ -158,9 +169,44 @@ public class UserService {
 			return SqlResult.FAIL.getValue();
 		}
 		
-		boolean modifyResult = userMapper.updateUserAccount(userAccountDto);
+		// 프로필 이미지가 없는 경우
+		if (files == null || files.isEmpty()) {
+			
+			boolean modifyResult = userMapper.updateUserAccount(userAccountDto);
+			
+			return modifyResult;
+		}
 		
-		return modifyResult;
+		// 프로필 이미지가 있는 경우
+		
+		// 이미지 파일 저장 경로
+		Date now = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		String date = dateFormat.format(now);
+		
+		String filePath = "\\user\\" + userAccountDto.getU_no() + "\\" + date;
+		
+		// 이미지 저장 요청
+		ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
+		
+		if (savedFile == null) {
+			throw new RuntimeException("uploadFile fail");
+		}
+		
+		log.info("uploadFile success");
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		
+		try {
+			Map<String, Object> savedFileOBJ = 
+					objectMapper.readValue(savedFile.getBody(), new TypeReference<Map<String, Object>>() {});
+		} catch (JsonProcessingException e) {
+
+			e.printStackTrace();
+		}
+		
+		return false;
+		
 	}
 
 	// 비밀번호 확인

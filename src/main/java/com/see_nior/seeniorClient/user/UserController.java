@@ -1,6 +1,7 @@
 package com.see_nior.seeniorClient.user;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.see_nior.seeniorClient.dto.UserAccountDto;
 
@@ -30,7 +32,7 @@ public class UserController {
 		log.info("signUpConfirm()");
 		
 		// 회원 가입 성공 return = true, 실패 or 아이디 중복 return = false
-		if (userAccountDto.getU_social_id() == null) 
+		if (userAccountDto.getU_social_id() == null || userAccountDto.getU_social_id().equals("")) 
 			return userService.signUpConfirm(userAccountDto);
 		else 
 			return userService.oauth2SignUpConfirm(userAccountDto);
@@ -69,10 +71,11 @@ public class UserController {
 	
 	// 내 정보 수정 확인 
 	@PostMapping("/modify_confirm")
-	public boolean modifyConfirm(UserAccountDto userAccountDto) {
+	public boolean modifyConfirm(@RequestBody UserAccountDto userAccountDto, 
+			@RequestParam(value = "files", required = false) List<MultipartFile> files) {
 		log.info("modifyConfirm()");
 		
-		return userService.modifyConfirm(userAccountDto);
+		return userService.modifyConfirm(files, userAccountDto);
 	}
 	
 	

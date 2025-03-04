@@ -1,7 +1,7 @@
 package com.see_nior.seeniorClient.OAuth;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -21,25 +21,20 @@ public class CustomOAuth2User implements OAuth2User {
 		return null;
 	}
 
-//	@SuppressWarnings("serial")
-//	@Override
-//	public Collection<? extends GrantedAuthority> getAuthorities() {
-//		
-//		Collection<GrantedAuthority> collection = new ArrayList<>();
-//		
-//		collection.add(new GrantedAuthority() {
-//			@Override
-//			public String getAuthority() {
-//				return userAccountDto.getU_authority_role();
-//			}
-//		});
-//		
-//		return collection;
-//	}
-	
+	@SuppressWarnings("serial")
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of((GrantedAuthority) () -> userAccountDto.getU_authority_role());
+		
+		Collection<GrantedAuthority> collection = new ArrayList<>();
+		
+		collection.add(new GrantedAuthority() {
+			@Override
+			public String getAuthority() {
+				return userAccountDto.getU_authority_role();
+			}
+		});
+		
+		return collection;
 	}
 
 	@Override
