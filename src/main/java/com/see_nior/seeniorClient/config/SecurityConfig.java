@@ -115,15 +115,17 @@ public class SecurityConfig {
 		// oauth2
         http
             .oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                    .userService(custumOAtuth2UserService))
                 .successHandler(customOAuth2SuccessHandler)
                 .failureHandler(customOAuth2FailureHandler)
-                .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                    .userService(custumOAtuth2UserService)));
+            );
 
 		http
 			.logout(logout -> logout
 				.logoutUrl("/logout")
 				.logoutSuccessHandler(new CustomLogoutSuccessHandler(jwtUtil, redisService))
+				.invalidateHttpSession(false)
 				.permitAll());
 		
 		http

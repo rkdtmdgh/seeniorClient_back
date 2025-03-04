@@ -52,6 +52,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 	    response.setHeader("access", "Bearer " + accessToken);
 	    response.addCookie(createCookie("refresh", refreshToken));
 	    response.setStatus(HttpStatus.OK.value());
+	    
+	    Collection<String> cookies = response.getHeaders("Set-Cookie");
+        for (String cookie : cookies) {
+			log.info("Response Set-Cookie: {}", cookie);
+		}
 	}
 	
 	private Cookie createCookie(String key, String value) {
