@@ -44,15 +44,21 @@ public class ReissueController {
         // 검증 시작
         // refresh token이 없는 경우
         if (refresh == null) {
+        	log.info("refreshToken is null");
+        	
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
         }
         
         // 유효시간 확인
         try {
         	if(jwtUtil.isExpired(refresh)) {
+        		log.info("refreshToken is expired");
+        		
             	return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);	
             }
         } catch (ExpiredJwtException e) {
+        	log.info("reissue error");
+        	
             return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
         }
 		
