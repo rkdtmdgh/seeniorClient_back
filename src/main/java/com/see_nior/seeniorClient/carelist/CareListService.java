@@ -519,44 +519,42 @@ public class CareListService {
 	
 
 	// 케어리스트 삭제하기
+	@Transactional
 	public boolean deleteCareListConfirm(int cl_no) {
 		log.info("deleteCareListConfirm()");
 		
-		CareListDto deleteCareListDto = careListMapper.getCareListByNo(cl_no);
-		
-		List<String> deleteFolderPath = new ArrayList<>();
-		
-		String folderPath = "\\careList\\" + deleteCareListDto.getCl_no();
-		deleteFolderPath.add(folderPath);
-		
-		ResponseEntity<String> deleteFolderResult = imageFileService.deleteFolders(deleteFolderPath);
-		
-		// 이미지 서버에서 deleteFolder요청이 성공한 경우
-		if (deleteFolderResult.getBody().equals("1")) {
-			log.info("deleteFolder SUCCESS!!");
+		try {
 			
 			int deleteResult = careListMapper.deleteCareList(cl_no);
 			
 			// DB에 입력 실패
-			if (deleteResult <= 0) {
-				log.info("케어리스트 DB데이터 삭제 실패!!");
-				
-				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-				
-				return SqlResult.FAIL.getValue();
-				
-			}
-			// DB에 입력 성공
-			else return SqlResult.SUCCESS.getValue();
+			if (deleteResult <= 0) throw new RuntimeException("deleteCareList FAIL!!");
 			
-		} else {
-			log.info("deleteFolder FAIL!!");
+			CareListDto deleteCareListDto = careListMapper.getCareListByNo(cl_no);
+			
+			List<String> deleteFolderPath = new ArrayList<>();
+			
+			String folderPath = "\\careList\\" + deleteCareListDto.getCl_no();
+			deleteFolderPath.add(folderPath);
+			
+			ResponseEntity<String> deleteFolderResult = imageFileService.deleteFolders(deleteFolderPath);
+			
+			// 이미지 서버에서 deleteFolder요청이 tlfvo한 경우
+			if (!deleteFolderResult.getBody().equals("1")) throw new RuntimeException("deleteFolder FAIL!!");
+			
+		} catch(Exception e) {
+			
+			log.info("Exception 발생: {}", e.getMessage(), e);
 			
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			
 			return SqlResult.FAIL.getValue();
 			
 		}
+		
+		return SqlResult.SUCCESS.getValue();
+		
+		
 		
 	}
 
