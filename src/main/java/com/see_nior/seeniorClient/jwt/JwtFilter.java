@@ -28,7 +28,11 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		log.info("doFilterInternal()");
+
+		String method = request.getMethod();
+		log.info("doFilterInternal() method ----- {}", method);
+		String requestUrl = request.getRequestURI();
+		log.info("doFilterInternal() requestUrl ----- {}", requestUrl);
 		
 		// 요청 헤더에서 access 를 찾음
 		String accessToken = request.getHeader("access");
