@@ -65,19 +65,11 @@ public interface CareListMapper {
 
 	// 케어리스트 한 개 가져오기
 	public CareListDto getCareListByNo(int cl_no);
+	
+	// 케어리스트 수정하기
+	public int updateCareList(CareListDto careListDto);
 
 	// 케어리스트 삭제 하기
 	public int deleteCareList(int cl_no);
-
-	
-
-	
-
-
-	
-
-	
-	
-	
 	
 }

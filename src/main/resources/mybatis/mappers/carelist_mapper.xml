@@ -389,6 +389,46 @@
 	
 	</select>
 	
+	<!-- 케어리스트 수정하기 -->
+	<update id="updateCareList">
+	
+		UPDATE 
+			CAER_LIST 
+		SET 
+			CL_CATEGORY_NO = #{cl_category_no},
+			CL_NAME = #{cl_name},
+			CL_GENDER = #{cl_gender},
+			CL_BIRTH = #{cl_birth},
+			CL_ZIP_CODE = #{cl_zip_code},
+			CL_ADDRESS = #{cl_address},
+			CL_DETAILED_ADDRESS = #{cl_detailed_address},
+			CL_BLOOD_TYPE_RH = #{cl_blood_type_rh},
+			CL_BLOOD_TYPE_ABO = #{cl_blood_type_abo},
+			CL_PHONE = #{cl_phone},
+			CL_EMERGENCY_CONTACT_1 = #{cl_emergency_contact_1},
+			CL_EMERGENCY_CONTACT_2 = #{cl_emergency_contact_2},
+			CL_EMERGENCY_CONTACT_3 = #{cl_emergency_contact_3},
+			CL_EMERGENCY_CONTACT_4 = #{cl_emergency_contact_4},
+			CL_DIABETIC_FOOD = #{cl_diabetic_food},
+			CL_MEDICATIONS = #{cl_medications},
+			CL_HOSPITAL = #{cl_hospital},
+			CL_DOCTOR = #{cl_doctor},
+			CL_HOSPITAL_TEL = #{cl_hospital_tel},
+			CL_WALK_STATE = #{cl_walk_state},
+			CL_ASSISTIVE_DEVICE = #{cl_assistive_device},
+			CL_WASHING_ASSISTANCE = #{cl_washing_assistance},
+			CL_TOILET_ASSISTANCE = #{cl_toilet_assistance},
+			CL_MENTAL_STATE = #{cl_mental_state},
+			CL_SOCIAL_STATE = #{cl_social_state},
+			CL_ETC = #{cl_etc},
+			CL_FAVORITES = #{cl_favorites},
+			CL_MOD_DATE = NOW() 
+		WHERE 
+			CL_NO = #{cl_no}
+		 
+	
+	</update>
+	
 	<!-- 케어리스트 삭제 하기 -->
 	<update id="deleteCareList"
 			parameterType="Integer">

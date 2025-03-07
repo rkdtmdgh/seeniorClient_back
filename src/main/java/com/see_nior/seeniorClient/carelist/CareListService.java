@@ -435,7 +435,7 @@ public class CareListService {
 			
 		}
 			
-		}
+	}
 	
 	
 	// 페이지 번호에 따른 모든 케어리스트 가져오기
@@ -515,8 +515,86 @@ public class CareListService {
 		
 	}
 	
-	
-	
+/*
+	// 케어리스트 수정하기
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public boolean modifyCareListConfirm(CareListDto careListDto, List<MultipartFile> files,
+			List<Integer> d_nos) {
+		log.info("modifyCareListConrifm()");
+		
+		try {
+			
+			int modifyResult = 0;
+			
+			// 케어리스트 테이블에 정보 수정하기
+			modifyResult = careListMapper.updateCareList(careListDto);
+			
+			// 케어리스트 테이블에 정보 수정 실패 시
+			if (modifyResult <= 0) throw new RuntimeException("CARE_LIST TABLE MODIFY FAIL!!");
+		
+			// 수정 성공 시 CARE_PERSON_DISEASE 테이블에 케어리스트의 질병 정보 수정하기
+			
+			// last_cl_no를 기준으로 CARE_PERSON_DISEASE 테이블 업데이트 하기
+			for (int d_no : d_nos) {
+				Map<String, Object> insertParams = new HashMap<>();
+				insertParams.put("last_cl_no", careListDto.getCl_no());
+				insertParams.put("d_no", d_no);
+				
+				int cpdCreateResult = careListMapper.insertNewCarePersonDisease(insertParams);
+				
+				if (cpdCreateResult <= 0) throw new RuntimeException("CARE_PERSON_DISEAE TABLE INSERT FAIL!!");
+				
+			}
+			
+			// 이미지 첨부를 안했을 시 여기서  반환
+			if (files == null || files.isEmpty()) return SqlResult.SUCCESS.getValue();
+			
+			// 이미지 서버에 요청할 파일 저장 경로 생성
+			Date now = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+			String date = dateFormat.format(now);
+			
+			String filePath = "\\careList\\" + last_cl_no + "\\" + date;
+			
+			// 이미지 저장 요청
+			ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
+			
+			// 이미지 서버에 저장 실패 시 즉시 롤백 후 FAIL 반환
+			if (savedFile == null) throw new RuntimeException("uploadFile FAIL!!");
+			
+			log.info("uploadFile SUCCESS!!");
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+				
+			Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody() , new TypeReference<Map<String, Object>>() {} );
+			String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
+			
+			// 디렉토리명과 이미지 URL을 CARE_LIST 테이블에 업데이트
+			Map<String, Object> updateImgColumnParams = new HashMap<>();
+			
+			updateImgColumnParams.put("last_cl_no", last_cl_no);
+			updateImgColumnParams.put("cl_dir_name", date);
+			updateImgColumnParams.put("cl_img", savedFileName);
+			
+			modifyResult = careListMapper.updateImgColumn(updateImgColumnParams);
+			
+			if (modifyResult <= 0) throw new RuntimeException("updateImgColumn FAIL!!");
+			
+			return SqlResult.SUCCESS.getValue();
+				
+		} catch(Exception e) {
+			
+			log.info("Exception 발생: {}", e.getMessage(), e);
+			
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			
+			return SqlResult.FAIL.getValue();
+			
+		}
+		
+	}
+*/
 
 	// 케어리스트 삭제하기
 	@Transactional
@@ -539,7 +617,7 @@ public class CareListService {
 			
 			ResponseEntity<String> deleteFolderResult = imageFileService.deleteFolders(deleteFolderPath);
 			
-			// 이미지 서버에서 deleteFolder요청이 tlfvo한 경우
+			// 이미지 서버에서 deleteFolder요청이 실패한 경우
 			if (!deleteFolderResult.getBody().equals("1")) throw new RuntimeException("deleteFolder FAIL!!");
 			
 		} catch(Exception e) {
@@ -554,16 +632,6 @@ public class CareListService {
 		
 		return SqlResult.SUCCESS.getValue();
 		
-		
-		
 	}
-
-	
-
-	
-
-	
-	
-	
 
 }
