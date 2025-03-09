@@ -5,8 +5,6 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -38,6 +36,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 		
 		CustomOAuth2User customUserDetail = (CustomOAuth2User) authentication.getPrincipal();
 		
+		String state = request.getParameter("state");
+		
 		// 토큰 생성시에 사용자명과 권한이 필요하니 준비
         String u_id = customUserDetail.getName();
         log.info("onAuthenticationSuccess() ----- {}", u_id);
@@ -57,6 +57,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         // 리다이렉트 URL
         String redirectUrl = UriComponentsBuilder.fromUriString(UrlPath.OATUTH2_LOGIN_REDIRECT_URI.getValue())
         		.queryParam("result", "success")
+        		.queryParam("state", state)
         		.encode()
         		.toUriString();
         
