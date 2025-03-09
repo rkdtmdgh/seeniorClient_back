@@ -5,8 +5,11 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,13 +33,25 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 	private final JwtUtil jwtUtil;
 	private final RedisService redisService;
 	
+	@Autowired
+	private HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository;
+	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		
 		CustomOAuth2User customUserDetail = (CustomOAuth2User) authentication.getPrincipal();
 		
-		String state = request.getParameter("state");
+		OAuth2AuthorizationRequest authRequest = 
+				authorizationRequestRepository.loadAuthorizationRequest(request);
+
+		if (authentication != null) {
+			String state = authRequest.getState();
+			log.info("onAuthenticationSuccess() --------- {}", state);
+		}
+		
+//		String state = request.getParameter("state");
+//		log.info("onAuthenticationSuccess() state ------ {} ", state);
 		
 		// 토큰 생성시에 사용자명과 권한이 필요하니 준비
         String u_id = customUserDetail.getName();
