@@ -39,7 +39,7 @@ public class SecurityConfig {
     private final CustomOAtuth2UserService custumOAtuth2UserService;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
-
+    
 	@Bean PasswordEncoder passwordEncoder() {
 		log.info("passwordEncoder()");
 
