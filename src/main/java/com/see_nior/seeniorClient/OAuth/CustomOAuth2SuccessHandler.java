@@ -45,8 +45,10 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 		OAuth2AuthorizationRequest authRequest = 
 				authorizationRequestRepository.loadAuthorizationRequest(request);
 
-		if (authentication != null) {
-			String state = authRequest.getState();
+		String state = "";
+		
+		if (authRequest != null) {
+			state = authRequest.getState();
 			log.info("onAuthenticationSuccess() --------- {}", state);
 		}
 		
