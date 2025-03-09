@@ -133,14 +133,37 @@
 		UPDATE 
 			USER_ACCOUNT 
 		SET 
+			U_MOD_DATE = NOW(), 
 			U_NAME = #{u_name}, 
 			U_PHONE = #{u_phone}, 
 			U_NICKNAME = #{u_nickname}, 
 			U_GENDER = #{u_gender}, 
 			U_BIRTH = #{u_birth}, 
-			u_zip_code = #{u_zip_code}, 
-			U_NAME = #{u_name}, 
-			U_NAME = #{u_name}, 
+			<if test="u_zip_code != '' and u_zip_code != null">
+				U_ZIP_CODE = #{u_zip_code}, 
+			</if>
+			<if test="u_address != '' and u_address != null">
+				U_ADDRESS = #{u_address}, 
+			</if>
+			<if test="u_detailed_address != '' and u_detailed_address != null">
+				U_DETAILED_ADDRESS = #{u_detailed_address}, 
+			</if>
+			<if test="u_profile_img != '' and u_profile_img != null">
+				U_PROFILE_IMG = #{u_profile_img}, 
+			</if>
+			<if test="u_img_dir_name != '' and u_img_dir_name != null">
+				U_IMG_DIR_NAME = #{u_img_dir_name}, 
+			</if>
+			<if test="u_address != '' and u_address != null">
+				U_ADDRESS = #{u_address}, 
+			</if>
+			<if test="u_is_personal == true">
+				U_IS_PERSONAL = 1
+			</if>
+			<if test="u_is_personal == false">
+				U_IS_PERSONAL = 0,   
+				U_COMPANY = #{u_company}
+			</if>
 		WHERE 
 			U_ID = #{u_id}
 	
@@ -179,8 +202,19 @@
 			U_SOCIAL_ID = #{u_social_id}
 		AND 
 			U_IS_DELETED = 1 
-			
 		
 	</select>
+	
+	<update id="updateUserAccountProfileImg">
+	
+		UPDATE 
+			USER_ACCOUNT 
+		SET 
+			U_PROFILE_IMG = #{u_profile_img}, 
+			U_IMG_DIR_NAME = #{u_img_dir_name}
+		WHERE 
+			U_NO = #{u_no}
+	
+	</update>
 	
 </mapper>

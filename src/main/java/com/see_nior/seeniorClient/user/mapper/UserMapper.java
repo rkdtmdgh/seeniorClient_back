@@ -24,5 +24,7 @@ public interface UserMapper {
 	public boolean isSocialId(String u_social_id);
 
 	public UserAccountDto selectUserAccountBySocialId(String u_social_id);
+
+	public boolean updateUserAccountProfileImg(UserAccountDto userAccountDto);
 	
 }
