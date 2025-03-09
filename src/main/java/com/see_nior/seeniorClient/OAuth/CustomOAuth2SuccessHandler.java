@@ -1,6 +1,8 @@
 package com.see_nior.seeniorClient.OAuth;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,26 +34,17 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 	private final JwtUtil jwtUtil;
 	private final RedisService redisService;
 	
-	private HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository;
-	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		
 		CustomOAuth2User customUserDetail = (CustomOAuth2User) authentication.getPrincipal();
 		
-		OAuth2AuthorizationRequest authRequest = 
-				authorizationRequestRepository.loadAuthorizationRequest(request);
-
-		String state = "";
-		
-		if (authRequest != null) {
-			state = authRequest.getState();
-			log.info("onAuthenticationSuccess() --------- {}", state);
+		String state = request.getParameter("state");
+		if (state != null) {
+			state = URLDecoder.decode(state, StandardCharsets.UTF_8);
 		}
-		
-//		String state = request.getParameter("state");
-//		log.info("onAuthenticationSuccess() state ------ {} ", state);
+		log.info("onAuthenticationSuccess() state ------ {} ", state);
 		
 		// 토큰 생성시에 사용자명과 권한이 필요하니 준비
         String u_id = customUserDetail.getName();
