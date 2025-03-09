@@ -41,10 +41,6 @@ public class SecurityConfig {
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
     
-    @Bean HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
-    	return new HttpSessionOAuth2AuthorizationRequestRepository();
-    }
-    
 	@Bean PasswordEncoder passwordEncoder() {
 		log.info("passwordEncoder()");
 
