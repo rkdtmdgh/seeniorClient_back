@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -39,7 +40,7 @@ public class SecurityConfig {
     private final CustomOAtuth2UserService custumOAtuth2UserService;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
-
+    
 	@Bean PasswordEncoder passwordEncoder() {
 		log.info("passwordEncoder()");
 

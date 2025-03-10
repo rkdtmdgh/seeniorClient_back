@@ -10,9 +10,10 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.see_nior.seeniorClient.dto.UserAccountDto;
@@ -158,54 +159,72 @@ public class UserService {
 	}
 
 	// 정보 수정 확인
+	@SuppressWarnings("unchecked")
+	@Transactional
 	public boolean modifyConfirm(List<MultipartFile> files, UserAccountDto userAccountDto) {
 		log.info("modifyConfirm() ------- {}", userAccountDto.getU_id());
 		
-		// 닉네임 중복검사
-		boolean result = 
-				userMapper.isNickname(userAccountDto.getU_nickname());
-		
-		if (result) {
-			return SqlResult.FAIL.getValue();
-		}
-		
-		// 프로필 이미지가 없는 경우
-		if (files == null || files.isEmpty()) {
+		try {
+			
+			// 닉네임 중복검사
+			boolean result = 
+					userMapper.isNickname(userAccountDto.getU_nickname());
+			
+			if (result) {
+				return SqlResult.FAIL.getValue();
+			}
 			
 			boolean modifyResult = userMapper.updateUserAccount(userAccountDto);
 			
-			return modifyResult;
+			if(!modifyResult) 
+				throw new RuntimeException("updateUserAccount fail");
+			
+			// 프로필 이미지가 없는 경우
+			if (files == null || files.isEmpty()) {
+				
+				return modifyResult;
+			}
+			
+			// 프로필 이미지가 있는 경우
+			// 이미지 파일 저장 경로
+			Date now = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+			String date = dateFormat.format(now);
+			
+			String filePath = "\\user\\" + userAccountDto.getU_no() + "\\" + date;
+			
+			// 이미지 저장 요청
+			ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
+			
+			// 이미지 서버에 저장 실패
+			if (savedFile == null) {
+				throw new RuntimeException("uploadFile fail");
+			}
+			
+			log.info("uploadFile success");
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+			
+			Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody() , new TypeReference<Map<String, Object>>() {} );
+			String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
+			
+			userAccountDto.setU_profile_img(savedFileName);
+			userAccountDto.setU_img_dir_name(filePath);
+			
+			boolean updateImgResult = userMapper.updateUserAccountProfileImg(userAccountDto); 
+			
+			if (!updateImgResult) 
+				throw new RuntimeException("updateUserAccountProfileImg fail");
+			
+			return SqlResult.SUCCESS.getValue();
+			
+		} catch (Exception e) {
+			log.info("modifyConfirm() error ------ {}", e.getMessage());
+			
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			
+			return SqlResult.FAIL.getValue();
 		}
-		
-		// 프로필 이미지가 있는 경우
-		
-		// 이미지 파일 저장 경로
-		Date now = new Date();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-		String date = dateFormat.format(now);
-		
-		String filePath = "\\user\\" + userAccountDto.getU_no() + "\\" + date;
-		
-		// 이미지 저장 요청
-		ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
-		
-		if (savedFile == null) {
-			throw new RuntimeException("uploadFile fail");
-		}
-		
-		log.info("uploadFile success");
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		
-		try {
-			Map<String, Object> savedFileOBJ = 
-					objectMapper.readValue(savedFile.getBody(), new TypeReference<Map<String, Object>>() {});
-		} catch (JsonProcessingException e) {
-
-			e.printStackTrace();
-		}
-		
-		return false;
 		
 	}
 

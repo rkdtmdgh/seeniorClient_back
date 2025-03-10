@@ -21,6 +21,7 @@ public class UserAccountDto {
 	private String u_address;
 	private String u_detailed_address;
 	private String u_profile_img;
+	private String u_img_dir_name;
 	private String u_company;
 	private boolean u_is_personal;					// true = 개인, false = 기관
 	private String u_social_id;
