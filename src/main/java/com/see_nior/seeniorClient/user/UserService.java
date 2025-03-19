@@ -2,6 +2,7 @@ package com.see_nior.seeniorClient.user;
 
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -157,6 +158,62 @@ public class UserService {
 		
 		return userMapper.isNickname(u_nickname);
 	}
+	
+	// 정보 수정 확인 -- 기존 프로필 이미지 삭제
+	@Transactional
+	public boolean delImgModifyConfirm(UserAccountDto userAccountDto) {
+		log.info("delImgModifyConfirm()");
+		
+		try {
+			
+			// 닉네임 중복검사
+			boolean result = 
+					userMapper.isNickname(userAccountDto.getU_nickname());
+			
+			if (result) {
+				return SqlResult.FAIL.getValue();
+			}
+			
+			String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
+			
+			userAccountDto.setU_profile_img(null);
+			userAccountDto.setU_img_dir_name(null);
+			
+			boolean modifyResult = userMapper.updateUserAccount(userAccountDto);
+			
+			// DB 업데이트 이후 기존 프로필 이미지 삭제
+			if (modifyResult) {
+				
+				ResponseEntity<String> deleteFolderResult = 
+						deleteImgFolder(del_u_img_dir_name);
+				
+				if (deleteFolderResult.getBody().equals("1")) {
+					log.info("profile img deleted success");
+					
+					return SqlResult.SUCCESS.getValue();
+				} else {
+					log.info("profile img deleted fail");
+					
+					// 프로필 이미지 삭제 실패 테이블 업데이트
+					boolean imgDeleteFailResult = userMapper.imgDeleteFail(del_u_img_dir_name);
+					
+					if (!imgDeleteFailResult) 
+						throw new RuntimeException("userMapper.imgDeleteFail ----- fail ");
+					
+					return SqlResult.SUCCESS.getValue();
+				}
+			}
+			
+			return SqlResult.FAIL.getValue();
+		} catch (Exception e) {
+			log.info("Exception 발생: {}", e.getMessage());
+			
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			
+			return SqlResult.FAIL.getValue();
+		}
+		
+	}
 
 	// 정보 수정 확인
 	@SuppressWarnings("unchecked")
@@ -174,16 +231,7 @@ public class UserService {
 				return SqlResult.FAIL.getValue();
 			}
 			
-			boolean modifyResult = userMapper.updateUserAccount(userAccountDto);
-			
-			if(!modifyResult) 
-				throw new RuntimeException("updateUserAccount fail");
-			
-			// 프로필 이미지가 없는 경우
-			if (files == null || files.isEmpty()) {
-				
-				return modifyResult;
-			}
+			String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
 			
 			// 프로필 이미지가 있는 경우
 			// 이미지 파일 저장 경로
@@ -191,10 +239,11 @@ public class UserService {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 			String date = dateFormat.format(now);
 			
-			String filePath = "\\user\\" + userAccountDto.getU_no() + "\\" + date;
+			String filePath = "\\userProfileImg\\" + userAccountDto.getU_no() + "\\" + date;
 			
 			// 이미지 저장 요청
-			ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
+			ResponseEntity<String> savedFile = 
+					imageFileService.uploadFiles(files, filePath);
 			
 			// 이미지 서버에 저장 실패
 			if (savedFile == null) {
@@ -216,7 +265,25 @@ public class UserService {
 			if (!updateImgResult) 
 				throw new RuntimeException("updateUserAccountProfileImg fail");
 			
-			return SqlResult.SUCCESS.getValue();
+			// 기존 이미지 삭제
+			ResponseEntity<String> deleteFolderResult = 
+					deleteImgFolder(del_u_img_dir_name);
+			
+			if (deleteFolderResult.getBody().equals("1")) {
+				log.info("profile img delete success");
+				
+				return SqlResult.SUCCESS.getValue();
+			} else {
+				log.info("profile img delete fail");
+				
+				// 프로필 이미지 삭제 실패 테이블 업데이트
+				boolean imgDeleteFailResult = userMapper.imgDeleteFail(del_u_img_dir_name);
+				
+				if (!imgDeleteFailResult) 
+					throw new RuntimeException("userMapper.imgDeleteFail ----- fail ");
+				
+				return SqlResult.SUCCESS.getValue();
+			}
 			
 		} catch (Exception e) {
 			log.info("modifyConfirm() error ------ {}", e.getMessage());
@@ -252,4 +319,19 @@ public class UserService {
 		return userMapper.isSocialId(u_social_id);
 	}
 
+	public boolean deleteConfirm(String u_id) {
+		log.info("deleteConfirm()");
+		
+		return userMapper.deleteUserAccountById(u_id);
+	}
+	
+	public ResponseEntity<String> deleteImgFolder(String folderPath) {
+		log.info("deletePrifileImgFile() ----- {}", folderPath);
+		
+		List<String> deleteFolderPath = new ArrayList<>();
+		deleteFolderPath.add(folderPath);
+		
+		return imageFileService.deleteFolders(deleteFolderPath);
+	}
+	
 }

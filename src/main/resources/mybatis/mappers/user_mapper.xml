@@ -217,4 +217,24 @@
 	
 	</update>
 	
+	<update id="deleteUserAccountById">
+	
+		UPDATE 
+			USER_ACCOUNT 
+		SET 
+			U_IS_DELETED = 0, 
+			U_MOD_DATE = NOW() 
+		WHERE 
+			U_ID = #{u_id} 
+		
+	</update>
+	
+	<insert id="imgDeleteFail">
+	
+		INSERT INTO 
+			IMG_DELETE_FAIL(IDF_FOLDER_PATH) 
+		VALUES(#{idf_folder_path})
+	
+	</insert>
+	
 </mapper>
