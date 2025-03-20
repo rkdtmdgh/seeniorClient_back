@@ -79,8 +79,12 @@ public class UserController {
 		if (deleted_profile) {
 			return userService.delImgModifyConfirm(userAccountDto);
 		}
+
+		if (files == null || files.isEmpty()) {
+			return userService.modifyConfirm(userAccountDto);
+		}
 		
-		return userService.modifyConfirm(files, userAccountDto);
+		return userService.fileUploadAndModifyConfirm(files, userAccountDto);
 	}
 	
 	

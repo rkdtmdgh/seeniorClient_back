@@ -160,66 +160,51 @@ public class UserService {
 	}
 	
 	// 정보 수정 확인 -- 기존 프로필 이미지 삭제
-	@Transactional
 	public boolean delImgModifyConfirm(UserAccountDto userAccountDto) {
-		log.info("delImgModifyConfirm()");
+		log.info("delImgModifyConfirm() ---- {}", userAccountDto.getU_id());
 		
-		try {
-			
-			// 닉네임 중복검사
-			boolean result = 
-					userMapper.isNickname(userAccountDto.getU_nickname());
-			
-			if (result) {
-				return SqlResult.FAIL.getValue();
-			}
-			
-			String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
-			
-			userAccountDto.setU_profile_img(null);
-			userAccountDto.setU_img_dir_name(null);
-			
-			boolean modifyResult = userMapper.updateUserAccount(userAccountDto);
-			
-			// DB 업데이트 이후 기존 프로필 이미지 삭제
-			if (modifyResult) {
-				
-				ResponseEntity<String> deleteFolderResult = 
-						deleteImgFolder(del_u_img_dir_name);
-				
-				if (deleteFolderResult.getBody().equals("1")) {
-					log.info("profile img deleted success");
-					
-					return SqlResult.SUCCESS.getValue();
-				} else {
-					log.info("profile img deleted fail");
-					
-					// 프로필 이미지 삭제 실패 테이블 업데이트
-					boolean imgDeleteFailResult = userMapper.imgDeleteFail(del_u_img_dir_name);
-					
-					if (!imgDeleteFailResult) 
-						throw new RuntimeException("userMapper.imgDeleteFail ----- fail ");
-					
-					return SqlResult.SUCCESS.getValue();
-				}
-			}
-			
+		// 닉네임 중복검사
+		boolean result = 
+				userMapper.isNickname(userAccountDto.getU_nickname());
+		
+		if (result) {
 			return SqlResult.FAIL.getValue();
-		} catch (Exception e) {
-			log.info("Exception 발생: {}", e.getMessage());
-			
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			
+		}
+		
+		String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
+		
+		userAccountDto.setU_profile_img(null);
+		userAccountDto.setU_img_dir_name(null);
+		
+		boolean modifyResult = userMapper.updateUserAccount(userAccountDto);
+		
+		// DB 업데이트 실패 시
+		if(!modifyResult) 
 			return SqlResult.FAIL.getValue();
+		
+		// DB 업데이트 이후 기존 프로필 이미지 삭제
+		ResponseEntity<String> deleteFolderResult = 
+				deleteImgFolder(del_u_img_dir_name);
+		
+		if (deleteFolderResult.getBody().equals("1")) {
+			log.info("profile img deleted success");
+			
+			return SqlResult.SUCCESS.getValue();
+		} else {
+			log.info("profile img deleted fail");
+			
+			// 프로필 이미지 삭제 실패 테이블 업데이트
+			userMapper.imgDeleteFail(del_u_img_dir_name);
+			
+			return SqlResult.SUCCESS.getValue();
 		}
 		
 	}
 
 	// 정보 수정 확인
 	@SuppressWarnings("unchecked")
-	@Transactional
-	public boolean modifyConfirm(List<MultipartFile> files, UserAccountDto userAccountDto) {
-		log.info("modifyConfirm() ------- {}", userAccountDto.getU_id());
+	public boolean fileUploadAndModifyConfirm(List<MultipartFile> files, UserAccountDto userAccountDto) {
+		log.info("fileUploadAndModifyConfirm() ------- {}", userAccountDto.getU_id());
 		
 		try {
 			
@@ -231,9 +216,9 @@ public class UserService {
 				return SqlResult.FAIL.getValue();
 			}
 			
+			// 기존 이미지 파일 경로 (기존 이미지 저장 파일 삭제 시 사용)
 			String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
 			
-			// 프로필 이미지가 있는 경우
 			// 이미지 파일 저장 경로
 			Date now = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -254,45 +239,70 @@ public class UserService {
 			
 			ObjectMapper objectMapper = new ObjectMapper();
 			
-			Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody() , new TypeReference<Map<String, Object>>() {} );
+			Map<String, Object> savedFileObj = 
+					objectMapper.readValue(savedFile.getBody() , new TypeReference<Map<String, Object>>() {});
 			String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
 			
 			userAccountDto.setU_profile_img(savedFileName);
 			userAccountDto.setU_img_dir_name(filePath);
 			
-			boolean updateImgResult = userMapper.updateUserAccountProfileImg(userAccountDto); 
+			// 새로운 이미지 파일 이름 & 경로 추가해서 DB 업데이트
+			boolean updateImgResult = userMapper.updateUserAccount(userAccountDto); 
 			
-			if (!updateImgResult) 
-				throw new RuntimeException("updateUserAccountProfileImg fail");
+			// DB 업데이트 실패 시 
+			if (!updateImgResult) {
+				log.info("updateUserAccount --- fail");
+				
+				// 새로 업로드한 이미지 삭제
+				ResponseEntity<String> deleteFolderResult = 
+						deleteImgFolder(filePath);
+				
+				if (deleteFolderResult.getBody().equals("1")) {
+					log.info("profile img folder delete success");
+					
+					return SqlResult.FAIL.getValue();
+				} else {
+					log.info("profile img folder delete fail");
+					// 프로필 이미지 삭제 실패 테이블 업데이트
+					boolean imgDeleteFailResult = userMapper.imgDeleteFail(filePath);
+					
+					if (!imgDeleteFailResult) 
+						log.info("userMapper.imgDeleteFail ----- fail ");
+					
+					return SqlResult.FAIL.getValue();
+				}
+				
+			}
 			
 			// 기존 이미지 삭제
 			ResponseEntity<String> deleteFolderResult = 
 					deleteImgFolder(del_u_img_dir_name);
 			
 			if (deleteFolderResult.getBody().equals("1")) {
-				log.info("profile img delete success");
+				log.info("profile img folder delete success");
 				
 				return SqlResult.SUCCESS.getValue();
 			} else {
-				log.info("profile img delete fail");
+				log.info("profile img folder delete fail");
 				
 				// 프로필 이미지 삭제 실패 테이블 업데이트
-				boolean imgDeleteFailResult = userMapper.imgDeleteFail(del_u_img_dir_name);
-				
-				if (!imgDeleteFailResult) 
-					throw new RuntimeException("userMapper.imgDeleteFail ----- fail ");
+				userMapper.imgDeleteFail(del_u_img_dir_name);
 				
 				return SqlResult.SUCCESS.getValue();
 			}
 			
 		} catch (Exception e) {
 			log.info("modifyConfirm() error ------ {}", e.getMessage());
-			
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			
+
 			return SqlResult.FAIL.getValue();
 		}
 		
+	}
+	
+	public boolean modifyConfirm(UserAccountDto userAccountDto) {
+		log.info("modifyConfirm() ----- {}", userAccountDto.getU_id());
+		
+		return userMapper.updateUserAccount(userAccountDto);
 	}
 
 	// 비밀번호 확인
@@ -333,5 +343,7 @@ public class UserService {
 		
 		return imageFileService.deleteFolders(deleteFolderPath);
 	}
+
+	
 	
 }

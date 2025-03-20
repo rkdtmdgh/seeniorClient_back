@@ -79,11 +79,11 @@ public class ReissueController {
         }
         
         // make new JWT
-        String newAccessToken = jwtUtil.createJwt("access", u_id, role, 600000L);
-        String newRefreshToken = jwtUtil.createJwt("refresh", u_id, role, 86400000L);
+        String newAccessToken = jwtUtil.createJwt("access", u_id, role, 10 * 60 * 1000L);
+        String newRefreshToken = jwtUtil.createJwt("refresh", u_id, role, 24 * 60 * 60 * 1000L);
 
         // update refreshToken to Redis
-        redisService.setValues(u_id, newRefreshToken, Duration.ofMillis(86400000L));
+        redisService.setValues(u_id, newRefreshToken, Duration.ofMillis(24 * 60 * 60 * 1000L));
         
         // response
         response.setHeader("access", "Bearer " + newAccessToken);

@@ -205,18 +205,6 @@
 		
 	</select>
 	
-	<update id="updateUserAccountProfileImg">
-	
-		UPDATE 
-			USER_ACCOUNT 
-		SET 
-			U_PROFILE_IMG = #{u_profile_img}, 
-			U_IMG_DIR_NAME = #{u_img_dir_name}
-		WHERE 
-			U_NO = #{u_no}
-	
-	</update>
-	
 	<update id="deleteUserAccountById">
 	
 		UPDATE 
