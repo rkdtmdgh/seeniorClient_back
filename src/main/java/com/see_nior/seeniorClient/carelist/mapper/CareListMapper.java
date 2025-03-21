@@ -51,6 +51,9 @@ public interface CareListMapper {
 	// 케어리스트 테이블에 Img 관련 컬럼들 업데이트
 	public int updateImgColumn(Map<String, Object> updateImgColumnParams);
 	
+	// 케어리스트 즐겨찾기 ON / OFF
+	public int updateCareListFavorites(int cl_no);
+	
 	// 페이지 번호에 따른 모든 케어리스트 가져오기
 	public List<CareListDto> getCareListWithPage(Map<String, Object> pagingParams);
 

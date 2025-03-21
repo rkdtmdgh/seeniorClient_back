@@ -146,6 +146,17 @@ public class CareListController {
 		return createResult;
 		
 	}
+	
+	// 케어리스트 즐겨찾기 ON / OFF
+	@PostMapping("/info/favorites_confirm")
+	public boolean favoritesConfirm(@RequestParam(value = "cl_no") int cl_no) {
+		log.info("favoritesConfirm()");
+		
+		boolean favoritesResult = careListService.favorites_confirm(cl_no);
+		
+		return favoritesResult;
+		
+	}
 
 	
 /*
@@ -180,7 +191,7 @@ public class CareListController {
 			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value = "sortValue", required = false, defaultValue = "cl_no") String sortValue,
 			@RequestParam(value = "order", required = false, defaultValue = "desc") String order,
-			@RequestParam(value = "infoNo", required = false, defaultValue = "null") Integer infoNo, Principal principal) {
+			@RequestParam(value = "infoNo", required = false, defaultValue = "0") Integer infoNo, Principal principal) {
 		log.info("getCareListByCategory()");
 		
 		// 페이지 번호에 따른 카테고리별 케어리스트 가져오기
@@ -193,6 +204,9 @@ public class CareListController {
 		careListByCategoryWithPage.put("sortValue", sortValue);
 		careListByCategoryWithPage.put("order", order);
 		careListByCategoryWithPage.put("infoNo", infoNo);
+		
+		log.info("careListByCategoryWithPage ----->{}", careListByCategoryWithPage);
+		
 		
 		return careListByCategoryWithPage;
 		
@@ -210,6 +224,7 @@ public class CareListController {
 		
 	}
 	
+/*
 	// 케어리스트 수정하기
 	@PostMapping("/info/modify_care_list_confirm")
 	public boolean modifyCareListConfirm(
@@ -223,6 +238,7 @@ public class CareListController {
 		return modifyResult;
 		
 	}
+*/	
 	
 	// 케어리스트 삭제하기
 	@PostMapping("/info/delete_care_list_confirm")
