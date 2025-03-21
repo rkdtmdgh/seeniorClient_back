@@ -71,6 +71,7 @@ public class CareListPagingUtil {
 		pagingParams.put("sortValue", sortValue);
 		pagingParams.put("order", order);
 		pagingParams.put("infoNo", info_no);
+		pagingParams.put("u_no", u_no);
 		
 		return pagingParams;
 		
