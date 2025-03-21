@@ -25,6 +25,8 @@ public interface UserMapper {
 
 	public UserAccountDto selectUserAccountBySocialId(String u_social_id);
 
-	public boolean updateUserAccountProfileImg(UserAccountDto userAccountDto);
+	public boolean deleteUserAccountById(String u_id);
+
+	public boolean imgDeleteFail(String idf_folder_path);
 	
 }

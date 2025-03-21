@@ -205,16 +205,24 @@
 		
 	</select>
 	
-	<update id="updateUserAccountProfileImg">
+	<update id="deleteUserAccountById">
 	
 		UPDATE 
 			USER_ACCOUNT 
 		SET 
-			U_PROFILE_IMG = #{u_profile_img}, 
-			U_IMG_DIR_NAME = #{u_img_dir_name}
+			U_IS_DELETED = 0, 
+			U_MOD_DATE = NOW() 
 		WHERE 
-			U_NO = #{u_no}
-	
+			U_ID = #{u_id} 
+		
 	</update>
+	
+	<insert id="imgDeleteFail">
+	
+		INSERT INTO 
+			IMG_DELETE_FAIL(IDF_FOLDER_PATH) 
+		VALUES(#{idf_folder_path})
+	
+	</insert>
 	
 </mapper>

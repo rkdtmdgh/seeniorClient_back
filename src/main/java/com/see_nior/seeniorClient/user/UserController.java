@@ -72,19 +72,28 @@ public class UserController {
 	// 내 정보 수정 확인 
 	@PostMapping("/modify_confirm")
 	public boolean modifyConfirm(@RequestBody UserAccountDto userAccountDto, 
-			@RequestParam(value = "files", required = false) List<MultipartFile> files) {
+			@RequestParam(value = "files", required = false) List<MultipartFile> files, 
+			@RequestParam("deleted_profile") boolean deleted_profile) {
 		log.info("modifyConfirm()");
 		
-		return userService.modifyConfirm(files, userAccountDto);
+		if (deleted_profile) {
+			return userService.delImgModifyConfirm(userAccountDto);
+		}
+
+		if (files == null || files.isEmpty()) {
+			return userService.modifyConfirm(userAccountDto);
+		}
+		
+		return userService.fileUploadAndModifyConfirm(files, userAccountDto);
 	}
 	
 	
 	// 회원 탈퇴 확인 
 	@PostMapping("/delete_confirm")
-	public boolean deleteConfirm() {
+	public boolean deleteConfirm(Principal principal) {
 		log.info("deleteConfirm()");
 		
-		return false;
+		return userService.deleteConfirm(principal.getName());
 	}
 	
 	// 비밀번호 변경 전 비밀 번호 확인 
