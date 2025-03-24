@@ -1,7 +1,6 @@
 package com.see_nior.seeniorClient.carelist;
 
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.see_nior.seeniorClient.dto.CareListCategoryDto;
 import com.see_nior.seeniorClient.dto.CareListDto;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -140,19 +138,23 @@ public class CareListController {
 	@PostMapping("/info/create_confirm")
 	public boolean createConfirm(
 			@RequestParam(value = "files", required = false) List<MultipartFile> files, CareListDto careListDto, 
-			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos, Principal principal, HttpServletRequest request) {
+			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos, Principal principal) {
 		log.info("createConfirm()");
 		
-		// 요청 파라미터 출력
-	    log.info("===== Request Parameters =====");
-	    request.getParameterMap().forEach((key, values) -> {
-	        log.info("Param: {} = {}", key, Arrays.toString(values));
-	    });
-		
 		boolean createResult = careListService.createConfirm(files, careListDto, d_nos, principal.getName());
-		log.info("createResult ---------> {}", createResult);
 		
 		return createResult;
+		
+	}
+	
+	// 케어리스트 즐겨찾기 ON / OFF
+	@PostMapping("/info/favorites_confirm")
+	public boolean favoritesConfirm(@RequestParam(value = "cl_no") int cl_no) {
+		log.info("favoritesConfirm()");
+		
+		boolean favoritesResult = careListService.favorites_confirm(cl_no);
+		
+		return favoritesResult;
 		
 	}
 
@@ -189,7 +191,7 @@ public class CareListController {
 			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value = "sortValue", required = false, defaultValue = "cl_no") String sortValue,
 			@RequestParam(value = "order", required = false, defaultValue = "desc") String order,
-			@RequestParam(value = "infoNo", required = false, defaultValue = "null") Integer infoNo, Principal principal) {
+			@RequestParam(value = "infoNo", required = false, defaultValue = "0") Integer infoNo, Principal principal) {
 		log.info("getCareListByCategory()");
 		
 		// 페이지 번호에 따른 카테고리별 케어리스트 가져오기
@@ -203,13 +205,17 @@ public class CareListController {
 		careListByCategoryWithPage.put("order", order);
 		careListByCategoryWithPage.put("infoNo", infoNo);
 		
+		log.info("careListByCategoryWithPage ----->{}", careListByCategoryWithPage);
+		
+		
 		return careListByCategoryWithPage;
 		
 	}
 	
 	// 케어리스트 한 개 가져오기
 	@GetMapping("/info/get_care_list_by_no")
-	public Object getCareListByNo(@RequestParam(value = "cl_no") int cl_no) {
+	public Object getCareListByNo(
+			@RequestParam(value = "cl_no") int cl_no) {
 		log.info("getCareListByNo()");
 		
 		CareListDto careListDto = careListService.getCareListByNo(cl_no);
@@ -218,9 +224,21 @@ public class CareListController {
 		
 	}
 	
-	
+/*
 	// 케어리스트 수정하기
-	
+	@PostMapping("/info/modify_care_list_confirm")
+	public boolean modifyCareListConfirm(
+			CareListDto careListDto,
+			@RequestParam(value = "files", required = false) List<MultipartFile> files,
+			@RequestParam(value = "old_cpd_disease_nos") List<Integer> old_d_nos,
+			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos) {
+		
+		boolean modifyResult = careListService.modifyCareListConfirm(careListDto, files,old_d_nos, d_nos);
+		
+		return modifyResult;
+		
+	}
+*/	
 	
 	// 케어리스트 삭제하기
 	@PostMapping("/info/delete_care_list_confirm")

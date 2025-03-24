@@ -220,16 +220,14 @@
 			CL_EMERGENCY_CONTACT_1, CL_EMERGENCY_CONTACT_2, CL_EMERGENCY_CONTACT_3, CL_EMERGENCY_CONTACT_4, 
 			CL_DIABETIC_FOOD, CL_MEDICATIONS, CL_HOSPITAL, 
 			CL_DOCTOR, CL_HOSPITAL_TEL, CL_WALK_STATE, CL_ASSISTIVE_DEVICE, CL_WASHING_ASSISTANCE, 
-			CL_TOILET_ASSISTANCE, CL_MENTAL_STATE, CL_SOCIAL_STATE, CL_ETC, 
-			CL_FAVORITES, CL_IS_DELETED, CL_REG_DATE, CL_MOD_DATE) 
+			CL_TOILET_ASSISTANCE, CL_MENTAL_STATE, CL_SOCIAL_STATE, CL_ETC) 
 		VALUES
 			(#{cl_user_no}, #{cl_category_no}, #{cl_name}, #{cl_gender}, #{cl_birth}, 
 			#{cl_zip_code}, #{cl_address}, #{cl_detailed_address}, #{cl_blood_type_rh}, #{cl_blood_type_abo}, #{cl_phone}, 
 			#{cl_emergency_contact_1}, #{cl_emergency_contact_2}, #{cl_emergency_contact_3}, #{cl_emergency_contact_4}, 
 			#{cl_diabetic_food}, #{cl_medications}, #{cl_hospital}, 
 			#{cl_doctor}, #{cl_hospital_tel}, #{cl_walk_state}, #{cl_assistive_device}, #{cl_washing_assistance}, 
-			#{cl_toilet_assistance}, #{cl_mental_state}, #{cl_social_state}, #{cl_etc}, 
-			#{cl_favorites}, #{cl_is_deleted}, NOW(), NOW())
+			#{cl_toilet_assistance}, #{cl_mental_state}, #{cl_social_state}, #{cl_etc})
 			
 	</insert>
 	 
@@ -257,6 +255,19 @@
 			CL_NO = #{last_cl_no}
 	
 	</update>
+	
+	<!-- 케어리스트 즐겨찾기 ON / OFF -->
+	<update id="updateCareListFavorites">
+	
+		UPDATE 
+			CARE_LIST 
+		SET 
+			CL_FAVORITES = CASE WHEN CL_FAVORITES = 0 THEN 1 ELSE 0 END 
+		WHERE 
+			CL_NO = #{cl_no}
+	
+	</update>
+	
 
 <!-- 
 	<! 페이지 번호에 따른 모든 케어리스트 가져오기 >
@@ -323,20 +334,23 @@
 			CARE_LIST_CATEGORY AS CLC 
 		ON 
 			CL.CL_CATEGORY_NO = CLC.CLC_NO 
+		AND 
+			CLC.CLC_IS_DELETED = 1 
 		WHERE 
 			CL.CL_IS_DELETED = 1 
 		AND 
-			CLC.CLC_IS_DELETED = 1 
+			CL.CL_USER_NO = #{u_no} 
 		<choose>
-		    <when test="infoNo != null and infoNo != -1">
+		    <when test="infoNo != -1 and infoNo != 0">
 		        AND CL.CL_CATEGORY_NO = #{infoNo}
 		    </when>
 		    <when test="infoNo == -1">
-		        AND CL.CL_FAVORITES = 0
+		        AND CL.CL_FAVORITES = 1 
 		    </when>
+		    <otherwise>
+		    	AND (CL.CL_CATEGORY_NO IS NULL OR CL.CL_CATEGORY_NO >= 0) 
+		    </otherwise>
 		</choose>
-		AND 
-			CL.CL_USER_NO = #{u_no} 
 		ORDER BY 
 			CL.${sortValue} ${order} 
 		LIMIT 
@@ -353,20 +367,25 @@
 			COUNT(*) 
 		FROM 
 			CARE_LIST AS CL 
-		JOIN 
+		LEFT JOIN 
 			CARE_LIST_CATEGORY AS CLC 
 		ON 
 			CL.CL_CATEGORY_NO = CLC.CLC_NO 
+		AND 
+			CLC.CLC_IS_DELETED = 1 
 		WHERE 
 			CL.CL_IS_DELETED = 1 
 		AND 
-			CLC.CLC_IS_DELETED = 1 
-		<if test="infoNo != null">
-		AND 
-			CL.CL_CATEGORY_NO = #{infoNo} 
-		</if>
-		AND 
-			CL.CL_USER_NO = #{u_no} 	
+			CL.CL_USER_NO = #{u_no} 
+		<choose>
+			<when test="infoNo != -1 and infoNo != 0">
+				AND 
+					CL.CL_CATEGORY_NO = #{infoNo} 
+			</when>
+			<when test="infoNo == -1">
+		        AND CL.CL_FAVORITES = 1 
+		    </when>
+		</choose>
 	
 	</select>
 	
@@ -388,6 +407,46 @@
 			CL.CL_NO = #{cl_no}
 	
 	</select>
+	
+	<!-- 케어리스트 수정하기 -->
+	<update id="updateCareList">
+	
+		UPDATE 
+			CAER_LIST 
+		SET 
+			CL_CATEGORY_NO = #{cl_category_no},
+			CL_NAME = #{cl_name},
+			CL_GENDER = #{cl_gender},
+			CL_BIRTH = #{cl_birth},
+			CL_ZIP_CODE = #{cl_zip_code},
+			CL_ADDRESS = #{cl_address},
+			CL_DETAILED_ADDRESS = #{cl_detailed_address},
+			CL_BLOOD_TYPE_RH = #{cl_blood_type_rh},
+			CL_BLOOD_TYPE_ABO = #{cl_blood_type_abo},
+			CL_PHONE = #{cl_phone},
+			CL_EMERGENCY_CONTACT_1 = #{cl_emergency_contact_1},
+			CL_EMERGENCY_CONTACT_2 = #{cl_emergency_contact_2},
+			CL_EMERGENCY_CONTACT_3 = #{cl_emergency_contact_3},
+			CL_EMERGENCY_CONTACT_4 = #{cl_emergency_contact_4},
+			CL_DIABETIC_FOOD = #{cl_diabetic_food},
+			CL_MEDICATIONS = #{cl_medications},
+			CL_HOSPITAL = #{cl_hospital},
+			CL_DOCTOR = #{cl_doctor},
+			CL_HOSPITAL_TEL = #{cl_hospital_tel},
+			CL_WALK_STATE = #{cl_walk_state},
+			CL_ASSISTIVE_DEVICE = #{cl_assistive_device},
+			CL_WASHING_ASSISTANCE = #{cl_washing_assistance},
+			CL_TOILET_ASSISTANCE = #{cl_toilet_assistance},
+			CL_MENTAL_STATE = #{cl_mental_state},
+			CL_SOCIAL_STATE = #{cl_social_state},
+			CL_ETC = #{cl_etc},
+			CL_FAVORITES = #{cl_favorites},
+			CL_MOD_DATE = NOW() 
+		WHERE 
+			CL_NO = #{cl_no}
+		 
+	
+	</update>
 	
 	<!-- 케어리스트 삭제 하기 -->
 	<update id="deleteCareList"
