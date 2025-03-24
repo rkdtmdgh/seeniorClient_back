@@ -9,7 +9,7 @@ public enum ImgUrlPath {
 	QNA_NOTICE_FILE_PATH("\\notice\\qna\\"),
 	NOTICE_PATH("127.0.0.1:8091/seeniorUploadImg/notice/all/"),
 	NOTICE_FILE_PATH("\\notice\\all\\"),
-	USER_PROFILE_PATH("");
+	USER_PROFILE_PATH("127.0.0.1:8091/seeniorUploadImg/userProfileImg/");
 	
 	private String value;
 	

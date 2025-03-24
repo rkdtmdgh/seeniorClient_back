@@ -1,7 +1,9 @@
 package com.see_nior.seeniorClient.user;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.see_nior.seeniorClient.dto.UserAccountDto;
+import com.see_nior.seeniorClient.enums.ImgUrlPath;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -41,7 +44,7 @@ public class UserController {
 	
 	// 아이디 중복 여부 확인
 	@GetMapping("/is_account")
-	public boolean isAccount(@RequestParam("u_id") String u_id) {
+	public boolean isAccount(@RequestParam String u_id) {
 		log.info("isAccount()");
 		
 		return userService.isAccount(u_id);
@@ -50,7 +53,7 @@ public class UserController {
 	// 닉네임 중복 여부 확인
 	@GetMapping("/is_nickname")
 	@ResponseBody
-	public boolean isNickname(@RequestParam("u_nickname") String u_nickname) {
+	public boolean isNickname(@RequestParam String u_nickname) {
 		log.info("isNickname()");
 		
 		return userService.isNickname(u_nickname);
@@ -66,14 +69,19 @@ public class UserController {
 		
 		userAccountDto.setU_pw("");
 		
-		return userAccountDto;
+		Map<String, Object> responseMap = new HashMap<>();
+		
+		responseMap.put("userAccountDto", userAccountDto);
+		responseMap.put("userProfileImgServerPath", ImgUrlPath.USER_PROFILE_PATH.getValue());
+		
+		return responseMap;
 	}
 	
 	// 내 정보 수정 확인 
 	@PostMapping("/modify_confirm")
 	public boolean modifyConfirm(@RequestBody UserAccountDto userAccountDto, 
-			@RequestParam(value = "files", required = false) List<MultipartFile> files, 
-			@RequestParam("deleted_profile") boolean deleted_profile) {
+			@RequestParam(required = false) List<MultipartFile> files, 
+			@RequestParam boolean deleted_profile) {
 		log.info("modifyConfirm()");
 		
 		if (deleted_profile) {
@@ -98,7 +106,7 @@ public class UserController {
 	
 	// 비밀번호 변경 전 비밀 번호 확인 
 	@PostMapping("/check_pw")
-	public boolean checkPw(@RequestParam("u_pw") String u_pw, Principal principal) {
+	public boolean checkPw(@RequestParam String u_pw, Principal principal) {
 		log.info("checkPw()");
 		
 		return userService.checkPw(principal.getName(), u_pw);
@@ -106,7 +114,7 @@ public class UserController {
 	
 	// 비밀번호 변경
 	@PostMapping("/modify_pw_confirm")
-	public boolean modifyPwConfirm(@RequestParam("u_pw") String u_pw, Principal principal) {
+	public boolean modifyPwConfirm(@RequestParam String u_pw, Principal principal) {
 		log.info("modifyPwConfirm()");
 		
 		return userService.modifyPwConfirm(u_pw, principal.getName());

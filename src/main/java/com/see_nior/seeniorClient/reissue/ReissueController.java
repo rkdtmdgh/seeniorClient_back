@@ -73,9 +73,14 @@ public class ReissueController {
         String role = jwtUtil.getRole(refresh);
 
         // Redis내에 존재하는 refreshToken인지 확인
-        String redisRefrshToken = redisService.getValues(u_id);
-        if(redisService.checkExistsValue(redisRefrshToken)) {
+        String redisRefreshToken = redisService.getValues(u_id);
+        if(redisService.checkExistsValue(redisRefreshToken)) {
             return new ResponseEntity<>("no exists in redis refresh token", HttpStatus.BAD_REQUEST);
+        }
+        
+        // 받은 refreshToken과 Redis에 저장된 refreshToken 비교
+        if (!redisRefreshToken.equals(refresh)) {
+            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
         
         // make new JWT
