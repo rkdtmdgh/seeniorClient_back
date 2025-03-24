@@ -11,8 +11,6 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -343,7 +341,5 @@ public class UserService {
 		
 		return imageFileService.deleteFolders(deleteFolderPath);
 	}
-
-	
 	
 }

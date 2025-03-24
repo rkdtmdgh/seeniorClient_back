@@ -31,12 +31,14 @@
 				<if test="u_profile_img != '' and u_profile_img != null">
 					U_PROFILE_IMG,
 				</if>
-				<if test="u_is_personal == true">
+				<if test="u_is_personal eq true">
 					U_IS_PERSONAL  
 				</if>
-				<if test="u_is_personal == false">
-					U_IS_PERSONAL,   
-					U_COMPANY
+				<if test="u_is_personal eq false">
+					U_IS_PERSONAL 
+					<if test="u_company != null and u_company != ''">
+				        , U_COMPANY
+				    </if>
 				</if>
 			) 
 		VALUES(
@@ -62,12 +64,14 @@
 			<if test="u_profile_img != '' and u_profile_img != null">
 				#{u_profile_img}, 
 			</if>
-			<if test="u_is_personal == true">
+			<if test="u_is_personal eq true">
 				1
 			</if>
-			<if test="u_is_personal == false">
-				0,   
-				#{u_company}
+			<if test="u_is_personal eq false">
+				0
+				<if test="u_company != null and u_company != ''">
+			        , #{u_company} 
+			    </if>
 			</if>
 		)
 	
@@ -154,15 +158,14 @@
 			<if test="u_img_dir_name != '' and u_img_dir_name != null">
 				U_IMG_DIR_NAME = #{u_img_dir_name}, 
 			</if>
-			<if test="u_address != '' and u_address != null">
-				U_ADDRESS = #{u_address}, 
-			</if>
-			<if test="u_is_personal == true">
+			<if test="u_is_personal eq true">
 				U_IS_PERSONAL = 1
 			</if>
-			<if test="u_is_personal == false">
-				U_IS_PERSONAL = 0,   
-				U_COMPANY = #{u_company}
+			<if test="u_is_personal eq false">
+				U_IS_PERSONAL = 0
+				<if test="u_company != null and u_company != ''">
+		            , U_COMPANY = #{u_company}
+		        </if>
 			</if>
 		WHERE 
 			U_ID = #{u_id}
