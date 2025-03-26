@@ -262,7 +262,7 @@
 		UPDATE 
 			CARE_LIST 
 		SET 
-			CL_FAVORITES = CASE WHEN CL_FAVORITES = 0 THEN 1 ELSE 0 END 
+			CL_FAVORITES = #{cl_favorites} 
 		WHERE 
 			CL_NO = #{cl_no}
 	

@@ -52,7 +52,7 @@ public interface CareListMapper {
 	public int updateImgColumn(Map<String, Object> updateImgColumnParams);
 	
 	// 케어리스트 즐겨찾기 ON / OFF
-	public int updateCareListFavorites(int cl_no);
+	public int updateCareListFavorites(Map<String, Object> favoritesParams);
 	
 	// 페이지 번호에 따른 모든 케어리스트 가져오기
 	public List<CareListDto> getCareListWithPage(Map<String, Object> pagingParams);
