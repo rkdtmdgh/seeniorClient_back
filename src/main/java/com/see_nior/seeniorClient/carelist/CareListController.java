@@ -149,10 +149,12 @@ public class CareListController {
 	
 	// 케어리스트 즐겨찾기 ON / OFF
 	@PostMapping("/info/favorites_confirm")
-	public boolean favoritesConfirm(@RequestParam(value = "cl_no") int cl_no) {
+	public boolean favoritesConfirm(
+			@RequestParam(value = "cl_no") int cl_no,
+			@RequestParam(value = "cl_favorites") int cl_favorites) {
 		log.info("favoritesConfirm()");
 		
-		boolean favoritesResult = careListService.favorites_confirm(cl_no);
+		boolean favoritesResult = careListService.favorites_confirm(cl_no, cl_favorites);
 		
 		return favoritesResult;
 		

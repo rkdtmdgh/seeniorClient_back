@@ -304,10 +304,15 @@ public class CareListService {
 	}
 	
 	// 케어리스트 즐겨찾기 ON / OFF
-	public boolean favorites_confirm(int cl_no) {
+	public boolean favorites_confirm(int cl_no, int cl_favorites) {
 		log.info("favorites_confirm()");
 		
-		int favoritesResult = careListMapper.updateCareListFavorites(cl_no);
+		Map<String, Object> favoritesParams = new HashMap<>();
+		
+		favoritesParams.put("cl_no", cl_no);
+		favoritesParams.put("cl_favorites", cl_favorites);
+		
+		int favoritesResult = careListMapper.updateCareListFavorites(favoritesParams);
 		
 		// DB에 입력 실패
 		if (favoritesResult <= 0) return SqlResult.FAIL.getValue();
