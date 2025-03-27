@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 
 import com.see_nior.seeniorClient.jwt.JwtUtil;
 import com.see_nior.seeniorClient.redis.RedisService;
+import com.see_nior.seeniorClient.util.CookieUtil;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -50,23 +50,12 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 		
 		//응답 설정
 	    response.setHeader("access", "Bearer " + accessToken);
-	    response.addCookie(createCookie("refresh", refreshToken));
+	    response.addCookie(CookieUtil.createCookie("refresh", refreshToken));
 	    response.setStatus(HttpStatus.OK.value());
 	    
 	    Collection<String> cookies = response.getHeaders("Set-Cookie");
         for (String cookie : cookies) {
 			log.info("Response Set-Cookie: {}", cookie);
 		}
-	}
-	
-	private Cookie createCookie(String key, String value) {
-
-	    Cookie cookie = new Cookie(key, value);
-	    cookie.setMaxAge(24*60*60);
-	    //cookie.setSecure(true);
-	    cookie.setPath("/");
-	    cookie.setHttpOnly(true);
-
-	    return cookie;
 	}
 }
