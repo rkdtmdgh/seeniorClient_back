@@ -120,4 +120,23 @@ public class UserController {
 		return userService.modifyPwConfirm(u_pw, principal.getName());
 	}
 	
+	// id & profileImgPath 가져오기
+	@GetMapping("/get_profile")
+	public Object getProfile(Principal principal) {
+		log.info("getProfile() -------- {}", principal.getName());
+		
+		UserAccountDto userAccountDto = 
+				userService.getAccountInfoById(principal.getName());
+		
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("u_no", userAccountDto.getU_no());
+		responseMap.put("u_id", userAccountDto.getU_id());
+		responseMap.put("u_img_dir_name", userAccountDto.getU_img_dir_name());
+		responseMap.put("u_profile_img", userAccountDto.getU_profile_img());
+		responseMap.put("userProfileImgServerPath", ImgUrlPath.USER_PROFILE_PATH.getValue());
+		
+		return responseMap;
+	}
+	
+	
 }
