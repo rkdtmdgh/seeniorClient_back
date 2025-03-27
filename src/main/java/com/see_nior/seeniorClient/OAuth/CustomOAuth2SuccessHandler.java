@@ -17,7 +17,6 @@ import com.see_nior.seeniorClient.redis.RedisService;
 import com.see_nior.seeniorClient.util.CookieUtil;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

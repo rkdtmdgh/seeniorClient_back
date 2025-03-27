@@ -239,7 +239,14 @@ public class UserService {
 			
 			Map<String, Object> savedFileObj = 
 					objectMapper.readValue(savedFile.getBody() , new TypeReference<Map<String, Object>>() {});
-			String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
+			
+			String savedFileName;
+			
+			try {
+				savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
+			} catch (Exception e) {
+				throw new RuntimeException("Invalid response from image server", e);
+			}
 			
 			userAccountDto.setU_profile_img(savedFileName);
 			userAccountDto.setU_img_dir_name(filePath);
@@ -290,7 +297,7 @@ public class UserService {
 			}
 			
 		} catch (Exception e) {
-			log.info("modifyConfirm() error ------ {}", e.getMessage());
+			log.info("modifyConfirm() error ------ {}", e);
 
 			return SqlResult.FAIL.getValue();
 		}
