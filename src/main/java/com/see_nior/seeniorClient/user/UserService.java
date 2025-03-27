@@ -229,7 +229,7 @@ public class UserService {
 					imageFileService.uploadFiles(files, filePath);
 			
 			// 이미지 서버에 저장 실패
-			if (savedFile == null) {
+			if (savedFile == null || !savedFile.getStatusCode().is2xxSuccessful()) {
 				throw new RuntimeException("uploadFile fail");
 			}
 			
