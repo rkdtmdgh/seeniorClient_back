@@ -91,23 +91,27 @@
 			resultMap="CareListCategoryDto">
 	
 		SELECT 
-			* 
+			CLC.*, 
+			(SELECT 
+				COUNT(*) 
+			FROM 
+				CARE_LIST AS CL 
+			WHERE 
+				CL.CL_CATEGORY_NO = CLC.CLC_NO 
+			AND 
+				CL.CL_IS_DELETED = 1) AS CLC_ITEM_CNT 
 		FROM 
-			CARE_LIST_CATEGORY 
+			CARE_LIST_CATEGORY AS CLC 
 		WHERE 
-			CLC_IS_DELETED = 1 
-		AND 
-			CLC_USER_NO = #{u_no} 
-		ORDER BY 
-			CLC_NAME ASC
+			CLC.CLC_IS_DELETED = 1 
 	
 	</select>
-	
+
 	<!-- 모든 케어리스트 카테고리 가져오기 (페이지네이션) -->
 	<select id="getCareListCategoryListWithPage"
 			parameterType="Map"
 			resultMap="CareListCategoryDto">
-			
+		
 		SELECT 
 			CLC.*, 
 			(SELECT 
@@ -122,12 +126,9 @@
 			CARE_LIST_CATEGORY AS CLC 
 		WHERE 
 			CLC.CLC_IS_DELETED = 1 
-		ORDER BY 
-			CLC.${sortValue} ${order} 
-		LIMIT 
-			#{start}, #{limit}	
-	
+		
 	</select>
+ 
 	
 	<!-- 케어리스트 카테고리의 총 리스트 개수 구하기 -->
 	<select id="getAllCareListCategoryCnt"
@@ -402,7 +403,7 @@
 		JOIN 
 			CARE_LIST_CATEGORY AS CLC 
 		ON 
-			CL.CL_CATEGORY_NO = CLC.CLC_CATEGORY_NO 
+			CL.CL_CATEGORY_NO = CLC.CLC_NO 
 		WHERE 
 			CL.CL_NO = #{cl_no}
 	

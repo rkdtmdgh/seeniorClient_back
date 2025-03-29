@@ -1,6 +1,7 @@
 package com.see_nior.seeniorClient.carelist;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.see_nior.seeniorClient.dto.CareListCategoryDto;
 import com.see_nior.seeniorClient.dto.CareListDto;
+import com.see_nior.seeniorClient.enums.ImgUrlPath;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,6 +26,9 @@ import lombok.extern.log4j.Log4j2;
 public class CareListController {
 
 	final private CareListService careListService;
+	
+	// 이미지 서버 경로
+	final private String careListImgServerPath = "http://" + ImgUrlPath.CARE_LIST_PATH.getValue();
 	
 //////////////////////////////////////////////////// 케어리스트 카테고리
 	
@@ -209,6 +214,7 @@ public class CareListController {
 		careListByCategoryWithPage.put("sortValue", sortValue);
 		careListByCategoryWithPage.put("order", order);
 		careListByCategoryWithPage.put("infoNo", infoNo);
+		careListByCategoryWithPage.put("careListImgServerPath", careListImgServerPath);
 		
 		log.info("careListByCategoryWithPage ----->{}", careListByCategoryWithPage);
 		
@@ -222,10 +228,16 @@ public class CareListController {
 	public Object getCareListByNo(
 			@RequestParam(value = "cl_no") int cl_no) {
 		log.info("getCareListByNo()");
+		log.info("cl_no ==========> {}", cl_no);
+		
+		Map<String, Object> responseMap = new HashMap<>();
 		
 		CareListDto careListDto = careListService.getCareListByNo(cl_no);
 		
-		return careListDto;
+		responseMap.put("careListDto", careListDto);
+		responseMap.put("careListImgServerPath", careListImgServerPath);
+		
+		return responseMap;
 		
 	}
 	
