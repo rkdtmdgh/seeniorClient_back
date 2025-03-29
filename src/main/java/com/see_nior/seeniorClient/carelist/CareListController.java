@@ -154,6 +154,9 @@ public class CareListController {
 			@RequestParam(value = "cl_favorites") int cl_favorites) {
 		log.info("favoritesConfirm()");
 		
+		log.info("cl_no ---------> {}", cl_no);
+		log.info("cl_favorites ---------> {}", cl_favorites);
+		
 		boolean favoritesResult = careListService.favorites_confirm(cl_no, cl_favorites);
 		
 		return favoritesResult;
