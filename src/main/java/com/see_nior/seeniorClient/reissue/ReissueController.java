@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.see_nior.seeniorClient.jwt.JwtUtil;
 import com.see_nior.seeniorClient.redis.RedisService;
+import com.see_nior.seeniorClient.util.CookieUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -92,21 +93,8 @@ public class ReissueController {
         
         // response
         response.setHeader("access", "Bearer " + newAccessToken);
-        response.addCookie(createCookie("refresh", newRefreshToken));
+        response.addCookie(CookieUtil.createCookie("refresh", newRefreshToken));
 
         return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
-	// 쿠키 생성 메서드
-	private Cookie createCookie(String key, String value) {
-
-	    Cookie cookie = new Cookie(key, value);
-	    cookie.setMaxAge(24*60*60);		// 쿠키 유효 시간
-	    //cookie.setSecure(true);		// https에서만 동작할것인지 (로컬은 http 환경이라 안먹음)
-	    //cookie.setPath("/");			// 쿠키가 전역에서 동작
-	    cookie.setHttpOnly(true);		// http에서만 쿠키가 동작할 수 있도록 (js와 같은곳에서 가져갈 수 없도록)
-
-	    return cookie;
-	}
-	
 }
