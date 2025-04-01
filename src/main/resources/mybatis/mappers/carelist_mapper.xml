@@ -400,12 +400,14 @@
 			CLC.* 
 		FROM 
 			CARE_LIST AS CL 
-		JOIN 
+		LEFT JOIN 
 			CARE_LIST_CATEGORY AS CLC 
 		ON 
 			CL.CL_CATEGORY_NO = CLC.CLC_NO 
+		AND 
+			CLC.CLC_IS_DELETED = 1 
 		WHERE 
-			CL.CL_NO = #{cl_no}
+			CL.CL_NO = #{cl_no} 
 	
 	</select>
 	
