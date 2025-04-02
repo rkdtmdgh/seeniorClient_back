@@ -71,8 +71,12 @@ public interface CareListMapper {
 	
 	// 케어리스트 수정하기
 	public int updateCareList(CareListDto careListDto);
+	
+	// 케어리스트 노인의 질환 delete하기
+	public int deleteCarePersonDisease(Map<String, Object> deleteParams);
 
 	// 케어리스트 삭제 하기
 	public int deleteCareList(int cl_no);
+
 	
 }

@@ -4,8 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -216,7 +218,7 @@ public class CareListService {
 
 /////////////////////////////////////////////////////// 케어리스트	
 	
-	// 케어리스트 등록하기 (수정)
+	// 케어리스트 등록하기
 	@SuppressWarnings("unchecked")
 	@Transactional
 	public boolean createConfirm(List<MultipartFile> files, CareListDto careListDto, List<Integer> d_nos, String u_id) {
@@ -399,77 +401,109 @@ public class CareListService {
 		
 	}
 	
-/*
-	// 케어리스트 수정하기
-	@SuppressWarnings("unchecked")
+	// 케어리스트 수정하기 -> deleted_profile의 값에 따라 분기 태우기
+	public boolean modifyCareListConfirm(
+			CareListDto careListDto, List<MultipartFile> files, boolean deleted_profile,
+			List<Integer> old_d_nos, List<Integer> d_nos, String u_id) {
+		log.info("modifyCareListConfirm()");
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		
+		// deleted_profile이 true일 경우 사진 폴더 삭제하고 DB에 데이터 업데이트
+		if (deleted_profile) return delImgModifyConfirm(careListDto, old_d_nos, d_nos, u_no);
+		
+		// 첨부 파일이 없을 경우 사진 유지 이므로 DB에 데이터 업데이트
+		if (files == null || files.isEmpty()) return modifyConfirm(careListDto, old_d_nos, d_nos);
+		
+		// 사진을 추가하거나 수정하는 경우
+		return fileUploadAndModifyConfirm(files, careListDto, old_d_nos, d_nos, u_no);
+		
+	}
+
+	// 케어리스트 수정1. 사진 삭제하고 DB 업데이트
 	@Transactional
-	public boolean modifyCareListConfirm(CareListDto careListDto, List<MultipartFile> files,
-			List<Integer> d_nos) {
-		log.info("modifyCareListConrifm()");
+	private boolean delImgModifyConfirm(CareListDto careListDto, List<Integer> old_d_nos, List<Integer> d_nos, int u_no) {
+		log.info("delImgModifyConfirm()");
 		
 		try {
 			
-			int modifyResult = 0;
+			// 사진 삭제하기
+			List<String> deleteFolderPath = new ArrayList<>();
 			
-			// 케어리스트 테이블에 정보 수정하기
-			modifyResult = careListMapper.updateCareList(careListDto);
+			String folderPath = "\\careList\\" + u_no + "\\" + careListDto.getCl_no();
+			deleteFolderPath.add(folderPath);
 			
-			// 케어리스트 테이블에 정보 수정 실패 시
-			if (modifyResult <= 0) throw new RuntimeException("CARE_LIST TABLE MODIFY FAIL!!");
+			ResponseEntity<String> deleteFolderResult = imageFileService.deleteFolders(deleteFolderPath);
+			
+			// 이미지 서버에서 deleteFolder요청이 실패한 경우
+			if (!deleteFolderResult.getBody().equals("1")) throw new RuntimeException("deleteFolder FAIL!!");
+			
+			// dir_name과 img컬럼 null로 할당
+			careListDto.setCl_dir_name(null);
+			careListDto.setCl_img(null);
 		
-			// 수정 성공 시 CARE_PERSON_DISEASE 테이블에 케어리스트의 질병 정보 수정하기
+			// 케어리스트 테이블 업데이트 하기
+			int modifyResult = careListMapper.updateCareList(careListDto);
 			
-			// last_cl_no를 기준으로 CARE_PERSON_DISEASE 테이블 업데이트 하기
-			for (int d_no : d_nos) {
-				Map<String, Object> insertParams = new HashMap<>();
-				insertParams.put("last_cl_no", careListDto.getCl_no());
-				insertParams.put("d_no", d_no);
+			// 케어리스트 테이블 업데이트 실패 시
+			if (modifyResult <= 0) throw new RuntimeException("CARE_LIST TABLE MODIFY FAIL!!");
+			
+			// old_d_nos와 d_nos 비교하여 삭제할 질병 / 추가할 질병 색출하기
+			
+			// HashSet으로 변환
+			Set<Integer> oldSet = new HashSet<>(old_d_nos);
+			Set<Integer> newSet = new HashSet<>(d_nos);
+			
+			// 삭제할 질병 번호 = oldSet - newSet
+			Set<Integer> toDelete = new HashSet<>(oldSet);
+			toDelete.removeAll(newSet);
+			
+			// 추가할 질병 번호 = newSet - oldSet
+			Set<Integer> toAdd = new HashSet<>(newSet);
+			toAdd.removeAll(oldSet);
+			
+			log.info("삭제할 질병 번호 : {}", toDelete);
+			log.info("추가할 질병 번호 : {}", toAdd);
+			
+			int cl_no = careListDto.getCl_no();
+			
+			// 삭제할 질병 번호가 있을 경우
+			if (!toDelete.isEmpty()) {
 				
-				int cpdCreateResult = careListMapper.insertNewCarePersonDisease(insertParams);
-				
-				if (cpdCreateResult <= 0) throw new RuntimeException("CARE_PERSON_DISEAE TABLE INSERT FAIL!!");
+				for (int d_no : toDelete) {
+					
+					Map<String, Object> deleteParams = new HashMap<>();
+					deleteParams.put("cl_no", cl_no);
+					deleteParams.put("d_no", d_no);
+					
+					int deleteResult = careListMapper.deleteCarePersonDisease(deleteParams);
+					if (deleteResult <= 0) throw new RuntimeException("DELETE D_NOS FAIL! d_no : " + d_no);
+					
+				}
 				
 			}
 			
-			// 이미지 첨부를 안했을 시 여기서  반환
-			if (files == null || files.isEmpty()) return SqlResult.SUCCESS.getValue();
-			
-			// 이미지 서버에 요청할 파일 저장 경로 생성
-			Date now = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-			String date = dateFormat.format(now);
-			
-			String filePath = "\\careList\\" + last_cl_no + "\\" + date;
-			
-			// 이미지 저장 요청
-			ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
-			
-			// 이미지 서버에 저장 실패 시 즉시 롤백 후 FAIL 반환
-			if (savedFile == null) throw new RuntimeException("uploadFile FAIL!!");
-			
-			log.info("uploadFile SUCCESS!!");
-			
-			ObjectMapper objectMapper = new ObjectMapper();
+			// 추가할 질병 번호가 있을 경우
+			if (!toAdd.isEmpty()) {
 				
-			Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody() , new TypeReference<Map<String, Object>>() {} );
-			String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
-			
-			// 디렉토리명과 이미지 URL을 CARE_LIST 테이블에 업데이트
-			Map<String, Object> updateImgColumnParams = new HashMap<>();
-			
-			updateImgColumnParams.put("last_cl_no", last_cl_no);
-			updateImgColumnParams.put("cl_dir_name", date);
-			updateImgColumnParams.put("cl_img", savedFileName);
-			
-			modifyResult = careListMapper.updateImgColumn(updateImgColumnParams);
-			
-			if (modifyResult <= 0) throw new RuntimeException("updateImgColumn FAIL!!");
+				for (int d_no : toAdd) {
+					
+					Map<String, Object> insertParams = new HashMap<>();
+					insertParams.put("cl_no", cl_no);
+					insertParams.put("d_no", d_no);
+					
+					int insertResult = careListMapper.insertNewCarePersonDisease(insertParams);
+					if (insertResult <= 0) throw new RuntimeException("INSERT D_NOS FAIL! d_no : " + d_no);
+					
+				}
+				
+			}
 			
 			return SqlResult.SUCCESS.getValue();
-				
-		} catch(Exception e) {
-			
-			log.info("Exception 발생: {}", e.getMessage(), e);
+		
+		} catch (Exception e) {
+			log.info("Exception 발생: {}", e.getMessage());
 			
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			
@@ -478,7 +512,202 @@ public class CareListService {
 		}
 		
 	}
-*/
+
+	// 케어리스트 수정2. DB만 업데이트
+	@Transactional
+	private boolean modifyConfirm(CareListDto careListDto, List<Integer> old_d_nos, List<Integer> d_nos) {
+		log.info("modifyConfirm()");
+		
+		try {
+		
+			// 케어리스트 테이블 업데이트 하기
+			int modifyResult = careListMapper.updateCareList(careListDto);
+			
+			// 케어리스트 테이블 업데이트 실패 시
+			if (modifyResult <= 0) throw new RuntimeException("CARE_LIST TABLE MODIFY FAIL!!");
+			
+			// old_d_nos와 d_nos 비교하여 삭제할 질병 / 추가할 질병 색출하기
+			
+			// HashSet으로 변환
+			Set<Integer> oldSet = new HashSet<>(old_d_nos);
+			Set<Integer> newSet = new HashSet<>(d_nos);
+			
+			// 삭제할 질병 번호 = oldSet - newSet
+			Set<Integer> toDelete = new HashSet<>(oldSet);
+			toDelete.removeAll(newSet);
+			
+			// 추가할 질병 번호 = newSet - oldSet
+			Set<Integer> toAdd = new HashSet<>(newSet);
+			toAdd.removeAll(oldSet);
+			
+			log.info("삭제할 질병 번호 : {}", toDelete);
+			log.info("추가할 질병 번호 : {}", toAdd);
+			
+			int cl_no = careListDto.getCl_no();
+			
+			// 삭제할 질병 번호가 있을 경우
+			if (!toDelete.isEmpty()) {
+				
+				for (int d_no : toDelete) {
+					
+					Map<String, Object> deleteParams = new HashMap<>();
+					deleteParams.put("cl_no", cl_no);
+					deleteParams.put("d_no", d_no);
+					
+					int deleteResult = careListMapper.deleteCarePersonDisease(deleteParams);
+					if (deleteResult <= 0) throw new RuntimeException("DELETE D_NOS FAIL! d_no : " + d_no);
+					
+				}
+				
+			}
+			
+			// 추가할 질병 번호가 있을 경우
+			if (!toAdd.isEmpty()) {
+				
+				for (int d_no : toAdd) {
+					
+					Map<String, Object> insertParams = new HashMap<>();
+					insertParams.put("cl_no", cl_no);
+					insertParams.put("d_no", d_no);
+					
+					int insertResult = careListMapper.insertNewCarePersonDisease(insertParams);
+					if (insertResult <= 0) throw new RuntimeException("INSERT D_NOS FAIL! d_no : " + d_no);
+					
+				}
+				
+			}
+			
+			return SqlResult.SUCCESS.getValue();
+		
+		} catch (Exception e) {
+			log.info("Exception 발생: {}", e.getMessage());
+			
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			
+			return SqlResult.FAIL.getValue();
+			
+		}
+		
+	}
+	
+	// 케어리스트 수정3. 사진 추가 및 수정하고 DB 업데이트
+	@SuppressWarnings("unchecked")
+	@Transactional
+	private boolean fileUploadAndModifyConfirm(List<MultipartFile> files, CareListDto careListDto,
+			List<Integer> old_d_nos, List<Integer> d_nos, int u_no) {
+		log.info("fileUploadAndModifyConfirm()");
+		
+		try {
+			
+			// 기존에 사진이 있었다면 기존 사진 삭제
+			if (careListDto.getCl_dir_name() != null) {
+				
+				// 사진 삭제하기
+				List<String> deleteFolderPath = new ArrayList<>();
+				
+				String folderPath = "\\careList\\" + u_no + "\\" + careListDto.getCl_no();
+				deleteFolderPath.add(folderPath);
+				
+				ResponseEntity<String> deleteFolderResult = imageFileService.deleteFolders(deleteFolderPath);
+				
+				// 이미지 서버에서 deleteFolder요청이 실패한 경우
+				if (!deleteFolderResult.getBody().equals("1")) throw new RuntimeException("deleteFolder FAIL!!");
+				
+			}
+			
+			// 사진 추가
+			
+			// 이미지 서버에 요청할 파일 저장 경로 생성
+			Date now = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+			String date = dateFormat.format(now);
+			
+			String filePath = "\\careList\\" + u_no + "\\" + careListDto.getCl_no() + "\\" + date;
+			
+			// 이미지 저장 요청
+			ResponseEntity<String> savedFile = imageFileService.uploadFiles(files, filePath);
+			
+			// 이미지 서버에 저장 실패 시 즉시 롤백 후 FAIL 반환
+			if (savedFile == null) throw new RuntimeException("uploadFile FAIL!!");
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+				
+			Map<String, Object> savedFileObj = objectMapper.readValue(savedFile.getBody() , new TypeReference<Map<String, Object>>() {} );
+			String savedFileName = ((List<String>) savedFileObj.get("savedFileNames")).get(0);
+			
+			careListDto.setCl_dir_name(date);
+			careListDto.setCl_img(savedFileName);
+			
+		
+			// 케어리스트 테이블 업데이트 하기
+			int modifyResult = careListMapper.updateCareList(careListDto);
+			
+			// 케어리스트 테이블 업데이트 실패 시
+			if (modifyResult <= 0) throw new RuntimeException("CARE_LIST TABLE MODIFY FAIL!!");
+			
+			// old_d_nos와 d_nos 비교하여 삭제할 질병 / 추가할 질병 색출하기
+			
+			// HashSet으로 변환
+			Set<Integer> oldSet = new HashSet<>(old_d_nos);
+			Set<Integer> newSet = new HashSet<>(d_nos);
+			
+			// 삭제할 질병 번호 = oldSet - newSet
+			Set<Integer> toDelete = new HashSet<>(oldSet);
+			toDelete.removeAll(newSet);
+			
+			// 추가할 질병 번호 = newSet - oldSet
+			Set<Integer> toAdd = new HashSet<>(newSet);
+			toAdd.removeAll(oldSet);
+			
+			log.info("삭제할 질병 번호 : {}", toDelete);
+			log.info("추가할 질병 번호 : {}", toAdd);
+			
+			int cl_no = careListDto.getCl_no();
+			
+			// 삭제할 질병 번호가 있을 경우
+			if (!toDelete.isEmpty()) {
+				
+				for (int d_no : toDelete) {
+					
+					Map<String, Object> deleteParams = new HashMap<>();
+					deleteParams.put("cl_no", cl_no);
+					deleteParams.put("d_no", d_no);
+					
+					int deleteResult = careListMapper.deleteCarePersonDisease(deleteParams);
+					if (deleteResult <= 0) throw new RuntimeException("DELETE D_NOS FAIL! d_no : " + d_no);
+					
+				}
+				
+			}
+			
+			// 추가할 질병 번호가 있을 경우
+			if (!toAdd.isEmpty()) {
+				
+				for (int d_no : toAdd) {
+					
+					Map<String, Object> insertParams = new HashMap<>();
+					insertParams.put("cl_no", cl_no);
+					insertParams.put("d_no", d_no);
+					
+					int insertResult = careListMapper.insertNewCarePersonDisease(insertParams);
+					if (insertResult <= 0) throw new RuntimeException("INSERT D_NOS FAIL! d_no : " + d_no);
+					
+				}
+				
+			}
+			
+			return SqlResult.SUCCESS.getValue();
+		
+		} catch (Exception e) {
+			log.info("Exception 발생: {}", e.getMessage());
+			
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			
+			return SqlResult.FAIL.getValue();
+			
+		}
+		
+	}
 
 	// 케어리스트 삭제하기
 	@Transactional
@@ -520,6 +749,8 @@ public class CareListService {
 		return SqlResult.SUCCESS.getValue();
 		
 	}
+
+
 
 	
 

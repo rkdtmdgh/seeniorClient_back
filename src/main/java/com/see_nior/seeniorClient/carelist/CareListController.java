@@ -241,21 +241,21 @@ public class CareListController {
 		
 	}
 	
-/*
 	// 케어리스트 수정하기
 	@PostMapping("/info/modify_care_list_confirm")
 	public boolean modifyCareListConfirm(
 			CareListDto careListDto,
 			@RequestParam(value = "files", required = false) List<MultipartFile> files,
+			@RequestParam(value = "deleted_profile") boolean deleted_profile,
 			@RequestParam(value = "old_cpd_disease_nos") List<Integer> old_d_nos,
-			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos) {
+			@RequestParam(value = "cpd_disease_nos") List<Integer> d_nos, Principal principal) {
+		log.info("modifyCareListConfirm()");
 		
-		boolean modifyResult = careListService.modifyCareListConfirm(careListDto, files,old_d_nos, d_nos);
+		boolean modifyResult = careListService.modifyCareListConfirm(careListDto, files, deleted_profile, old_d_nos, d_nos, principal.getName());
 		
 		return modifyResult;
 		
 	}
-*/	
 	
 	// 케어리스트 삭제하기
 	@PostMapping("/info/delete_care_list_confirm")
