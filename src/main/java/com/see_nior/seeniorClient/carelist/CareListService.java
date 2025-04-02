@@ -482,10 +482,13 @@ public class CareListService {
 
 	// 케어리스트 삭제하기
 	@Transactional
-	public boolean deleteCareListConfirm(int cl_no) {
+	public boolean deleteCareListConfirm(int cl_no, String u_id) {
 		log.info("deleteCareListConfirm()");
 		
 		try {
+			
+			// u_id 값으로 u_no 가져오기
+			int u_no = userService.selectUserNoById(u_id);
 			
 			int deleteResult = careListMapper.deleteCareList(cl_no);
 			
@@ -496,7 +499,7 @@ public class CareListService {
 			
 			List<String> deleteFolderPath = new ArrayList<>();
 			
-			String folderPath = "\\careList\\" + deleteCareListDto.getCl_no();
+			String folderPath = "\\careList\\" + u_no + "\\" + deleteCareListDto.getCl_no();
 			deleteFolderPath.add(folderPath);
 			
 			ResponseEntity<String> deleteFolderResult = imageFileService.deleteFolders(deleteFolderPath);
