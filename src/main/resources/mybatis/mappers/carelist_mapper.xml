@@ -400,12 +400,14 @@
 			CLC.* 
 		FROM 
 			CARE_LIST AS CL 
-		JOIN 
+		LEFT JOIN 
 			CARE_LIST_CATEGORY AS CLC 
 		ON 
 			CL.CL_CATEGORY_NO = CLC.CLC_NO 
+		AND 
+			CLC.CLC_IS_DELETED = 1 
 		WHERE 
-			CL.CL_NO = #{cl_no}
+			CL.CL_NO = #{cl_no} 
 	
 	</select>
 	
@@ -445,9 +447,20 @@
 			CL_MOD_DATE = NOW() 
 		WHERE 
 			CL_NO = #{cl_no}
-		 
 	
 	</update>
+	
+	<!-- 케어리스트 노인의 질환 delete하기 -->
+	<delete id="deleteCarePersonDisease">
+	
+		DELETE FROM 
+			CARE_PERSON_DISEASE 
+		WHERE 
+			CPD_CARE_LIST_NO = #{cl_no} 
+		AND 
+			CPD_DISEASE_NO = #{d_no} 
+	
+	</delete>
 	
 	<!-- 케어리스트 삭제 하기 -->
 	<update id="deleteCareList"
