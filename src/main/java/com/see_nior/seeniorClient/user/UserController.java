@@ -84,13 +84,11 @@ public class UserController {
 			@RequestParam boolean deleted_profile) {
 		log.info("modifyConfirm()");
 		
-		if (deleted_profile) {
+		if (deleted_profile) 
 			return userService.delImgModifyConfirm(userAccountDto);
-		}
 
-		if (files == null || files.isEmpty()) {
+		if (files == null || files.isEmpty()) 
 			return userService.modifyConfirm(userAccountDto);
-		}
 		
 		return userService.fileUploadAndModifyConfirm(files, userAccountDto);
 	}
