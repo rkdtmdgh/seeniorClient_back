@@ -259,10 +259,13 @@ public class CareListController {
 	
 	// 케어리스트 삭제하기
 	@PostMapping("/info/delete_care_list_confirm")
-	public boolean deleteCareListConfirm(@RequestParam(value = "cl_no") int cl_no, Principal principal) {
+	public boolean deleteCareListConfirm(
+			@RequestParam(value = "cl_no") int cl_no, 
+			@RequestParam(value = "dir_name", required = false) String dir_name,
+			Principal principal) {
 		log.info("deleteCareListConfirm()");
 		
-		boolean deleteCareListResult = careListService.deleteCareListConfirm(cl_no, principal.getName());
+		boolean deleteCareListResult = careListService.deleteCareListConfirm(cl_no, principal.getName(), dir_name);
 		
 		return deleteCareListResult;
 		

@@ -4,6 +4,38 @@
 
 <mapper namespace="com.see_nior.seeniorClient.carelist.mapper.CareListMapper">
 
+	<resultMap type="DiseaseCategoryDto" id="DiseaseCategoryDto">
+		<id column="dc_no" property="dc_no" />
+		<result column="dc_name" property="dc_name" />		
+		<result column="dc_is_deleted" property="dc_is_deleted" />
+		<result column="dc_item_cnt" property="dc_item_cnt" />
+		<result column="dc_reg_date" property="dc_reg_date" />
+		<result column="dc_mod_date" property="dc_mod_date" />
+	</resultMap>
+
+	<resultMap type="DiseaseDto" id="DiseaseDto">
+		<id column="d_no" property="d_no" />
+		<result column="d_category_no" property="d_category_no" />
+		<result column="d_name" property="d_name" />
+		<result column="d_info" property="d_info" />
+		<result column="d_good_food" property="d_good_food" />
+		<result column="d_bad_food" property="d_bad_food" />
+		<result column="d_is_deleted" property="d_is_deleted" />
+		<result column="d_reg_date" property="d_reg_date" />
+		<result column="d_mod_date" property="d_mod_date" />
+		<association property="diseaseCategoryDto" resultMap="DiseaseCategoryDto" />
+	</resultMap>
+	
+	<resultMap type="CarePersonDiseaseDto" id="CarePersonDiseaseDto">
+		<id column="cpd_no" property="cpd_no" />
+		<result column="cpd_care_list_no" property="cpd_care_list_no" />
+		<result column="cpd_disease_no" property="cpd_disease_no" />
+		<result column="cpd_is_deleted" property="cpd_is_deleted" />
+		<result column="cpd_reg_date" property="cpd_reg_date" />
+		<result column="cpd_mod_date" property="cpd_mod_date" />
+		<association property="diseaseDto" resultMap="DiseaseDto" />
+	</resultMap>
+
 	<resultMap type="CareListCategoryDto" id="CareListCategoryDto">
 		<id column="clc_no" property="clc_no" />
 		<result column="clc_user_no" property="clc_user_no" />
@@ -49,7 +81,8 @@
 		<result column="cl_is_deleted" property="cl_is_deleted"/>
 		<result column="cl_reg_date" property="cl_reg_date"/>
 		<result column="cl_mod_date" property="cl_mod_date"/>
-		<collection property="careListCategoryDto" resultMap="CareListCategoryDto" />
+		<association property="careListCategoryDto" resultMap="CareListCategoryDto" />
+		<collection property="carePersonDiseaseDtos" resultMap="CarePersonDiseaseDto" />
 	</resultMap>
 	
 <!-- ////////////////////////////////////////// 케어리스트 카테고리 -->
@@ -328,7 +361,10 @@
 			
 		SELECT 
 			CL.*, 
-			CLC.* 
+			CLC.*, 
+			CPD.*, 
+			D.*, 
+			DC.* 
 		FROM 
 			CARE_LIST AS CL 
 		LEFT JOIN 
@@ -337,6 +373,18 @@
 			CL.CL_CATEGORY_NO = CLC.CLC_NO 
 		AND 
 			CLC.CLC_IS_DELETED = 1 
+		LEFT JOIN 
+			CARE_PERSON_DISEASE AS CPD 
+		ON 
+			CL.CL_NO = CPD.CPD_CARE_LIST_NO 
+		LEFT JOIN 
+			DISEASE AS D 
+		ON 
+			CPD.CPD_DISEASE_NO = D.D_NO 
+		LEFT JOIN 
+			DISEASE_CATEGORY AS DC 
+		ON 
+			D.D_CATEGORY_NO = DC.DC_NO 
 		WHERE 
 			CL.CL_IS_DELETED = 1 
 		AND 
@@ -394,7 +442,9 @@
 	<select id="getCareListByNo"
 			parameterType="Integer"
 			resultMap="CareListDto">
-			
+		
+		
+	<!-- 	
 		SELECT 
 			CL.*, 
 			CLC.* 
@@ -408,6 +458,36 @@
 			CLC.CLC_IS_DELETED = 1 
 		WHERE 
 			CL.CL_NO = #{cl_no} 
+	 -->
+	 
+		SELECT 
+		    CL.*, 
+		    CLC.*, 
+		    CPD.*, 
+		    D.*, 
+		    DC.* 
+		FROM 
+		    CARE_LIST AS CL 
+		LEFT JOIN 
+		    CARE_LIST_CATEGORY AS CLC 
+	    ON 
+	    	CL.CL_CATEGORY_NO = CLC.CLC_NO 
+		AND 
+		    CLC.CLC_IS_DELETED = 1 
+		LEFT JOIN 
+		    CARE_PERSON_DISEASE AS CPD 
+		ON 
+			CL.CL_NO = CPD.CPD_CARE_LIST_NO 
+		LEFT JOIN 
+		    DISEASE AS D 
+		ON 
+			CPD.CPD_DISEASE_NO = D.D_NO 
+		LEFT JOIN 
+		    DISEASE_CATEGORY AS DC 
+		ON 
+			D.D_CATEGORY_NO = DC.DC_NO 
+		WHERE 
+		    CL.CL_NO = #{cl_no}
 	
 	</select>
 	
