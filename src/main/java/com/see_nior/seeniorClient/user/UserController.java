@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.see_nior.seeniorClient.dto.UserAccountDto;
 import com.see_nior.seeniorClient.enums.ImgUrlPath;
+import com.see_nior.seeniorClient.enums.SqlResult;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -79,20 +80,48 @@ public class UserController {
 	
 	// 내 정보 수정 확인 
 	@PostMapping("/modify_confirm")
-	public boolean modifyConfirm(@RequestBody UserAccountDto userAccountDto, 
+	public Object modifyConfirm(@RequestBody UserAccountDto userAccountDto, 
 			@RequestParam(required = false) List<MultipartFile> files, 
 			@RequestParam boolean deleted_profile) {
 		log.info("modifyConfirm()");
 		
-		if (deleted_profile) {
-			return userService.delImgModifyConfirm(userAccountDto);
-		}
-
-		if (files == null || files.isEmpty()) {
-			return userService.modifyConfirm(userAccountDto);
+		Map<String, Object> responseMap = new HashMap<>();
+		
+		boolean isNicknameResult = 
+				userService.isNickname(userAccountDto.getU_nickname());
+		
+		if (isNicknameResult) {
+			responseMap.put("result", SqlResult.FAIL.getValue());
+			responseMap.put("reason", "u_nickname");
+			
+			return responseMap;
 		}
 		
-		return userService.fileUploadAndModifyConfirm(files, userAccountDto);
+		if (deleted_profile) {
+			
+			boolean modifyResult = 
+					userService.delImgModifyConfirm(userAccountDto);
+
+			responseMap.put("result", modifyResult);
+			
+			return responseMap;
+		}
+			
+
+		if (files == null || files.isEmpty()) {
+			
+			boolean modifyResult =  
+					userService.modifyConfirm(userAccountDto);
+			responseMap.put("result", modifyResult);
+			
+			return responseMap;
+		}
+		
+		boolean modifyResult = 
+				userService.fileUploadAndModifyConfirm(files, userAccountDto);
+		responseMap.put("result", modifyResult);
+		
+		return responseMap;
 	}
 	
 	

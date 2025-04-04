@@ -161,14 +161,6 @@ public class UserService {
 	public boolean delImgModifyConfirm(UserAccountDto userAccountDto) {
 		log.info("delImgModifyConfirm() ---- {}", userAccountDto.getU_id());
 		
-		// 닉네임 중복검사
-		boolean result = 
-				userMapper.isNickname(userAccountDto.getU_nickname());
-		
-		if (result) {
-			return SqlResult.FAIL.getValue();
-		}
-		
 		String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
 		
 		userAccountDto.setU_profile_img(null);
@@ -205,14 +197,6 @@ public class UserService {
 		log.info("fileUploadAndModifyConfirm() ------- {}", userAccountDto.getU_id());
 		
 		try {
-			
-			// 닉네임 중복검사
-			boolean result = 
-					userMapper.isNickname(userAccountDto.getU_nickname());
-			
-			if (result) {
-				return SqlResult.FAIL.getValue();
-			}
 			
 			// 기존 이미지 파일 경로 (기존 이미지 저장 파일 삭제 시 사용)
 			String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
@@ -336,6 +320,8 @@ public class UserService {
 
 	public boolean deleteConfirm(String u_id) {
 		log.info("deleteConfirm()");
+		
+		
 		
 		return userMapper.deleteUserAccountById(u_id);
 	}
