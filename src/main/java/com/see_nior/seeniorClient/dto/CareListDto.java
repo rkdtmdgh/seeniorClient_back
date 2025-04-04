@@ -1,5 +1,7 @@
 package com.see_nior.seeniorClient.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,5 +47,6 @@ public class CareListDto {
 	private String cl_mod_date;
 	
 	private CareListCategoryDto careListCategoryDto;
+	private List<CarePersonDiseaseDto> carePersonDiseaseDtos;
 
 }

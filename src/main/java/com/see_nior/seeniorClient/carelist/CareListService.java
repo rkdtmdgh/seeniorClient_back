@@ -711,7 +711,7 @@ public class CareListService {
 
 	// 케어리스트 삭제하기
 	@Transactional
-	public boolean deleteCareListConfirm(int cl_no, String u_id) {
+	public boolean deleteCareListConfirm(int cl_no, String u_id, String dir_name) {
 		log.info("deleteCareListConfirm()");
 		
 		try {
@@ -724,17 +724,21 @@ public class CareListService {
 			// DB에 입력 실패
 			if (deleteResult <= 0) throw new RuntimeException("deleteCareList FAIL!!");
 			
-			CareListDto deleteCareListDto = careListMapper.getCareListByNo(cl_no);
-			
-			List<String> deleteFolderPath = new ArrayList<>();
-			
-			String folderPath = "\\careList\\" + u_no + "\\" + deleteCareListDto.getCl_no();
-			deleteFolderPath.add(folderPath);
-			
-			ResponseEntity<String> deleteFolderResult = imageFileService.deleteFolders(deleteFolderPath);
-			
-			// 이미지 서버에서 deleteFolder요청이 실패한 경우
-			if (!deleteFolderResult.getBody().equals("1")) throw new RuntimeException("deleteFolder FAIL!!");
+			if (dir_name != null) {
+				
+				CareListDto deleteCareListDto = careListMapper.getCareListByNo(cl_no);
+				
+				List<String> deleteFolderPath = new ArrayList<>();
+				
+				String folderPath = "\\careList\\" + u_no + "\\" + deleteCareListDto.getCl_no();
+				deleteFolderPath.add(folderPath);
+				
+				ResponseEntity<String> deleteFolderResult = imageFileService.deleteFolders(deleteFolderPath);
+				
+				// 이미지 서버에서 deleteFolder요청이 실패한 경우
+				if (!deleteFolderResult.getBody().equals("1")) throw new RuntimeException("deleteFolder FAIL!!");
+				
+			}
 			
 		} catch(Exception e) {
 			
