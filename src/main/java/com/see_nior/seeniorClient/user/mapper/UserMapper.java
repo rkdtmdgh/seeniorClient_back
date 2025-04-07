@@ -28,5 +28,7 @@ public interface UserMapper {
 	public boolean deleteUserAccountById(String u_id);
 
 	public boolean imgDeleteFail(String idf_folder_path);
+
+	public boolean isNicknameMod(UserAccountDto userAccountDto);
 	
 }

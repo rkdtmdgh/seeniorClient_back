@@ -128,6 +128,8 @@
 			USER_ACCOUNT 
 		WHERE 
 			U_NICKNAME = #{u_nickname} 
+		AND 
+			U_IS_DELETED = 1 
 	
 	</select>
 	
@@ -168,7 +170,7 @@
 		        </if>
 			</if>
 		WHERE 
-			U_ID = #{u_id}
+			U_NO = #{u_no} 
 	
 	</update>
 	
@@ -227,5 +229,20 @@
 		VALUES(#{idf_folder_path})
 	
 	</insert>
+	
+	<select id="isNicknameMod">
+		
+		SELECT 	
+			COUNT(*) 
+		FROM 
+			USER_ACCOUNT 
+		WHERE 
+			U_NICKNAME = #{u_nickname} 
+		AND 
+			U_NO != #{u_no} 
+		AND 
+			U_IS_DELETED = 1 
+	
+	</select>
 	
 </mapper>
