@@ -59,6 +59,13 @@ public class UserController {
 		
 		return userService.isNickname(u_nickname);
 	}
+	
+	@GetMapping("/is_nickname_mod")
+	public boolean isNicknameMod(UserAccountDto userAccountDto) {
+		log.info("isNicknameMod()");
+		
+		return userService.isNicknameMod(userAccountDto);
+	}
 
 	// 내 정보 가져오기 
 	@GetMapping("/get_account_info")
@@ -80,15 +87,18 @@ public class UserController {
 	
 	// 내 정보 수정 확인 
 	@PostMapping("/modify_confirm")
-	public Object modifyConfirm(@RequestBody UserAccountDto userAccountDto, 
-			@RequestParam(required = false) List<MultipartFile> files, 
-			@RequestParam boolean deleted_profile) {
-		log.info("modifyConfirm()");
+	public Object modifyConfirm(UserAccountDto userAccountDto, 
+			@RequestParam(name = "files", required = false) List<MultipartFile> files, 
+			@RequestParam(name = "deleted_profile") boolean deleted_profile) {
+		log.info("modifyConfirm() userAccountDto ------- {}", userAccountDto);
+		log.info("modifyConfirm() files ------- {}", files);
+		log.info("modifyConfirm() deleted_profile ------- {}", deleted_profile);
 		
 		Map<String, Object> responseMap = new HashMap<>();
 		
+		// 닉네임 중복 검사
 		boolean isNicknameResult = 
-				userService.isNickname(userAccountDto.getU_nickname());
+				userService.isNicknameMod(userAccountDto);
 		
 		if (isNicknameResult) {
 			responseMap.put("result", SqlResult.FAIL.getValue());
@@ -97,7 +107,9 @@ public class UserController {
 			return responseMap;
 		}
 		
+		// 프로필 삭제 하는 경우
 		if (deleted_profile) {
+			log.info("deleted_profile is true");
 			
 			boolean modifyResult = 
 					userService.delImgModifyConfirm(userAccountDto);
@@ -108,7 +120,9 @@ public class UserController {
 		}
 			
 
+		// 프로필 변경이 없는 경우
 		if (files == null || files.isEmpty()) {
+			log.info("files == null");
 			
 			boolean modifyResult =  
 					userService.modifyConfirm(userAccountDto);
@@ -116,6 +130,9 @@ public class UserController {
 			
 			return responseMap;
 		}
+		
+		// 프로필 이미지 변경하는 경우
+		log.info("modify only");
 		
 		boolean modifyResult = 
 				userService.fileUploadAndModifyConfirm(files, userAccountDto);

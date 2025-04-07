@@ -194,7 +194,7 @@ public class UserService {
 	// 정보 수정 확인
 	@SuppressWarnings("unchecked")
 	public boolean fileUploadAndModifyConfirm(List<MultipartFile> files, UserAccountDto userAccountDto) {
-		log.info("fileUploadAndModifyConfirm() ------- {}", userAccountDto.getU_id());
+		log.info("fileUploadAndModifyConfirm() ------- {}", userAccountDto.getU_name());
 		
 		try {
 			
@@ -333,6 +333,12 @@ public class UserService {
 		deleteFolderPath.add(folderPath);
 		
 		return imageFileService.deleteFolders(deleteFolderPath);
+	}
+
+	public boolean isNicknameMod(UserAccountDto userAccountDto) {
+		log.info("isNicknameMod()");
+		
+		return userMapper.isNicknameMod(userAccountDto);
 	}
 	
 }
