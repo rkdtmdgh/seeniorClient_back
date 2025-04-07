@@ -19,6 +19,6 @@ public class DiseaseDto {
 	private String d_reg_date;
 	private String d_mod_date;
 	
-	DiseaseCategoryDto diseaseCategoryDto;
+	private DiseaseCategoryDto diseaseCategoryDto;
 	
 }
