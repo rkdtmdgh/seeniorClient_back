@@ -2,15 +2,15 @@ package com.see_nior.seeniorClient.enums;
 
 public enum ImgUrlPath {
 	
-	SERVER_PATH("127.0.0.1:8091/seeniorUploadImg/"),
+	SERVER_PATH("http://127.0.0.1:8091/seeniorUploadImg/"),
 	BOARD_PATH(""),
 	ADVERTISEMENT_PATH("127.0.0.1:8091/seeniorUploadImg/advertisement/"),
-	CARE_LIST_PATH("127.0.0.1:8091/seeniorUploadImg/careList/"),
+	CARE_LIST_PATH("http://127.0.0.1:8091/seeniorUploadImg/careList/"),
 	QNA_NOTICE_PATH("127.0.0.1:8091/seeniorUploadImg/notice/qna/"),
 	QNA_NOTICE_FILE_PATH("\\notice\\qna\\"),
 	NOTICE_PATH("127.0.0.1:8091/seeniorUploadImg/notice/all/"),
 	NOTICE_FILE_PATH("\\notice\\all\\"),
-	USER_PROFILE_PATH("127.0.0.1:8091/seeniorUploadImg/userProfileImg/");
+	USER_PROFILE_PATH("http://127.0.0.1:8091/seeniorUploadImg/userProfileImg/");
 	
 	private String value;
 	

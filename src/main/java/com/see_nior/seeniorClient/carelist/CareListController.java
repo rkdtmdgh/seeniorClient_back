@@ -28,7 +28,7 @@ public class CareListController {
 	final private CareListService careListService;
 	
 	// 이미지 서버 경로
-	final private String careListImgServerPath = "http://" + ImgUrlPath.CARE_LIST_PATH.getValue();
+	final private String careListImgServerPath = ImgUrlPath.CARE_LIST_PATH.getValue();
 	
 //////////////////////////////////////////////////// 케어리스트 카테고리
 	
