@@ -82,9 +82,6 @@ public class UserController {
 		responseMap.put("userAccountDto", userAccountDto);
 		responseMap.put("userProfileImgServerPath", ImgUrlPath.USER_PROFILE_PATH.getValue());
 		
-		log.info("getAccountInfo() dir_name --- {}", userAccountDto.getU_img_dir_name());
-		log.info("getAccountInfo() dir_name --- {}", userAccountDto.getU_profile_img());
-		
 		return responseMap;
 	}
 	
