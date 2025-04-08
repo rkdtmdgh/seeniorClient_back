@@ -235,7 +235,7 @@ public class UserService {
 			}
 			
 			userAccountDto.setU_profile_img(savedFileName);
-			userAccountDto.setU_img_dir_name(filePath);
+			userAccountDto.setU_img_dir_name(date);
 			
 			// 새로운 이미지 파일 이름 & 경로 추가해서 DB 업데이트
 			boolean updateImgResult = userMapper.updateUserAccount(userAccountDto); 
