@@ -198,6 +198,8 @@ public class UserService {
 		
 		try {
 			
+			log.info("fileUploadAndModifyConfirm() 기존 이미지 파일 경로 --- {}", userAccountDto.getU_img_dir_name());
+			
 			// 기존 이미지 파일 경로 (기존 이미지 저장 파일 삭제 시 사용)
 			String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
 			
@@ -263,22 +265,27 @@ public class UserService {
 				
 			}
 			
-			// 기존 이미지 삭제
-			ResponseEntity<String> deleteFolderResult = 
-					deleteImgFolder(del_u_img_dir_name);
-			
-			if (deleteFolderResult.getBody().equals("1")) {
-				log.info("profile img folder delete success");
+			// 기존 이미지가 있다면 삭제
+			if (del_u_img_dir_name != null && !del_u_img_dir_name.isBlank()) {
 				
-				return SqlResult.SUCCESS.getValue();
-			} else {
-				log.info("profile img folder delete fail");
+				ResponseEntity<String> deleteFolderResult = 
+						deleteImgFolder(del_u_img_dir_name);
 				
-				// 프로필 이미지 삭제 실패 테이블 업데이트
-				userMapper.imgDeleteFail(del_u_img_dir_name);
-				
-				return SqlResult.SUCCESS.getValue();
+				if (deleteFolderResult.getBody().equals("1")) {
+					log.info("profile img folder delete success");
+					
+					return SqlResult.SUCCESS.getValue();
+				} else {
+					log.info("profile img folder delete fail");
+					
+					// 프로필 이미지 삭제 실패 테이블 업데이트
+					userMapper.imgDeleteFail(del_u_img_dir_name);
+					
+					return SqlResult.SUCCESS.getValue();
+				}
 			}
+			
+			return SqlResult.SUCCESS.getValue();
 			
 		} catch (Exception e) {
 			log.info("modifyConfirm() error ------ {}", e);
@@ -327,7 +334,7 @@ public class UserService {
 	}
 	
 	public ResponseEntity<String> deleteImgFolder(String folderPath) {
-		log.info("deletePrifileImgFile() ----- {}", folderPath);
+		log.info("deleteProfileImgFile() ----- {}", folderPath);
 		
 		List<String> deleteFolderPath = new ArrayList<>();
 		deleteFolderPath.add(folderPath);
