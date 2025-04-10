@@ -200,7 +200,8 @@ public class UserService {
 		try {
 			
 			// 기존 이미지 파일 경로 (기존 이미지 저장 파일 삭제 시 사용)
-			String del_u_img_dir_name = "\\userProfileImg\\" + userAccountDto.getU_no() + "\\" + userAccountDto.getU_img_dir_name();
+			String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
+			String del_dir_path = "\\userProfileImg\\" + userAccountDto.getU_no() + "\\" +  del_u_img_dir_name;
 			log.info("fileUploadAndModifyConfirm() 기존 이미지 파일 경로 --- {}", del_u_img_dir_name);
 			
 			// 이미지 파일 저장 경로
@@ -269,7 +270,7 @@ public class UserService {
 			if (del_u_img_dir_name != null && !del_u_img_dir_name.isBlank()) {
 				
 				ResponseEntity<String> deleteFolderResult = 
-						deleteImgFolder(del_u_img_dir_name);
+						deleteImgFolder(del_dir_path);
 				
 				if (deleteFolderResult.getBody().equals("1")) {
 					log.info("profile img folder delete success");
@@ -315,7 +316,11 @@ public class UserService {
 	public boolean modifyPwConfirm(String u_pw, String u_id) {
 		log.info("modifyPwConfirm()");
 		
-		return userMapper.updateUserPw(u_id, passwordEncoder.encode(u_pw));
+		Map<String, Object> param = new HashMap<>();
+		param.put("u_id", u_id);
+		param.put("u_pw", passwordEncoder.encode(u_pw));
+		
+		return userMapper.updateUserPw(param);
 	}
 	
 	// u_social_id 존재 확인

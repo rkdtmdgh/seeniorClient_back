@@ -16,21 +16,11 @@
 				U_NICKNAME, 
 				U_GENDER, 
 				U_BIRTH, 
-				<if test="u_social_id != '' and u_social_id != null">
-					U_SOCIAL_ID, 
-				</if>
-				<if test="u_zip_code != '' and u_zip_code != null">
-					U_ZIP_CODE,
-				</if>
-				<if test="u_address != '' and u_address != null">
-					U_ADDRESS,
-				</if>
-				<if test="u_detailed_address != '' and u_detailed_address != null">
-					U_DETAILED_ADDRESS,
-				</if>
-				<if test="u_profile_img != '' and u_profile_img != null">
-					U_PROFILE_IMG,
-				</if>
+				U_SOCIAL_ID, 
+				U_ZIP_CODE,
+				U_ADDRESS,
+				U_DETAILED_ADDRESS,
+				U_PROFILE_IMG,
 				<if test="u_is_personal eq true">
 					U_IS_PERSONAL  
 				</if>
@@ -49,21 +39,11 @@
 			#{u_nickname}, 
 			#{u_gender}, 
 			#{u_birth}, 
-			<if test="u_social_id != '' and u_social_id != null">
-				#{u_social_id}, 
-			</if>
-			<if test="u_address != '' and u_address != null">
-				#{u_zip_code}, 
-			</if>
-			<if test="u_address != '' and u_address != null">
-				#{u_address}, 
-			</if>
-			<if test="u_address != '' and u_address != null">
-				#{u_detailed_address}, 
-			</if>
-			<if test="u_profile_img != '' and u_profile_img != null">
-				#{u_profile_img}, 
-			</if>
+			#{u_social_id}, 
+			#{u_zip_code}, 
+			#{u_address}, 
+			#{u_detailed_address}, 
+			#{u_profile_img}, 
 			<if test="u_is_personal eq true">
 				1
 			</if>
