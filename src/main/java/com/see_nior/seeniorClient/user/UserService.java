@@ -162,6 +162,7 @@ public class UserService {
 		log.info("delImgModifyConfirm() ---- {}", userAccountDto.getU_no());
 		
 		String del_u_img_dir_name = "\\userProfileImg\\" + userAccountDto.getU_no() + "\\" + userAccountDto.getU_img_dir_name();
+		log.info("delImgModifyConfirm() 삭제할 파일 경로 ---- {}", del_u_img_dir_name);
 		
 		userAccountDto.setU_profile_img(null);
 		userAccountDto.setU_img_dir_name(null);
@@ -198,10 +199,9 @@ public class UserService {
 		
 		try {
 			
-			log.info("fileUploadAndModifyConfirm() 기존 이미지 파일 경로 --- {}", userAccountDto.getU_img_dir_name());
-			
 			// 기존 이미지 파일 경로 (기존 이미지 저장 파일 삭제 시 사용)
-			String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
+			String del_u_img_dir_name = "\\userProfileImg\\" + userAccountDto.getU_no() + "\\" + userAccountDto.getU_img_dir_name();
+			log.info("fileUploadAndModifyConfirm() 기존 이미지 파일 경로 --- {}", del_u_img_dir_name);
 			
 			// 이미지 파일 저장 경로
 			Date now = new Date();
