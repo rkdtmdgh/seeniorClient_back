@@ -114,6 +114,8 @@ public class UserController {
 			boolean modifyResult = 
 					userService.delImgModifyConfirm(userAccountDto);
 
+			log.info("delImgModifyConfirm result ------ {}", modifyResult);
+			
 			responseMap.put("result", modifyResult);
 			
 			return responseMap;

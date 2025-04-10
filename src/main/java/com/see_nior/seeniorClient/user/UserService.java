@@ -159,9 +159,9 @@ public class UserService {
 	
 	// 정보 수정 확인 -- 기존 프로필 이미지 삭제
 	public boolean delImgModifyConfirm(UserAccountDto userAccountDto) {
-		log.info("delImgModifyConfirm() ---- {}", userAccountDto.getU_id());
+		log.info("delImgModifyConfirm() ---- {}", userAccountDto.getU_no());
 		
-		String del_u_img_dir_name = userAccountDto.getU_img_dir_name();
+		String del_u_img_dir_name = "\\userProfileImg\\" + userAccountDto.getU_no() + "\\" + userAccountDto.getU_img_dir_name();
 		
 		userAccountDto.setU_profile_img(null);
 		userAccountDto.setU_img_dir_name(null);
