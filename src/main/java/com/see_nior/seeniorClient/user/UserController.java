@@ -45,16 +45,15 @@ public class UserController {
 	
 	// 아이디 중복 여부 확인
 	@GetMapping("/is_account")
-	public boolean isAccount(@RequestParam String u_id) {
-		log.info("isAccount()");
+	public boolean isAccount(@RequestParam("u_id") String u_id) {
+		log.info("isAccount() ---- u_id : {}", u_id);
 		
 		return userService.isAccount(u_id);
 	}
 	
 	// 닉네임 중복 여부 확인
 	@GetMapping("/is_nickname")
-	@ResponseBody
-	public boolean isNickname(@RequestParam String u_nickname) {
+	public boolean isNickname(@RequestParam("u_nickname") String u_nickname) {
 		log.info("isNickname()");
 		
 		return userService.isNickname(u_nickname);
@@ -154,7 +153,7 @@ public class UserController {
 	
 	// 비밀번호 변경 전 비밀 번호 확인 
 	@PostMapping("/check_pw")
-	public boolean checkPw(@RequestParam String u_pw, Principal principal) {
+	public boolean checkPw(@RequestParam("u_pw") String u_pw, Principal principal) {
 		log.info("checkPw()");
 		
 		return userService.checkPw(principal.getName(), u_pw);
@@ -162,7 +161,7 @@ public class UserController {
 	
 	// 비밀번호 변경
 	@PostMapping("/modify_pw_confirm")
-	public boolean modifyPwConfirm(@RequestParam String u_pw, Principal principal) {
+	public boolean modifyPwConfirm(@RequestParam("u_pw") String u_pw, Principal principal) {
 		log.info("modifyPwConfirm()");
 		
 		return userService.modifyPwConfirm(u_pw, principal.getName());
