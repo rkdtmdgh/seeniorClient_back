@@ -261,7 +261,7 @@ public class CareListController {
 	@PostMapping("/info/delete_care_list_confirm")
 	public boolean deleteCareListConfirm(
 			@RequestParam(value = "cl_no") int cl_no, 
-			@RequestParam(value = "dir_name", required = false) String dir_name,
+			@RequestParam(value = "cl_dir_name", required = false) String dir_name,
 			Principal principal) {
 		log.info("deleteCareListConfirm()");
 		
