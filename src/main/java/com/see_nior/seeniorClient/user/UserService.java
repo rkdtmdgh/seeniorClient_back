@@ -331,9 +331,7 @@ public class UserService {
 	}
 
 	public boolean deleteConfirm(String u_id) {
-		log.info("deleteConfirm()");
-		
-		
+		log.info("deleteConfirm() --- {}", u_id);
 		
 		return userMapper.deleteUserAccountById(u_id);
 	}
