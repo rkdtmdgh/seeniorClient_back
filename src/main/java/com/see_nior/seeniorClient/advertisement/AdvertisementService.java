@@ -22,7 +22,7 @@ public class AdvertisementService {
 	
 	// 이미지 서버 경로
 //		final private String advertisementImgServerPath = "http://127.0.0.1:8091/seeniorUploadImg/advertisement/";
-		final private String advertisementImgServerPath = "http://" + ImgUrlPath.ADVERTISEMENT_PATH.getValue();
+		final private String advertisementImgServerPath = ImgUrlPath.ADVERTISEMENT_PATH.getValue();
 
 	// 홈 화면에서 보여질 광고 가져오기(위치별 광고)
 	public Object getAdvertisementListForMainByCategory(int ad_category_no) {
