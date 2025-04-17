@@ -495,7 +495,7 @@
 	<update id="updateCareList">
 	
 		UPDATE 
-			CAER_LIST 
+			CARE_LIST 
 		SET 
 			CL_CATEGORY_NO = #{cl_category_no},
 			CL_NAME = #{cl_name},
