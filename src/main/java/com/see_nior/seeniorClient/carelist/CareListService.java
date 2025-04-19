@@ -423,7 +423,7 @@ public class CareListService {
 
 	// 케어리스트 수정1. 사진 삭제하고 DB 업데이트
 	@Transactional
-	private boolean delImgModifyConfirm(CareListDto careListDto, List<Integer> old_d_nos, List<Integer> d_nos, int u_no) {
+	public boolean delImgModifyConfirm(CareListDto careListDto, List<Integer> old_d_nos, List<Integer> d_nos, int u_no) {
 		log.info("delImgModifyConfirm()");
 		
 		try {
@@ -452,8 +452,9 @@ public class CareListService {
 			// old_d_nos와 d_nos 비교하여 삭제할 질병 / 추가할 질병 색출하기
 			
 			// HashSet으로 변환
-			Set<Integer> oldSet = new HashSet<>(old_d_nos);
-			Set<Integer> newSet = new HashSet<>(d_nos);
+			
+			Set<Integer> oldSet = old_d_nos == null ? new HashSet<>() : new HashSet<>(old_d_nos);
+			Set<Integer> newSet = d_nos == null ? new HashSet<>() : new HashSet<>(d_nos);
 			
 			// 삭제할 질병 번호 = oldSet - newSet
 			Set<Integer> toDelete = new HashSet<>(oldSet);
@@ -493,7 +494,7 @@ public class CareListService {
 					insertParams.put("cl_no", cl_no);
 					insertParams.put("d_no", d_no);
 					
-					int insertResult = careListMapper.insertNewCarePersonDisease(insertParams);
+					int insertResult = careListMapper.insertCarePersonDisease(insertParams);
 					if (insertResult <= 0) throw new RuntimeException("INSERT D_NOS FAIL! d_no : " + d_no);
 					
 				}
@@ -515,7 +516,7 @@ public class CareListService {
 
 	// 케어리스트 수정2. DB만 업데이트
 	@Transactional
-	private boolean modifyConfirm(CareListDto careListDto, List<Integer> old_d_nos, List<Integer> d_nos) {
+	public boolean modifyConfirm(CareListDto careListDto, List<Integer> old_d_nos, List<Integer> d_nos) {
 		log.info("modifyConfirm()");
 		
 		try {
@@ -570,7 +571,7 @@ public class CareListService {
 					insertParams.put("cl_no", cl_no);
 					insertParams.put("d_no", d_no);
 					
-					int insertResult = careListMapper.insertNewCarePersonDisease(insertParams);
+					int insertResult = careListMapper.insertCarePersonDisease(insertParams);
 					if (insertResult <= 0) throw new RuntimeException("INSERT D_NOS FAIL! d_no : " + d_no);
 					
 				}
@@ -593,7 +594,7 @@ public class CareListService {
 	// 케어리스트 수정3. 사진 추가 및 수정하고 DB 업데이트
 	@SuppressWarnings("unchecked")
 	@Transactional
-	private boolean fileUploadAndModifyConfirm(List<MultipartFile> files, CareListDto careListDto,
+	public boolean fileUploadAndModifyConfirm(List<MultipartFile> files, CareListDto careListDto,
 			List<Integer> old_d_nos, List<Integer> d_nos, int u_no) {
 		log.info("fileUploadAndModifyConfirm()");
 		
@@ -689,7 +690,7 @@ public class CareListService {
 					insertParams.put("cl_no", cl_no);
 					insertParams.put("d_no", d_no);
 					
-					int insertResult = careListMapper.insertNewCarePersonDisease(insertParams);
+					int insertResult = careListMapper.insertCarePersonDisease(insertParams);
 					if (insertResult <= 0) throw new RuntimeException("INSERT D_NOS FAIL! d_no : " + d_no);
 					
 				}
