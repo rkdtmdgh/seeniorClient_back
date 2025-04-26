@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.see_nior.seeniorClient.organizer.mapper.ScheduleMapper">
+
+	<resultMap type="CarePersonDiseaseDto" id="CarePersonDiseaseDto">
+		<id column="cpd_no" property="cpd_no" />
+		<result column="cpd_care_list_no" property="cpd_care_list_no" />
+		<result column="cpd_disease_no" property="cpd_disease_no" />
+		<result column="cpd_is_deleted" property="cpd_is_deleted" />
+		<result column="cpd_reg_date" property="cpd_reg_date" />
+		<result column="cpd_mod_date" property="cpd_mod_date" />
+		<association property="diseaseDto" resultMap="DiseaseDto" />
+	</resultMap>
+
+	<resultMap type="CareListCategoryDto" id="CareListCategoryDto">
+		<id column="clc_no" property="clc_no" />
+		<result column="clc_user_no" property="clc_user_no" />
+		<result column="clc_name" property="clc_name" />
+		<result column="clc_item_cnt" property="clc_item_cnt" />
+		<result column="clc_is_deleted" property="clc_is_deleted" />
+		<result column="clc_reg_date" property="clc_reg_date" />
+		<result column="clc_mod_date" property="clc_mod_date" />
+	</resultMap>
+	
+	<resultMap type="CareListDto" id="CareListDto">
+		<id column="cl_no" property="cl_no"/>
+		<result column="cl_user_no" property="cl_user_no"/>
+		<result column="cl_category_no" property="cl_category_no"/>
+		<result column="cl_name" property="cl_name"/>
+		<result column="cl_img" property="cl_img"/>
+		<result column="cl_dir_name" property="cl_dir_name"/>
+		<result column="cl_gender" property="cl_gender"/>
+		<result column="cl_birth" property="cl_birth"/>
+		<result column="cl_zip_code" property="cl_zip_code"/>
+		<result column="cl_address" property="cl_address"/>
+		<result column="cl_detailed_address" property="cl_detailed_address"/>
+		<result column="cl_blood_type_rh" property="cl_blood_type_rh"/>
+		<result column="cl_blood_type_abo" property="cl_blood_type_abo"/>
+		<result column="cl_phone" property="cl_phone"/>
+		<result column="cl_emergency_contact_1" property="cl_emergency_contact_1"/>
+		<result column="cl_emergency_contact_2" property="cl_emergency_contact_2"/>
+		<result column="cl_emergency_contact_3" property="cl_emergency_contact_3"/>
+		<result column="cl_emergency_contact_4" property="cl_emergency_contact_4"/>
+		<result column="cl_diabetic_food" property="cl_diabetic_food"/>
+		<result column="cl_medications" property="cl_medications"/>
+		<result column="cl_hospital" property="cl_hospital"/>
+		<result column="cl_doctor" property="cl_doctor"/>
+		<result column="cl_hospital_tel" property="cl_hospital_tel"/>
+		<result column="cl_walk_state" property="cl_walk_state"/>
+		<result column="cl_assistive_device" property="cl_assistive_device"/>
+		<result column="cl_washing_assistance" property="cl_washing_assistance"/>
+		<result column="cl_toilet_assistance" property="cl_toilet_assistance"/>
+		<result column="cl_mental_state" property="cl_mental_state"/>
+		<result column="cl_social_state" property="cl_social_state"/>
+		<result column="cl_etc" property="cl_etc"/>
+		<result column="cl_favorites" property="cl_favorites"/>
+		<result column="cl_is_deleted" property="cl_is_deleted"/>
+		<result column="cl_reg_date" property="cl_reg_date"/>
+		<result column="cl_mod_date" property="cl_mod_date"/>
+		<association property="careListCategoryDto" resultMap="CareListCategoryDto" />
+		<collection property="carePersonDiseaseDtos" resultMap="CarePersonDiseaseDto" />
+	</resultMap>
+	
+	<resultMap type="ScheduleDto" id="ScheduleDto">
+		<id column="s_no" property="s_no" />
+		<result column="s_title" property="s_title" />
+		<result column="s_comment" property="s_comment" />
+		<result column="s_alarm_check" property="s_alarm_check" />
+		<result column="s_alarm_time" property="s_alarm_time" />
+		<result column="s_start_date" property="s_start_date" />
+		<result column="s_end_date" property="s_end_date" />
+		<result column="s_is_deleted" property="s_is_deleted" />
+		<result column="s_reg_date" property="s_reg_date" />
+		<result column="s_mod_date" property="s_mod_date" />
+		<result column="s_user_no" property="s_user_no" />
+		<result column="s_care_list_no" property="s_care_list_no" />
+		<association property="careListDto" resultMap="CareListDto" />
+	</resultMap>
+
+	<insert id="insertNewSchedule">
+	
+		INSERT INTO 
+			SCHEDULES
+			(
+				S_USER_NO,
+	            S_CARE_LIST_NO,
+	            S_TITLE,
+	            S_COMMENT,
+	            S_ALARM_CHECK,
+	            S_ALARM_TIME,
+	            S_START_DATE,
+	            S_END_DATE
+			)
+		VALUES 
+			(
+				#{s_user_no},
+	            #{s_care_list_no},
+	            #{s_title},
+	            #{s_comment},
+	            #{s_alarm_check},
+	            #{s_alarm_time},
+	            #{s_start_date},
+	            #{s_end_date}
+			)
+	
+	</insert>
+
+
+	<select id="selectScheduleForMonth"
+			resultMap="ScheduleDto">
+
+		SELECT 
+			* 
+		FROM 
+			SCHEDULES AS S 
+		LEFT JOIN 
+			CARE_LIST AS CL 
+		ON 
+			S.S_CARE_LIST_NO = CL.CL_NO 
+		WHERE 
+			S.S_USER_NO = #{s_user_no} 
+		AND 
+			S.S_IS_DELETED = 1 
+		AND 
+			S.S_YEAR = #{s_year} 
+		AND 
+			S.S_MONTH = #{s_month} 
+	
+	</select>
+	
+	<select id="selectScheduleForDate"
+			resultMap="ScheduleDto">
+	
+		SELECT 
+			* 
+		FROM 
+			SCHEDULES AS S 
+		LEFT JOIN 
+			CARE_LIST AS CL 
+		ON 
+			S.S_CARE_LIST_NO = CL.CL_NO 
+		LEFT JOIN 
+			PRESCRIPTIONS AS P 
+		ON 
+			
+	
+	</select>
+	
+</mapper>
