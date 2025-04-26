@@ -495,11 +495,13 @@
 	<update id="updateCareList">
 	
 		UPDATE 
-			CAER_LIST 
+			CARE_LIST 
 		SET 
 			CL_CATEGORY_NO = #{cl_category_no},
 			CL_NAME = #{cl_name},
-			CL_GENDER = #{cl_gender},
+			CL_IMG = #{cl_img},
+			CL_NAME = #{cl_name},
+			CL_DIR_NAME = #{cl_dir_name},
 			CL_BIRTH = #{cl_birth},
 			CL_ZIP_CODE = #{cl_zip_code},
 			CL_ADDRESS = #{cl_address},
@@ -541,6 +543,17 @@
 			CPD_DISEASE_NO = #{d_no} 
 	
 	</delete>
+	
+	<!--  케어리스트 노인의 질환 insert하기(기존에 있던 노인) -->
+	<insert id="insertCarePersonDisease">
+	
+		INSERT INTO
+			CARE_PERSON_DISEASE
+				(CPD_CARE_LIST_NO, CPD_DISEASE_NO) 
+			VALUES
+				(#{cl_no}, #{d_no})
+	
+	</insert>
 	
 	<!-- 케어리스트 삭제 하기 -->
 	<update id="deleteCareList"
