@@ -1,5 +1,7 @@
 package com.see_nior.seeniorClient.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,8 +16,8 @@ public class MedicineScheduleDto {
     private String ms_meal_relation;
     private String ms_repeat_day;
 	private boolean ms_is_deleted;
-    private String ms_reg_date;
-    private String ms_mod_date;
+    private LocalDateTime ms_reg_date;
+    private LocalDateTime ms_mod_date;
     
     private int ms_medicine_no;
 	

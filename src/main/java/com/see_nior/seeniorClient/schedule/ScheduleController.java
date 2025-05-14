@@ -1,15 +1,19 @@
 package com.see_nior.seeniorClient.schedule;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.see_nior.seeniorClient.dto.MedicineRequestDto;
 import com.see_nior.seeniorClient.dto.ScheduleDto;
 
 import lombok.RequiredArgsConstructor;
@@ -32,19 +36,25 @@ public class ScheduleController {
 		return scheduleService.createScheduleConfirm(scheduleDto);
 	}
 	
+	// 개별 복용약 등록하기
+	@PostMapping("/create_medicine_confirm")
+	public ResponseEntity<Boolean> createMedicineConfirm(@RequestBody MedicineRequestDto requestDto) {
+		log.info("createMedicineConfirm()");
+		
+		boolean result = scheduleService.createMedicineConfirm(requestDto);
+		
+		return ResponseEntity.ok(result);
+	}
+	
 	// 월별 일정 가져오기
 	@GetMapping("/get_schedule_for_month")
-	public Object getScheduleForMonth(ScheduleDto scheduleDto) {
+	public Object getScheduleForMonth(@RequestParam("s_user_no") int s_user_no, 
+			@RequestParam("search_date") LocalDate search_date) {
 		log.info("getScheduleForMonth()");
 		
-		Map<String, Object> responseMap = new HashMap<>();
+		scheduleService.getScheduleForMonth(s_user_no, search_date);
 		
-		List<ScheduleDto> scheduleDtos = 
-				scheduleService.getScheduleForMonth(scheduleDto);
-		
-		responseMap.put("scheduleDtos", scheduleDtos);
-		
-		return responseMap;
+		return null;
 	}
 	
 	// 일별 일정 가져오기 
