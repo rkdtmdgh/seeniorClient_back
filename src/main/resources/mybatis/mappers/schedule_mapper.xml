@@ -147,4 +147,28 @@
 	
 	</select>
 	
+	<insert id="insertMedicine" parameterType="MedicineDto"
+			useGeneratedKeys="true" keyProperty="m_no">
+	
+		INSERT INTO MEDICINE (
+	        m_name, m_start_date, m_end_date, m_user_no, m_care_list_no
+	    )
+	    VALUES (
+	        #{m_name}, #{m_start_date}, #{m_end_date}, #{m_user_no}, #{m_care_list_no}
+	    )
+	
+	</insert>
+	
+	<insert id="insertMedicineSchedule" parameterType="MedicineScheduleDto">
+	
+		INSERT INTO MEDICINE_SCHEDULE (
+            MS_DOSING_PERIOD, MS_MEAL_RELATION, MS_REPEAT_DAY, MS_IS_DELETED,
+            MS_REG_DATE, MS_MOD_DATE, MS_MEDICINE_NO
+        ) VALUES (
+            #{ms_dosing_period}, #{ms_meal_relation}, #{ms_repeat_day}, #{ms_is_deleted},
+            NOW(), NOW(), #{ms_medicine_no}
+        )
+	
+	</insert>
+	
 </mapper>
