@@ -22,8 +22,6 @@ public interface ScheduleMapper {
 
 	List<ScheduleDto> selectScheduleForDate(ScheduleDto scheduleDto);
 
-	@Insert("INSERT INTO MEDICINE (...) VALUES (...)")
-	@Options(useGeneratedKeys = true, keyProperty = "m_no")
 	void insertMedicine(MedicineDto medicineDto);
 	
 	void insertMedicineSchedule(MedicineScheduleDto medicineScheduleDto);
