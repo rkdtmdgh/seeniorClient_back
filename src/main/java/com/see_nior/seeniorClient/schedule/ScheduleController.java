@@ -39,7 +39,7 @@ public class ScheduleController {
 	// 개별 복용약 등록하기
 	@PostMapping("/create_medicine_confirm")
 	public ResponseEntity<Boolean> createMedicineConfirm(@RequestBody MedicineRequestDto requestDto) {
-		log.info("createMedicineConfirm()");
+		log.info("createMedicineConfirm() ------ requestDto : {}", requestDto);
 		
 		boolean result = scheduleService.createMedicineConfirm(requestDto);
 		
