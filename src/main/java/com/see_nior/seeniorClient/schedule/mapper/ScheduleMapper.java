@@ -1,4 +1,4 @@
-package com.see_nior.seeniorClient.organizer.mapper;
+package com.see_nior.seeniorClient.schedule.mapper;
 
 import java.util.List;
 import java.util.Map;

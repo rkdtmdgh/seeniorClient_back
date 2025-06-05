@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +16,6 @@ import com.see_nior.seeniorClient.dto.CareListCategoryDto;
 import com.see_nior.seeniorClient.dto.CareListDto;
 import com.see_nior.seeniorClient.enums.ImgUrlPath;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -228,13 +226,13 @@ public class CareListController {
 	// 케어리스트 한 개 가져오기
 	@GetMapping("/info/get_care_list_by_no")
 	public Object getCareListByNo(
-			@RequestParam(value = "cl_no") int cl_no) {
+			@RequestParam(value = "cl_no") int cl_no, Principal principal) {
 		log.info("getCareListByNo()");
 		log.info("cl_no ==========> {}", cl_no);
 		
 		Map<String, Object> responseMap = new HashMap<>();
 		
-		CareListDto careListDto = careListService.getCareListByNo(cl_no);
+		CareListDto careListDto = careListService.getCareListByNo(cl_no, principal.getName());
 		
 		responseMap.put("careListDto", careListDto);
 		responseMap.put("careListImgServerPath", careListImgServerPath);

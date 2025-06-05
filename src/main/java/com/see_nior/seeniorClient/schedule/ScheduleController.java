@@ -1,11 +1,11 @@
 package com.see_nior.seeniorClient.schedule;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.see_nior.seeniorClient.dto.MedicineRequestDto;
 import com.see_nior.seeniorClient.dto.ScheduleDto;
+import com.see_nior.seeniorClient.user.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,40 +28,52 @@ import lombok.extern.log4j.Log4j2;
 public class ScheduleController {
 
 	final private ScheduleService scheduleService;
+	final private UserService userService;
 	
 	// 개별 일정 등록하기
 	@PostMapping("/create_schedule_confirm")
-	public boolean createScheduleConfirm(ScheduleDto scheduleDto) {
+	public boolean createScheduleConfirm(ScheduleDto scheduleDto, Principal principal) {
 		log.info("createScheduleConfirm()");
+		
+		int u_no = getLoginedNo(principal.getName());
+		
+		scheduleDto.setS_user_no(u_no);
 		
 		return scheduleService.createScheduleConfirm(scheduleDto);
 	}
 	
 	// 개별 복용약 등록하기
 	@PostMapping("/create_medicine_confirm")
-	public ResponseEntity<Boolean> createMedicineConfirm(@RequestBody MedicineRequestDto requestDto) {
+	public boolean createMedicineConfirm(@RequestBody MedicineRequestDto requestDto, 
+			Principal principal) {
 		log.info("createMedicineConfirm() ------ requestDto : {}", requestDto);
 		
-		boolean result = scheduleService.createMedicineConfirm(requestDto);
+		int u_no = getLoginedNo(principal.getName());
 		
-		return ResponseEntity.ok(result);
+		return scheduleService.createMedicineConfirm(requestDto, u_no);
 	}
 	
 	// 월별 일정 가져오기
 	@GetMapping("/get_schedule_for_month")
-	public Object getScheduleForMonth(@RequestParam("s_user_no") int s_user_no, 
-			@RequestParam("search_date") LocalDate search_date) {
+	public Object getScheduleForMonth(@RequestParam("search_date") LocalDate search_date, 
+			Principal principal) {
 		log.info("getScheduleForMonth()");
 		
-		scheduleService.getScheduleForMonth(s_user_no, search_date);
+		int u_no = getLoginedNo(principal.getName());
+		
+		scheduleService.getScheduleForMonth(u_no, search_date);
 		
 		return null;
 	}
 	
 	// 일별 일정 가져오기 
 	@GetMapping("/get_schedule_for_date")
-	public Object getScheduleForDate(ScheduleDto scheduleDto) {
+	public Object getScheduleForDate(ScheduleDto scheduleDto, Principal principal) {
 		log.info("getScheduleForDate()");
+
+		int u_no = getLoginedNo(principal.getName());
+		
+		scheduleDto.setS_user_no(u_no);
 		
 		Map<String, Object> responseMap = new HashMap<>();
 		
@@ -73,9 +86,10 @@ public class ScheduleController {
 	}
 	
 	// 개별 일정 가져오기
-	@PostMapping("/")
-	public String postMethodName(@RequestBody String entity) {
-		//TODO: process POST request
+	@PostMapping("/get_schedule")
+	public String getSchedule(@RequestBody String entity) {
+		log.info("getSchedule()");
+		
 		
 		return entity;
 	}
@@ -86,5 +100,12 @@ public class ScheduleController {
 	// 개별 일정 수정하기 
 	
 	// 개별 일정 삭제하기
+	
+	// 로그인한 no 가져오기
+	private int getLoginedNo(String u_id) {
+		log.info("getLoginedNo()");
+		
+		return userService.selectUserNoById(u_id);
+	}
 	
 }

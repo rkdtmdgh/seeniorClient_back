@@ -487,7 +487,9 @@
 		ON 
 			D.D_CATEGORY_NO = DC.DC_NO 
 		WHERE 
-		    CL.CL_NO = #{cl_no}
+		    CL.CL_NO = #{cl_no} 
+		AND 
+			CL.CL_USER_NO = #{u_no} 
 	
 	</select>
 	

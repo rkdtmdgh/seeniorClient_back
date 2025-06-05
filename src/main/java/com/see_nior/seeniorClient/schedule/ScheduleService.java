@@ -12,7 +12,7 @@ import com.see_nior.seeniorClient.dto.MedicineDto;
 import com.see_nior.seeniorClient.dto.MedicineRequestDto;
 import com.see_nior.seeniorClient.dto.MedicineScheduleDto;
 import com.see_nior.seeniorClient.dto.ScheduleDto;
-import com.see_nior.seeniorClient.organizer.mapper.ScheduleMapper;
+import com.see_nior.seeniorClient.schedule.mapper.ScheduleMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,12 +36,14 @@ public class ScheduleService {
 	} 
 	
 	@Transactional
-	public boolean createMedicineConfirm(MedicineRequestDto requestDto) {
+	public boolean createMedicineConfirm(MedicineRequestDto requestDto, int u_no) {
 		log.info("createMedicineConfirm()");
 		
 		try {
 			MedicineDto medicineDto = requestDto.getMedicineDto();
 			MedicineScheduleDto medicineScheduleDto = requestDto.getMedicineScheduleDto();
+			
+			medicineDto.setM_user_no(u_no);
 			
 			// 약 정보 저장
 			scheduleMapper.insertMedicine(medicineDto);
