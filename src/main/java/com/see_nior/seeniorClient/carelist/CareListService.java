@@ -391,10 +391,14 @@ public class CareListService {
 	}
 	
 	// 케어리스트 한 개 가져오기
-	public CareListDto getCareListByNo(int cl_no) {
+	public CareListDto getCareListByNo(int cl_no, String u_id) {
 		log.info("getCareListByNo()");
 		
-		CareListDto careListDto = careListMapper.getCareListByNo(cl_no);
+		Map<String, Object> selectParams = new HashMap<>();
+		selectParams.put("cl_no", cl_no);
+		selectParams.put("u_no", userService.selectUserNoById(u_id));
+		
+		CareListDto careListDto = careListMapper.getCareListByNo(selectParams);
 		if (careListDto == null) throw new RuntimeException("careListDto is null!!");
 		
 		return careListDto;
@@ -727,7 +731,11 @@ public class CareListService {
 			
 			if (dir_name != null) {
 				
-				CareListDto deleteCareListDto = careListMapper.getCareListByNo(cl_no);
+				Map<String, Object> selectParams = new HashMap<>();
+				selectParams.put("cl_no", cl_no);
+				selectParams.put("u_no", u_no);
+				
+				CareListDto deleteCareListDto = careListMapper.getCareListByNo(selectParams);
 				
 				List<String> deleteFolderPath = new ArrayList<>();
 				

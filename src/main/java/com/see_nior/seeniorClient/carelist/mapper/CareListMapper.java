@@ -67,7 +67,7 @@ public interface CareListMapper {
 	public int getCareListByCategoryCnt(Map<String, Object> selectParams);
 
 	// 케어리스트 한 개 가져오기
-	public CareListDto getCareListByNo(int cl_no);
+	public CareListDto getCareListByNo(Map<String, Object> selectParams);
 	
 	// 케어리스트 수정하기
 	public int updateCareList(CareListDto careListDto);
