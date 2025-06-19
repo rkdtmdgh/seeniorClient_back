@@ -228,7 +228,7 @@ public class CareListController {
 	public Object getCareListByCategoryScheduler(
 			@RequestParam(value = "sortValue", required = false, defaultValue = "cl_no") String sortValue,
 			@RequestParam(value = "order", required = false, defaultValue = "desc") String order,
-			@RequestParam(value = "infoNo", required = false, defaultValue = "0") Integer infoNo, Principal principal) {
+			@RequestParam(value = "infoNo") Integer infoNo, Principal principal) {
 		log.info("getCareListByCategoryScheduler()");
 		
 		Map<String, Object> careListByCategory = careListService.getCareListByCategory(sortValue, order, infoNo, principal.getName());
