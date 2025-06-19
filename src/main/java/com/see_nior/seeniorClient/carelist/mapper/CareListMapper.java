@@ -62,6 +62,9 @@ public interface CareListMapper {
 
 	// 페이지 번호에 따른 카테고리별 케어리스트 가져오기
 	public List<CareListDto> getCareListByCategoryWithPage(Map<String, Object> pagingParamsForSelectBox);
+	
+	// 카테고리별 케어리스트 가져오기(페이지네이션 없음 -> 스케쥴 등록용)
+	public List<CareListDto> getCareListByCategory(Map<String, Object> selectParams);
 
 	// 카테고리별 케어리스트 총 개수 가져오기
 	public int getCareListByCategoryCnt(Map<String, Object> selectParams);
