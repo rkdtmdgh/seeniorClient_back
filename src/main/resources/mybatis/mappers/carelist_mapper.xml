@@ -442,17 +442,8 @@
 			CL.CL_IS_DELETED = 1 
 		AND 
 			CL.CL_USER_NO = #{u_no} 
-		<choose>
-		    <when test="infoNo != -1 and infoNo != 0">
-		        AND CL.CL_CATEGORY_NO = #{infoNo}
-		    </when>
-		    <when test="infoNo == -1">
-		        AND CL.CL_FAVORITES = 1 
-		    </when>
-		    <otherwise>
-		    	AND (CL.CL_CATEGORY_NO IS NULL OR CL.CL_CATEGORY_NO >= 0) 
-		    </otherwise>
-		</choose>
+        AND 
+        	CL.CL_CATEGORY_NO = #{infoNo}
 		ORDER BY 
 			CL.${sortValue} ${order} 	
 			
