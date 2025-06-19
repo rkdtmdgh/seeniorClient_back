@@ -340,6 +340,30 @@ public class CareListService {
 		return pagingList;
 		
 	}
+	
+	// 카테고리별 케어리스트 가져오기(페이지네이션 없음 -> 스케쥴 등록용)
+	public Map<String, Object> getCareListByCategory(String sortValue, String order, Integer infoNo, String u_id) {
+		log.info("getCareListByCategory()");
+		
+		// u_id 값으로 u_no 가져오기
+		int u_no = userService.selectUserNoById(u_id);
+		
+		Map<String, Object> pagingList = new HashMap<>();
+		
+		Map<String, Object> selectParams = new HashMap<>();
+		
+		selectParams.put("sortValue", sortValue);
+		selectParams.put("order", order);
+		selectParams.put("infoNo", infoNo);
+		selectParams.put("u_no", u_no);
+				
+		List<CareListDto> careListDtos = careListMapper.getCareListByCategory(selectParams);
+		pagingList.put("careListDtos", careListDtos);
+		
+		return pagingList;
+		
+	}
+
 
 	// 모든 케어리스트 총 페이지 개수 가져오기
 	public Map<String, Object> getCareListPageNum(int page_limit, int page, String u_id) {
@@ -763,6 +787,7 @@ public class CareListService {
 		
 	}
 
+	
 
 
 	

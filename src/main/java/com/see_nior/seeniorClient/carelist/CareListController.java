@@ -223,6 +223,24 @@ public class CareListController {
 		
 	}
 	
+	// 카테고리별 케어리스트 가져오기(페이지네이션 없음 -> 스케쥴 관리에서 <select>박스 용)
+	@GetMapping("/info/get_care_list_by_category_scheduler")
+	public Object getCareListByCategoryScheduler(
+			@RequestParam(value = "sortValue", required = false, defaultValue = "cl_no") String sortValue,
+			@RequestParam(value = "order", required = false, defaultValue = "desc") String order,
+			@RequestParam(value = "infoNo", required = false, defaultValue = "0") Integer infoNo, Principal principal) {
+		log.info("getCareListByCategoryScheduler()");
+		
+		Map<String, Object> careListByCategory = careListService.getCareListByCategory(sortValue, order, infoNo, principal.getName());
+		
+		careListByCategory.put("sortValue", sortValue);
+		careListByCategory.put("order", order);
+		careListByCategory.put("infoNo", infoNo);
+		
+		return careListByCategory;
+		
+	}
+	
 	// 케어리스트 한 개 가져오기
 	@GetMapping("/info/get_care_list_by_no")
 	public Object getCareListByNo(

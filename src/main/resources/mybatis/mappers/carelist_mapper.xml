@@ -407,6 +407,57 @@
 	
 	</select>
 	
+	<!-- 카테고리별 케어리스트 가져오기(페이지네이션 없음 -> 스케쥴 등록용) -->
+	<select id="getCareListByCategory"
+			parameterType="Map"
+			resultMap="CareListDto">
+		
+		SELECT 
+			CL.*, 
+			CLC.*, 
+			CPD.*, 
+			D.*, 
+			DC.* 
+		FROM 
+			CARE_LIST AS CL 
+		LEFT JOIN 
+			CARE_LIST_CATEGORY AS CLC 
+		ON 
+			CL.CL_CATEGORY_NO = CLC.CLC_NO 
+		AND 
+			CLC.CLC_IS_DELETED = 1 
+		LEFT JOIN 
+			CARE_PERSON_DISEASE AS CPD 
+		ON 
+			CL.CL_NO = CPD.CPD_CARE_LIST_NO 
+		LEFT JOIN 
+			DISEASE AS D 
+		ON 
+			CPD.CPD_DISEASE_NO = D.D_NO 
+		LEFT JOIN 
+			DISEASE_CATEGORY AS DC 
+		ON 
+			D.D_CATEGORY_NO = DC.DC_NO 
+		WHERE 
+			CL.CL_IS_DELETED = 1 
+		AND 
+			CL.CL_USER_NO = #{u_no} 
+		<choose>
+		    <when test="infoNo != -1 and infoNo != 0">
+		        AND CL.CL_CATEGORY_NO = #{infoNo}
+		    </when>
+		    <when test="infoNo == -1">
+		        AND CL.CL_FAVORITES = 1 
+		    </when>
+		    <otherwise>
+		    	AND (CL.CL_CATEGORY_NO IS NULL OR CL.CL_CATEGORY_NO >= 0) 
+		    </otherwise>
+		</choose>
+		ORDER BY 
+			CL.${sortValue} ${order} 	
+			
+	</select>
+	
 	<!-- 카테고리별 케어리스트 총 개수 가져오기 -->
 	<select id="getCareListByCategoryCnt"
 			parameterType="Integer"
